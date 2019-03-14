@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="Gene" extends="SequenceFeature" is-interface="true">
+		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<collection name="probeSets" referenced-type="ProbeSet" reverse-reference="genes"/>
+	</class>
+	<class name="ProbeSet" is-interface="true">
+		<attribute name="probeSetId" type="java.lang.String"/>
+		<attribute name="mappingType" type="java.lang.String"/>
+		<collection name="genes" referenced-type="Gene" reverse-reference="probeSets"/>
+		<reference name="organism" referenced-type="Organism"/>
+	</class>
+
+</classes>

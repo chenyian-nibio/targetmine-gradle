@@ -1,0 +1,1439 @@
+<webconfig>
+  <class className="org.intermine.model.bio.Author">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.BioEntity">
+    <headerconfig>
+      <titles>
+        <title mainTitles="symbol|primaryIdentifier" numberOfMainTitlesToShow="1" subTitles="*organism.name*" />
+      </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier" label="DB identifier"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Chromosome">
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="organism.name"/>
+      <fieldconfig fieldExpr="length" displayer="/model/sequenceShortDisplayerWithField.jsp" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Comment">
+    <fields>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="description"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DataSet">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="version"/>
+      <fieldconfig fieldExpr="dateType"/>
+      <fieldconfig fieldExpr="date"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DataSource">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="url" doNotTruncate="true"/>
+    </fields>
+    <tabledisplayer src="/model/dataSourceShort.jsp"/>
+  </class>
+
+  <class className="org.intermine.model.bio.Gene">
+    <inlinelist>
+      <table path="synonyms.value" showLinksToObjects="true" />
+      <table path="probeSets.probeSetId" showLinksToObjects="true" />
+    </inlinelist>
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="symbol"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="organism.name" />
+      <fieldconfig fieldExpr="description" doNotTruncate="true" showInResults="false" showInInlineCollection="false" showInSummary="false" />
+    </fields>
+  </class>
+
+ <class className="org.intermine.model.bio.Location">
+    <fields>
+      <fieldconfig fieldExpr="start"/>
+      <fieldconfig fieldExpr="end"/>
+      <fieldconfig fieldExpr="strand"/>
+    </fields>
+  </class>
+
+
+  <class className="org.intermine.model.bio.SequenceFeature">
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="length" displayer="/model/sequenceShortDisplayerWithField.jsp" />
+      <fieldconfig fieldExpr="chromosomeLocation" displayer="/model/chromosomeLocDisplayer.jsp" showInResults="false" />
+      <fieldconfig fieldExpr="chromosome.primaryIdentifier" showInInlineCollection="false" showInSummary="false" />
+      <fieldconfig fieldExpr="chromosomeLocation.start" showInInlineCollection="false" showInSummary="false" />
+      <fieldconfig fieldExpr="chromosomeLocation.end" showInInlineCollection="false" showInSummary="false" />
+      <fieldconfig fieldExpr="organism.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Ontology">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.OntologyAnnotation">
+    <fields>
+      <fieldconfig fieldExpr="subject.primaryIdentifier"/>
+      <fieldconfig fieldExpr="ontologyTerm.identifier"/>
+      <fieldconfig fieldExpr="ontologyTerm.name"/>
+      <fieldconfig fieldExpr="ontologyTerm.namespace"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.OntologyTerm">
+    <headerconfig>
+      <titles>
+        <title mainTitles="identifier|name" subTitles="ontology.name" />
+      </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="namespace"/>
+      <fieldconfig fieldExpr="description" doNotTruncate="true" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.OntologyRelation">
+    <fields>
+      <fieldconfig fieldExpr="relationship"/>
+      <fieldconfig fieldExpr="parentTerm.identifier"/>
+      <fieldconfig fieldExpr="childTerm.identifier"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.OntologyTermSynonym">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="type"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Organism">
+    <headerconfig>
+      <titles>
+        <title mainTitles="name" subTitles="taxonId"/>
+      </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="taxonId" />
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="genus"/>
+      <fieldconfig fieldExpr="species"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Protein">
+    <inlinelist>
+      <table path="synonyms.value" showLinksToObjects="true" />
+      <table path="keywords.name" showLinksToObjects="true" />
+      <table path="otherAccessions.accession" showLinksToObjects="false" />
+    </inlinelist>
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="primaryAccession"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="organism.name"/>
+      <fieldconfig fieldExpr="length" displayer="/model/sequenceShortDisplayerWithField.jsp" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Publication">
+    <headerconfig>
+      <titles>
+        <title mainTitles="title" subTitles="year"/>
+      </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="firstAuthor"/>
+      <fieldconfig fieldExpr="title"/>
+      <fieldconfig fieldExpr="year"/>
+      <fieldconfig fieldExpr="journal"/>
+      <fieldconfig fieldExpr="volume"/>
+      <fieldconfig fieldExpr="pages"/>
+      <fieldconfig fieldExpr="pubMedId"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Sequence">
+    <fields>
+      <fieldconfig fieldExpr="residues" fieldExporter="org.intermine.bio.web.export.ResidueFieldExporter"
+                   sectionOnRight="true" sectionTitle="Residues" openByDefault="true"
+                   showInSummary="false" showInResults="false" showInInlineCollection="false"/>
+      <fieldconfig fieldExpr="length"/>
+    </fields>
+    <tabledisplayer src="/model/sequenceShortDisplayer.jsp"/>
+  </class>
+
+  <class className="org.intermine.model.bio.Synonym">
+    <fields>
+      <fieldconfig fieldExpr="value"/>
+    </fields>
+  </class>
+<!--TargetMine-->
+  <class className="org.intermine.model.bio.ProteinStructure">
+    <fields>
+      <fieldconfig fieldExpr="pdbId"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="resolution"/>
+      <fieldconfig fieldExpr="experimentType"/>
+    </fields>
+    <inlinelist>
+      <table path="chains.chain" showLinksToObjects="true" />
+    </inlinelist>
+  </class>
+
+  <class className="org.intermine.model.bio.GOAnnotation">
+    <fields>
+      <fieldconfig fieldExpr="subject.primaryIdentifier"/>
+      <fieldconfig fieldExpr="ontologyTerm.identifier" />
+      <fieldconfig fieldExpr="ontologyTerm.name" />
+      <fieldconfig fieldExpr="ontologyTerm.namespace" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.GOEvidenceCode">
+    <fields>
+      <fieldconfig fieldExpr="code"/>
+    </fields>
+  </class>
+
+    <class className="org.intermine.model.bio.GOTerm">
+    <headerconfig>
+        <titles>
+            <title mainTitles="identifier|name" subTitles="ontology.name" />
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="description" showInResults="false" showInInlineCollection="false" doNotTruncate="true" />
+    </fields>
+  </class>
+
+    <class className="org.intermine.model.bio.GOSlimTerm">
+    <headerconfig>
+        <titles>
+            <title mainTitles="identifier|name" subTitles="ontology.name" />
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="description" showInResults="false" showInInlineCollection="false" doNotTruncate="true" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Compound">
+    <headerconfig>
+        <titles>
+            <title mainTitles="name" subTitles="identifier"/>
+        </titles>
+    </headerconfig>
+    <inlinelist>
+      <table path="synonyms.value" showLinksToObjects="true" />
+    </inlinelist>
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="originalId"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="inchiKey"/>
+    </fields>
+  </class>
+  
+  <class className="org.intermine.model.bio.CompoundStructure">
+    <fields>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="value"/>
+      <fieldconfig fieldExpr="dataSet.name" />
+    </fields>
+  </class>
+  
+  <class className="org.intermine.model.bio.CompoundSynonym">
+    <fields>
+      <fieldconfig fieldExpr="value"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.ProteinDomain">
+    <headerconfig>
+        <titles>
+            <title mainTitles="primaryIdentifier|shortName" subTitles="type" />
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="shortName"/>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="description" doNotTruncate="true" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.ProteinDomainRegion">
+    <fields>
+      <fieldconfig fieldExpr="protein.primaryIdentifier"/>
+      <fieldconfig fieldExpr="protein.primaryAccession"/>
+      <fieldconfig fieldExpr="start"/>
+      <fieldconfig fieldExpr="end"/>
+      <fieldconfig fieldExpr="originalId"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.ProteinStructureRegion">
+    <fields>
+      <fieldconfig fieldExpr="protein.primaryAccession"/>
+      <fieldconfig fieldExpr="start"/>
+      <fieldconfig fieldExpr="end"/>
+      <fieldconfig fieldExpr="pdbSeqStart"/>
+      <fieldconfig fieldExpr="pdbSeqEnd"/>
+      <fieldconfig fieldExpr="chain.structure.pdbId" label="PDB ID"/>
+      <fieldconfig fieldExpr="chain.chain" label="Chain"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Pathway">
+    <headerconfig>
+        <titles>
+            <title mainTitles="identifier|name" subTitles="organism.name"/>
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="identifier" />
+      <fieldconfig fieldExpr="name" />
+      <fieldconfig fieldExpr="organism.name" />
+      <fieldconfig fieldExpr="label1"/>
+      <fieldconfig fieldExpr="label2"/>
+      <fieldconfig fieldExpr="description" showInResults="false" showInInlineCollection="false" doNotTruncate="true" showInSummary="false" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.Relation">
+    <inlinelist>
+      <table path="types.name" />
+    </inlinelist>
+    <fields>
+      <fieldconfig fieldExpr="name" />
+      <fieldconfig fieldExpr="text" />
+      <fieldconfig fieldExpr="gene1.symbol" />
+      <fieldconfig fieldExpr="gene2.symbol" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.Modification">
+    <fields>
+      <fieldconfig fieldExpr="protein.primaryIdentifier" />
+      <fieldconfig fieldExpr="protein.primaryAccession" />
+      <fieldconfig fieldExpr="type" />
+      <fieldconfig fieldExpr="position" />
+      <fieldconfig fieldExpr="residue" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.IntegratedPathwayCluster" >
+    <fields>
+      <fieldconfig fieldExpr="identifier" />
+      <fieldconfig fieldExpr="name" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.KeggOrthology">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Disease">
+    <fields>
+      <fieldconfig fieldExpr="gene.primaryIdentifier"/>
+      <fieldconfig fieldExpr="gene.symbol"/>
+      <fieldconfig fieldExpr="diseaseTerm.name"/>
+    </fields>
+    <inlinelist>
+      <table path="sources.name" showLinksToObjects="true" />
+    </inlinelist>
+  </class>
+  <class className="org.intermine.model.bio.DiseaseTerm">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="description" doNotTruncate="true"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.CompoundProteinInteraction">
+    <fields>
+      <fieldconfig fieldExpr="protein.primaryAccession"/>
+      <fieldconfig fieldExpr="protein.name"/>
+      <fieldconfig fieldExpr="compound.identifier" />
+      <fieldconfig fieldExpr="compound.name" />
+      <fieldconfig fieldExpr="dataSet.name" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DrugBankInteraction">
+    <fields>
+      <fieldconfig fieldExpr="protein.primaryAccession"/>
+      <fieldconfig fieldExpr="protein.name"/>
+      <fieldconfig fieldExpr="actionLabel"/>
+      <fieldconfig fieldExpr="compound.identifier" />
+      <fieldconfig fieldExpr="compound.name" />
+      <fieldconfig fieldExpr="dataSet.name" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Activity">
+    <fields>
+      <fieldconfig fieldExpr="interaction.protein.primaryAccession" showInSummary="false"/>
+      <fieldconfig fieldExpr="interaction.compound.identifier" showInSummary="false"/>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="conc"/>
+      <fieldconfig fieldExpr="assay.name" showInSummary="false"/>
+      <fieldconfig fieldExpr="assay.source" showInSummary="false"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.CompoundProteinInteractionAssay">
+    <fields>
+      <fieldconfig fieldExpr="identifier" />
+      <fieldconfig fieldExpr="name" />
+      <fieldconfig fieldExpr="source" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Enzyme">
+    <fields>
+      <fieldconfig fieldExpr="ecNumber"/>
+      <fieldconfig fieldExpr="description" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.ProteinChain">
+    <fields>
+      <fieldconfig fieldExpr="pdbId" />
+      <fieldconfig fieldExpr="chain" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.ProteinRegion">
+    <fields>
+      <fieldconfig fieldExpr="start" />
+      <fieldconfig fieldExpr="end" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.StructuralClassification">
+    <fields>
+      <fieldconfig fieldExpr="type" />
+      <fieldconfig fieldExpr="level" />
+      <fieldconfig fieldExpr="code" />
+      <fieldconfig fieldExpr="description" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.ScopClassification">
+    <fields>
+      <fieldconfig fieldExpr="level" />
+      <fieldconfig fieldExpr="sunid" />
+      <fieldconfig fieldExpr="sccs" />
+      <fieldconfig fieldExpr="description" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.CathClassification">
+    <fields>
+      <fieldconfig fieldExpr="level" />
+      <fieldconfig fieldExpr="cathCode" />
+      <fieldconfig fieldExpr="description" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.StructuralRegion">
+    <fields>
+      <fieldconfig fieldExpr="start" />
+      <fieldconfig fieldExpr="startInsertionCode" />
+      <fieldconfig fieldExpr="end" />
+      <fieldconfig fieldExpr="endInsertionCode" />
+      <fieldconfig fieldExpr="proteinChain.identifier" />
+      <fieldconfig fieldExpr="structuralDomain.code" />
+      <fieldconfig fieldExpr="structuralDomain.description" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DOTerm">
+    <headerconfig>
+        <titles>
+            <title mainTitles="identifier|name" subTitles="ontology.name" />
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="description" doNotTruncate="true" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DrugType">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DrugCompound">
+    <headerconfig>
+        <titles>
+            <title mainTitles="name" subTitles="identifier" />
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="genericName"/>
+      <fieldconfig fieldExpr="drugBankId"/>
+      <fieldconfig fieldExpr="keggDrugId"/>
+      <fieldconfig fieldExpr="casRegistryNumber" showInSummary="false"/>
+      <fieldconfig fieldExpr="inchiKey" showInSummary="false"/>
+      <fieldconfig fieldExpr="description" showInResults="false" showInInlineCollection="false" doNotTruncate="true" showInSummary="false" />
+    </fields>
+    <inlinelist>
+      <table path="drugTypes.name" showLinksToObjects="false" />
+    </inlinelist>
+  </class>
+
+  <class className="org.intermine.model.bio.KeggCompound">
+    <headerconfig>
+        <titles>
+            <title mainTitles="name" subTitles="identifier" />
+        </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="originalId"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="inchiKey" showInSummary="false"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.Reaction">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="reactionType"/>
+      <fieldconfig fieldExpr="pathway.identifier"/>
+      <fieldconfig fieldExpr="dataSet.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DrugMetabolism">
+    <fields>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="gene.primaryIdentifier"/>
+      <fieldconfig fieldExpr="gene.symbol"/>
+      <fieldconfig fieldExpr="gene.organism.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DrugInteraction">
+    <fields>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="gene.primaryIdentifier"/>
+      <fieldconfig fieldExpr="gene.symbol"/>
+      <fieldconfig fieldExpr="gene.organism.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.GeneRIF">
+    <fields>
+      <fieldconfig fieldExpr="phrase"/>
+      <fieldconfig fieldExpr="sentence"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.InteractionDetail">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="type"/>
+    </fields>
+    <inlinelist>
+      <table path="sources.sourceId" showLinksToObjects="true" />
+    </inlinelist>
+  </class>
+  
+  <class className="org.intermine.model.bio.InteractionExperiment">
+    <fields>
+      <fieldconfig fieldExpr="publication.pubMedId"/>
+      <fieldconfig fieldExpr="publication.title"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.TranscriptionalRegulation">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="transcriptionFactor.primaryIdentifier"/>
+      <fieldconfig fieldExpr="transcriptionFactor.symbol"/>
+      <fieldconfig fieldExpr="targetGene.primaryIdentifier"/>
+      <fieldconfig fieldExpr="targetGene.symbol"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.ChipSeqData">
+    <fields>
+      <fieldconfig fieldExpr="distance"/>
+      <fieldconfig fieldExpr="bindingLocation.start"/>
+      <fieldconfig fieldExpr="bindingLocation.end"/>
+      <fieldconfig fieldExpr="bindingLocation.locatedOn.symbol" label="Chromosome"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.CompoundGroup">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.StructuralDomainRegion">
+    <fields>
+      <fieldconfig fieldExpr="protein.primaryAccession"/>
+      <fieldconfig fieldExpr="start"/>
+      <fieldconfig fieldExpr="end"/>
+      <fieldconfig fieldExpr="cathClassification.cathCode" label="CATH code"/>
+      <fieldconfig fieldExpr="cathClassification.description" label="Description"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.Druggability">
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="ensembl"/>
+      <fieldconfig fieldExpr="tractable"/>
+      <fieldconfig fieldExpr="druggable"/>
+      <fieldconfig fieldExpr="proteinStructure.pdbId"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Interaction">
+    <fields>
+      <fieldconfig fieldExpr="gene1.symbol"/>
+      <fieldconfig fieldExpr="gene2.symbol"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.InteractionConfidence">
+    <fields>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="dataSet.name"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.MiRNAInteraction">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="miRNA.secondaryIdentifier"/>
+      <fieldconfig fieldExpr="targetGene.symbol"/>
+      <fieldconfig fieldExpr="targetGene.organism.name"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.MiRNAEvidence">
+    <fields>
+      <fieldconfig fieldExpr="interaction.identifier"/>
+      <fieldconfig fieldExpr="publication.pubMedId"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.MiRNAExperiment">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.MiRNA">
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="secondaryIdentifier"/>
+      <fieldconfig fieldExpr="organism.name" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.MiRNAPrimaryTranscript">
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="secondaryIdentifier"/>
+      <fieldconfig fieldExpr="organism.name" />
+    </fields>
+  </class>
+  <class className="org.intermine.model.bio.NetworkProperty">
+    <fields>
+      <fieldconfig fieldExpr="networkType"/>
+      <fieldconfig fieldExpr="isBottleneck"/>
+      <fieldconfig fieldExpr="isHub"/>
+      <fieldconfig fieldExpr="degree"/>
+      <fieldconfig fieldExpr="betweenness"/>
+      <fieldconfig fieldExpr="closeness"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.GenomeWideAssociation">
+    <fields>
+      <fieldconfig fieldExpr="snp.identifier"/>
+      <fieldconfig fieldExpr="riskAllele" showInSummary="false"/>
+      <fieldconfig fieldExpr="frequency" showInSummary="false"/>
+      <fieldconfig fieldExpr="pvalue"/>
+      <fieldconfig fieldExpr="orBeta" showInSummary="false"/>
+      <fieldconfig fieldExpr="confidenceInterval" showInSummary="false"/>
+      <fieldconfig fieldExpr="trait"/>
+      <fieldconfig fieldExpr="initialSampleDescription" showInSummary="false" showInResults="false" doNotTruncate="true"/>
+      <fieldconfig fieldExpr="replicationSampleDescription" showInSummary="false" showInResults="false" doNotTruncate="true"/>
+      <fieldconfig fieldExpr="study" showInSummary="false" showInResults="false" doNotTruncate="true"/>
+      <fieldconfig fieldExpr="accession"/>
+      <fieldconfig fieldExpr="publication.pubMedId" showInSummary="false" showInResults="false"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.VariationAnnotation">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="gene.primaryIdentifier"/>
+      <fieldconfig fieldExpr="gene.symbol"/>
+      <fieldconfig fieldExpr="snp.identifier"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.SNP">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="refSnpAllele"/>
+      <fieldconfig fieldExpr="orientation"/>
+      <fieldconfig fieldExpr="chromosome"/>
+      <fieldconfig fieldExpr="location"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Variation">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="type"/>
+    </fields>
+  </class>
+  
+  <class className="org.intermine.model.bio.Allele">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="clinicalSignificance"/>
+      <fieldconfig fieldExpr="reviewStatus"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.SNPFunction">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="description"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.SNPReference">
+    <fields>
+      <fieldconfig fieldExpr="function.name"/>
+      <fieldconfig fieldExpr="mrnaAccession"/>
+      <fieldconfig fieldExpr="mrnaPosition"/>
+      <fieldconfig fieldExpr="orientation"/>
+      <fieldconfig fieldExpr="mrnaAllele"/>
+      <fieldconfig fieldExpr="mrnaCodon"/>
+      <fieldconfig fieldExpr="proteinAccession"/>
+      <fieldconfig fieldExpr="proteinPosition"/>
+      <fieldconfig fieldExpr="residue"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.GeneDiseasePair">
+    <headerconfig>
+      <titles>
+        <title mainTitles="gene.symbol" subTitles="diseaseTerm.name" />
+      </titles>
+    </headerconfig>
+    <fields>
+      <fieldconfig fieldExpr="title"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.UniProtFeature">
+    <fields>
+      <fieldconfig fieldExpr="start"/>
+      <fieldconfig fieldExpr="end"/>
+      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="description"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.CrossReference">
+    <fields>
+      <fieldconfig fieldExpr="source.name" label="Database"/>
+      <fieldconfig fieldExpr="identifier"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.AtcClassification">
+    <fields>
+      <fieldconfig fieldExpr="atcCode"/>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.JscClassification">
+    <fields>
+      <fieldconfig fieldExpr="jsccCode"/>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Expression">
+    <fields>
+      <fieldconfig fieldExpr="value"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.MicroarrayPlatform">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="title"/>
+    </fields>
+    <inlinelist>
+      <table path="samples.identifier" showLinksToObjects="true" />
+    </inlinelist>
+  </class>
+
+  <class className="org.intermine.model.bio.MicroarraySeries">
+    <inlinelist>
+      <table path="samples.identifier" showLinksToObjects="true" />
+    </inlinelist>
+  </class>
+
+  <class className="org.intermine.model.bio.MicroarraySample">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="platform.identifier"/>
+      <fieldconfig fieldExpr="platform.title"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Tissue">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.ProbeSet">
+    <fields>
+      <fieldconfig fieldExpr="probeSetId"/>
+      <fieldconfig fieldExpr="mappingType"/>
+      <fieldconfig fieldExpr="organism.name" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Taxonomy">
+    <fields>
+      <fieldconfig fieldExpr="taxonId"/>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="rank"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.MeshTerm">
+    <inlinelist>
+    	<table path="synonyms.name" showLinksToObjects="true" />
+    </inlinelist>
+  </class>
+
+  <class className="org.intermine.model.bio.MeshTree">
+    <fields>
+      <fieldconfig fieldExpr="number"/>
+      <fieldconfig fieldExpr="meshTerm.identifier"/>
+      <fieldconfig fieldExpr="meshTerm.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Frequency">
+    <fields>
+      <fieldconfig fieldExpr="allele"/>
+      <fieldconfig fieldExpr="frequency"/>
+      <fieldconfig fieldExpr="population.title"/>
+      <fieldconfig fieldExpr="dataSet.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Population">
+    <fields>
+      <fieldconfig fieldExpr="code"/>
+      <fieldconfig fieldExpr="title"/>
+    </fields>
+  </class>
+
+<!-- exporters -->
+  <tableExportConfig id="sequence" className="org.intermine.bio.web.export.SequenceHttpExporter"/>
+  <tableExportConfig id="gff3" className="org.intermine.bio.web.export.GFF3HttpExporter"/>
+  <tableExportConfig id="bed" className="org.intermine.bio.web.export.BEDHttpExporter"/>
+
+<!-- reportdisplayers -->
+  <reportdisplayers>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.HomologInfoDisplayer"
+                     jspName="model/homologInfoDisplayer.jsp"
+                     replacesFields="keggOrthology"
+                     placement="Genes"
+                     types="Gene"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.CytoscapeNetworkDisplayer"
+                     jspName="model/cytoscapeNetworkDisplayer.jsp"
+                     replacesFields="interactions"
+                     placement="Interactions"
+                     types="Gene"/>
+
+	<!-- temporary solution for protein interaction -->
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.CytoscapeNetworkDisplayer"
+                     jspName="model/cytoscapeNetworkDisplayer.jsp"
+                     replacesFields=""
+                     placement="Interactions"
+                     types="Protein"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GeneOntologyDisplayer"
+                     jspName="model/geneOntologyDisplayer.jsp"
+                     replacesFields="goAnnotation"
+                     placement="Gene Ontology"
+                     types="Gene,Protein"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.UniProtCommentsDisplayer"
+                     jspName="model/uniProtCommentsDisplayer.jsp"
+                     replacesFields="comments"
+                     placement="Proteins"
+                     types="Protein"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.UniprotFeatureDisplayer"
+                     jspName="model/uniprotFeatureDisplayer.jsp"
+                     replacesFields="features"
+                     placement="Proteins"
+                     types="Protein"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.ProteinModificationDisplayer"
+                     jspName="model/proteinModificationDisplayer.jsp"
+                     replacesFields="modifications"
+                     placement="Proteins"
+                     types="Protein"/>
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/modificationPspInfoDisplayer.jsp"
+                     replacesFields=""
+                     types="Modification"/>
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/relationExtraInfoDisplayer.jsp"
+                     replacesFields=""
+                     types="Relation"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.ProteinDomainDisplayer"
+                     jspName="model/proteinAnalysisResult.jsp"
+                     replacesFields="proteinDomainRegions"
+                     placement="Protein Domain"
+                     types="Protein"/>
+                     
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.ProteinSequenceDisplayer"
+                     jspName="model/proteinSequenceDisplayer.jsp"
+                     replacesFields="sequence"
+                     placement="summary"
+                     types="Protein"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.SequenceFeatureDisplayer"
+                     jspName="model/sequenceFeatureDisplayer.jsp"
+                     replacesFields="chromosome,chromosomeLocation,sequence,length,sequenceOntologyTerm,locations,cytoLocation"
+                     placement="summary"
+                     types="SequenceFeature"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/interactionExperimentDisplayer.jsp"
+                     replacesFields="experiment"
+                     types="InteractionDetail"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/compoundAssayExtLinkDisplayer.jsp"
+                     replacesFields="originalId" 
+                     types="CompoundProteinInteractionAssay"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.CompoundGroupDisplayer"
+                     jspName="model/compoundGroupDisplayer.jsp"
+                     replacesFields="compounds" 
+                     types="CompoundGroup"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.AtcClassificationDisplayer"
+                     jspName="model/atcClassificationDisplayer.jsp"
+                     replacesFields="parent, allParents" 
+                     types="AtcClassification"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.AtcClassificationDisplayer"
+                     jspName="model/jscClassificationDisplayer.jsp"
+                     replacesFields="parent, allParents" 
+                     types="JscClassification"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.ProbeSetExpressionDisplayer"
+                     jspName="model/probeSetExpressionDisplayer.jsp"
+                     replacesFields="expressions" 
+                     types="ProbeSet"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/proteinDomainHierDisplayer.jsp"
+                     replacesFields="parentFeatures,childFeatures,contains,foundIn" 
+                     types="ProteinDomain"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/compoundImageDisplayer.jsp"
+                     replacesFields="" 
+                     types="Compound"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.DrugCompoundInfoDisplayer"
+                     jspName="model/drugCompoundInfoDisplayer.jsp"
+                     replacesFields="atcCodes,jsccCodes,uspClassifications,synonyms" 
+                     types="DrugCompound"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.ChemblAlternateFormDisplayer"
+                     jspName="model/chemblAlternateFormDisplayer.jsp"
+                     replacesFields="parent, alternateForms" 
+                     types="ChemblCompound"/>
+                     
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.AltGeneDiseasePairDisplayer"
+                     jspName="model/altGeneDiseasePairDisplayer.jsp"
+                     replacesFields="diseases, geneDiseasePairs" 
+                     placement="Disease"
+                     types="Gene"/>
+
+  </reportdisplayers>
+
+  
+<!-- widgets -->
+<widgets>
+
+      <enrichmentwidgetdisplayer id="gene_pathway_enrichment"
+                                 title="Pathway Enrichment"
+                                 description="Pathways enriched for genes in this list - data from KEGG, Reactome and NCI"
+                                 label="Pathways"
+                                 filterLabel="DataSet"
+                                 filters="All,KEGG Pathway,Reactome,NCI Pathway Interaction Database"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="pathways.name"
+                                 enrichIdentifier="pathways.identifier"
+                                 constraints="pathways.dataSets.name=[DataSet],organism.taxonId=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, pathways.identifier, pathways.name, pathways.dataSets.name" 
+                                 externalLink="/targetmine/portal.do?class=Pathway&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="gene_ipc_enrichment"
+                                 title="Integrated Pathway Cluster Enrichment"
+                                 description="Integrated Pathway Clusters(IPCs) enriched for genes in this list"
+                                 label="IPCs"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="integratedPathwayClusters.name"
+                                 enrichIdentifier="integratedPathwayClusters.identifier"
+                                 constraints="organism.taxonId=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, integratedPathwayClusters.identifier, integratedPathwayClusters.name" 
+                                 externalLink="/targetmine/portal.do?class=IntegratedPathwayCluster&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="gene_go_enrichment"
+                                 title="Gene Ontology Enrichment"
+                                 description="GO terms enriched for genes in this list. (IEA annotations are excluded)"
+                                 label="GO Term"
+                                 filterLabel="Ontology"
+                                 filters="biological_process,cellular_component,molecular_function"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="goAnnotation.ontologyTerm.parents.name"
+                                 enrichIdentifier="goAnnotation.ontologyTerm.parents.identifier"
+                                 constraints="goAnnotation.ontologyTerm.parents.namespace=[Ontology],organism.name=[list],
+                                              goAnnotation.qualifier = null,
+                                              goAnnotation.evidence.code.code != IEA,
+                                              goAnnotation.ontologyTerm.parents.identifier != go:0008150,
+                                              goAnnotation.ontologyTerm.parents.identifier != go:0003674,
+                                              goAnnotation.ontologyTerm.parents.identifier != go:0005575"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name,
+                                       goAnnotation.ontologyTerm.parents.identifier,goAnnotation.ontologyTerm.parents.name"
+                                 constraintsForView="goAnnotation.evidence.code.code != IEA"
+                                 externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="gene_goagos_enrichment"
+                                 title="GOSlim Enrichment"
+                                 description="GOSlim terms enriched for genes in this list. (IEA annotations are excluded)"
+                                 label="GOSlim Term"
+                                 filterLabel="Ontology"
+                                 filters="biological_process,cellular_component,molecular_function"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="goAnnotation.goSlimTerms.parents.name"
+                                 enrichIdentifier="goAnnotation.goSlimTerms.parents.identifier"
+                                 constraints="goAnnotation.goSlimTerms.parents.namespace=[Ontology],organism.name=[list],
+                                              goAnnotation.qualifier = null,
+                                              goAnnotation.evidence.code.code != IEA,
+                                              goAnnotation.goSlimTerms.parents.identifier != go:0008150,
+                                              goAnnotation.goSlimTerms.parents.identifier != go:0003674,
+                                              goAnnotation.goSlimTerms.parents.identifier != go:0005575"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name,
+                                       goAnnotation.goSlimTerms.parents.identifier,goAnnotation.goSlimTerms.parents.name"
+                                 constraintsForView="goAnnotation.evidence.code.code != IEA"
+                                 externalLink="/targetmine/portal.do?class=GOSlimTerm&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="gene_disease_enrichment"
+                                 title="Disease Enrichment"
+                                 description="Disease enriched for genes in this list"
+                                 label="Disease"
+                                 filterLabel="DataSet"
+                                 filters="All,DisGeNET,OMIM data set"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="diseases.diseaseTerm.name"
+                                 enrichIdentifier="diseases.diseaseTerm.identifier"
+                                 constraints="diseases.dataSet.name=[DataSet],organism.taxonId=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, diseases.diseaseTerm.identifier, diseases.diseaseTerm.name"/>
+
+      <enrichmentwidgetdisplayer id="protein_pathway_enrichment"
+                                 title="Pathway Enrichment"
+                                 description="Pathways enriched for proteins in this list - data from KEGG, Reactome and NCI"
+                                 label="Pathways"
+                                 filterLabel="DataSet"
+                                 filters="All,KEGG Pathway,Reactome,NCI Pathway Interaction Database"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="genes.pathways.name"
+                                 enrichIdentifier="genes.pathways.identifier"
+                                 constraints="genes.pathways.dataSets.name=[DataSet],organism.taxonId=[list], primaryIdentifier != null"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name, genes.pathways.identifier, genes.pathways.name, genes.pathways.dataSets.name"
+                                 externalLink="/targetmine/portal.do?class=Pathway&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="protein_ipc_enrichment"
+                                 title="Integrated Pathway Cluster Enrichment"
+                                 description="Integrated Pathway Clusters(IPCs) enriched for proteins in this list"
+                                 label="IPCs"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="genes.integratedPathwayClusters.name"
+                                 enrichIdentifier="genes.integratedPathwayClusters.identifier"
+                                 constraints="organism.taxonId=[list]"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name, genes.integratedPathwayClusters.identifier, genes.integratedPathwayClusters.name" 
+                                 externalLink="/targetmine/portal.do?class=IntegratedPathwayCluster&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="protein_go_enrichment"
+                                 title="Gene Ontology Enrichment"
+                                 description="GO terms enriched for proteins in this list. (IEA annotations are excluded)"
+                                 label="GO Term"
+                                 filterLabel="Ontology"
+                                 filters="biological_process,cellular_component,molecular_function"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="goAnnotation.ontologyTerm.parents.name"
+                                 enrichIdentifier="goAnnotation.ontologyTerm.parents.identifier"
+                                 constraints="goAnnotation.ontologyTerm.parents.namespace=[Ontology],organism.name=[list],
+                                              primaryIdentifier != null, goAnnotation.qualifier = null,
+                                              goAnnotation.evidence.code.code != IEA,
+                                              goAnnotation.ontologyTerm.parents.identifier != go:0008150,
+                                              goAnnotation.ontologyTerm.parents.identifier != go:0003674,
+                                              goAnnotation.ontologyTerm.parents.identifier != go:0005575"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name,
+                                       goAnnotation.ontologyTerm.parents.identifier,goAnnotation.ontologyTerm.parents.name" 
+                                 constraintsForView="goAnnotation.evidence.code.code != IEA" 
+                                 externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="protein_goagos_enrichment"
+                                 title="GOSlim Enrichment"
+                                 description="GOSlim terms enriched for proteins in this list. (IEA annotations are excluded)"
+                                 label="GOSlim Term"
+                                 filterLabel="Ontology"
+                                 filters="biological_process,cellular_component,molecular_function"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="goAnnotation.goSlimTerms.parents.name"
+                                 enrichIdentifier="goAnnotation.goSlimTerms.parents.identifier"
+                                 constraints="goAnnotation.goSlimTerms.parents.namespace=[Ontology],organism.name=[list],
+                                              goAnnotation.qualifier = null,
+                                              goAnnotation.evidence.code.code != IEA,
+                                              goAnnotation.goSlimTerms.parents.identifier != go:0008150,
+                                              goAnnotation.goSlimTerms.parents.identifier != go:0003674,
+                                              goAnnotation.goSlimTerms.parents.identifier != go:0005575"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name,
+                                       goAnnotation.goSlimTerms.parents.identifier,goAnnotation.goSlimTerms.parents.name"
+                                 constraintsForView="goAnnotation.evidence.code.code != IEA"
+                                 externalLink="/targetmine/portal.do?class=GOSlimTerm&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="protein_disease_enrichment"
+                                 title="Disease Enrichment"
+                                 description="Disease enriched for proteins in this list"
+                                 label="Disease"
+                                 filterLabel="DataSet"
+                                 filters="All,DisGeNET,OMIM data set"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="genes.diseases.diseaseTerm.name"
+                                 enrichIdentifier="genes.diseases.diseaseTerm.identifier"
+                                 constraints="genes.diseases.dataSet.name=[DataSet],organism.taxonId=[list]"
+                                 typeClass="Protein"
+                                 views="primaryIdentifier, primaryAccession, genes.diseases.diseaseTerm.identifier, genes.diseases.diseaseTerm.name"/>
+
+      <enrichmentwidgetdisplayer id="protein_interpro_enrichment"
+                                 title="InterPro domain Enrichment"
+                                 description="Protein domains enriched for proteins in this list."
+                                 label="Protein Domain"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="proteinDomainRegions.proteinDomain.name"
+                                 enrichIdentifier="proteinDomainRegions.proteinDomain.primaryIdentifier"
+                                 constraints="organism.name=[list]"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name, proteinDomainRegions.proteinDomain.primaryIdentifier, 
+                                        proteinDomainRegions.proteinDomain.name"
+                                 externalLink="http://www.ebi.ac.uk/interpro/entry/"/>
+
+      <enrichmentwidgetdisplayer id="protein_cath_enrichment"
+                                 title="CATH classification Enrichment"
+                                 description="Structural domains enriched for proteins in this list."
+                                 label="CATH classification"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="structuralDomains.cathClassification.description"
+                                 enrichIdentifier="structuralDomains.cathClassification.cathCode"
+                                 constraints="organism.name=[list]"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name, structuralDomains.cathClassification.cathCode, 
+                                        structuralDomains.cathClassification.description"
+                                 externalLink="http://www.cathdb.info/cathnode/"/>
+
+      <enrichmentwidgetdisplayer id="protein_compound_enrichment"
+                                 title="Compound Enrichment"
+                                 description="Compound enriched for proteins in this list."
+                                 label="Compounds"
+                                 filterLabel="DataSet"
+                                 filters="DrugBank,ChEMBL,BioAssay,Ligand Expo,All"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="compounds.compound.name"
+                                 enrichIdentifier="compounds.compound.identifier"
+                                 constraints="compounds.dataSet.name=[DataSet], organism.name=[list]"
+                                 typeClass="Protein"
+                                 views="primaryAccession, name, organism.name, compounds.compound.identifier, compounds.compound.name"
+                                 externalLink="/targetmine/portal.do?class=Compound&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="gene_interpro_enrichment"
+                                 title="InterPro domain Enrichment"
+                                 description="Protein domains enriched for genes in this list."
+                                 label="Protein Domain"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="proteins.proteinDomainRegions.proteinDomain.name"
+                                 enrichIdentifier="proteins.proteinDomainRegions.proteinDomain.primaryIdentifier"
+                                 constraints="organism.name=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, proteins.proteinDomainRegions.proteinDomain.primaryIdentifier, 
+                                        proteins.proteinDomainRegions.proteinDomain.name"
+                                 externalLink="http://www.ebi.ac.uk/interpro/entry/"/>
+
+      <enrichmentwidgetdisplayer id="gene_cath_enrichment"
+                                 title="CATH classification Enrichment"
+                                 description="Structural domains enriched for genes in this list."
+                                 label="CATH classification"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="proteins.structuralDomains.cathClassification.description"
+                                 enrichIdentifier="proteins.structuralDomains.cathClassification.cathCode"
+                                 constraints="organism.name=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, proteins.structuralDomains.cathClassification.cathCode, 
+                                        proteins.structuralDomains.cathClassification.description"
+                                 externalLink="http://www.cathdb.info/cathnode/"/>
+
+      <enrichmentwidgetdisplayer id="gene_compound_enrichment"
+                                 title="Compound Enrichment"
+                                 description="Compound enriched for genes in this list."
+                                 label="Compounds"
+                                 filterLabel="DataSet"
+                                 filters="DrugBank,ChEMBL,BioAssay,Ligand Expo,All"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="proteins.compounds.compound.name"
+                                 enrichIdentifier="proteins.compounds.compound.identifier"
+                                 constraints="proteins.compounds.dataSet.name=[DataSet], organism.name=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, proteins.compounds.compound.identifier, proteins.compounds.compound.name"
+                                 externalLink="/targetmine/portal.do?class=Compound&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="pathway_gene_enrichment"
+                                 title="Gene Enrichment"
+                                 description="Genes enriched for pathways in this list"
+                                 label="Gene"
+                                 startClass="Pathway"
+                                 startClassDisplay="identifier"
+                                 enrich="genes.symbol"
+                                 enrichIdentifier="genes.primaryIdentifier"
+                                 constraints="organism.taxonId=[list]"
+                                 typeClass="Pathway"
+                                 views="identifier, name, dataSets.name, genes.primaryIdentifier, genes.symbol, genes.organism.name"
+                                 externalLink="/targetmine/portal.do?class=Gene&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="pathway_protein_enrichment"
+                                 title="Protein Enrichment"
+                                 description="Proteins enriched for pathways in this list"
+                                 label="Protein"
+                                 startClass="Pathway"
+                                 startClassDisplay="identifier"
+                                 enrich="genes.proteins.primaryAccession"
+                                 enrichIdentifier="genes.proteins.primaryIdentifier"
+                                 constraints="organism.taxonId=[list]"
+                                 typeClass="Pathway"
+                                 views="identifier, name, dataSets.name, genes.proteins.primaryIdentifier, genes.proteins.name, genes.proteins.organism.name"
+                                 externalLink="/targetmine/portal.do?class=Protein&amp;externalids="/>
+<!-- 
+ -->
+      <enrichmentwidgetdisplayer id="gene_tissue_enrichment"
+                                 title="Tissue Enrichment"
+                                 description="Tissues enriched for genes in this list"
+                                 label="Tissue"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="probeSets.expressions.tissue.name"
+                                 enrichIdentifier="probeSets.expressions.tissue.identifier"
+                                 constraints="organism.name=[list], probeSets.expressions.isExpressed=true" 
+                                 typeClass="Gene" 
+                                 views="primaryIdentifier, symbol, organism.name, probeSets.expressions.tissue.name"/>
+
+<!-- To be tested 
+      <enrichmentwidgetdisplayer id="compound_protein_enrichment"
+                                 title="Protein Enrichment"
+                                 description="Protiens enriched for compounds in this list"
+                                 label="Protein"
+                                 startClass="Compound"
+                                 startClassDisplay="identifier"
+                                 enrich="targetProteins.protein.name"
+                                 enrichIdentifier="targetProteins.protein.primaryAccession"
+                                 typeClass="Compound"
+                                 views="identifier, name, targetProteins.protein.primaryAccession, targetProteins.protein.name, targetProteins.protein.organism.name,"
+                                 externalLink="/targetmine/portal.do?class=Protein&amp;externalids="/>
+ -->
+      <enrichmentwidgetdisplayer id="drug_atc_enrichment"
+                                 title="ATC Classification Enrichment"
+                                 description="ATC Classification enriched for drugs in this list"
+                                 label="ATC Classification"
+                                 startClass="DrugCompound"
+                                 startClassDisplay="identifier"
+                                 enrich="atcCodes.allParents.name"
+                                 enrichIdentifier="atcCodes.allParents.atcCode"
+                                 typeClass="DrugCompound"
+                                 views="identifier, name, atcCodes.allParents.atcCode, atcCodes.allParents.name"
+                                 externalLink="/targetmine/portal.do?class=AtcClassification&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="drug_protein_enrichment"
+                                 title="Target Protein Enrichment"
+                                 description="Protiens enriched for drugs in this list"
+                                 label="Target Protein"
+                                 startClass="DrugCompound"
+                                 startClassDisplay="identifier"
+                                 enrich="targetProteins.protein.name"
+                                 enrichIdentifier="targetProteins.protein.primaryAccession"
+                                 typeClass="DrugCompound"
+                                 views="identifier, name, targetProteins.protein.primaryAccession, targetProteins.protein.name, targetProteins.protein.organism.name"
+                                 externalLink="/targetmine/portal.do?class=Protein&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="drug_jsc_enrichment"
+                                 title="JSC Classification Enrichment"
+                                 description="Japan Standard Commodity Classification(JSCC) enriched for drugs in this list"
+                                 label="JSC Classification"
+                                 startClass="DrugCompound"
+                                 startClassDisplay="identifier"
+                                 enrich="jsccCodes.allParents.name"
+                                 enrichIdentifier="jsccCodes.allParents.jsccCode"
+                                 typeClass="DrugCompound"
+                                 views="identifier, name, jsccCodes.allParents.jsccCode, jsccCodes.allParents.name"
+                                 externalLink="/targetmine/portal.do?class=JscClassification&amp;externalids="/>
+                                 
+      <enrichmentwidgetdisplayer id="probe_tissue_enrichment"
+                                 title="Tissue Enrichment"
+                                 description="Tissues enriched for probes in this list"
+                                 label="Tissue"
+                                 startClass="ProbeSet"
+                                 startClassDisplay="probeSetId"
+                                 enrich="expressions.tissue.name"
+                                 enrichIdentifier="expressions.tissue.identifier"
+                                 constraints="organism.name=[list], expressions.isExpressed=true" 
+                                 typeClass="ProbeSet" 
+                                 views="probeSetId, mappingType, organism.name, expressions.tissue.name"/>
+
+      <enrichmentwidgetdisplayer id="probe_pathway_enrichment"
+                                 title="Pathway Enrichment"
+                                 description="Pathways enriched for probes in this list - data from KEGG, Reactome and NCI"
+                                 label="Pathways"
+                                 filterLabel="DataSet"
+                                 filters="All,KEGG Pathway,Reactome,NCI Pathway Interaction Database"
+                                 startClass="ProbeSet"
+                                 startClassDisplay="probeSetId"
+                                 enrich="genes.pathways.name"
+                                 enrichIdentifier="genes.pathways.identifier"
+                                 constraints="genes.pathways.dataSets.name=[DataSet],organism.taxonId=[list]"
+                                 typeClass="ProbeSet"
+                                 views="probeSetId, mappingType, organism.name, genes.pathways.identifier, genes.pathways.name, genes.pathways.dataSets.name"
+                                 externalLink="/targetmine/portal.do?class=Pathway&amp;externalids="/>
+
+      <enrichmentwidgetdisplayer id="uniprot_keywords"
+                                 title="UniProt Keywords"
+                                 description="UniProt keywords enriched for proteins in this list."
+                                 label="Keyword"
+                                 startClass="Protein"
+                                 startClassDisplay="primaryIdentifier"
+                                 enrich="keywords.name"
+                                 constraints="organism.name=[list]"
+                                 typeClass="Protein"
+                                 views="primaryIdentifier, primaryAccession, organism.name,
+                                       keywords.name, keywords.description"/>
+
+      <enrichmentwidgetdisplayer id="keggcompound_pathway_enrichment" 
+                                 title="Pathway Enrichment" 
+                                 description="Pathways enriched for compounds in this list" 
+                                 label="Pathways" 
+                                 startClass="KeggCompound" 
+                                 startClassDisplay="identifier" 
+                                 enrich="pathways.name" 
+                                 enrichIdentifier="pathways.identifier" 
+                                 typeClass="KeggCompound" 
+                                 views="identifier, name, pathways.identifier, pathways.name, pathways.label1, pathways.label2" 
+                                 externalLink="/targetmine/portal.do?class=Pathway&amp;externalids=" />
+
+      <enrichmentwidgetdisplayer id="keggcompound_enzyme_enrichment" 
+                                 title="Enzyme Enrichment" 
+                                 description="Enzymes enriched for compounds in this list" 
+                                 label="Enzymes" 
+                                 startClass="KeggCompound" 
+                                 startClassDisplay="originalId" 
+                                 enrich="enzymes.description" 
+                                 enrichIdentifier="enzymes.ecNumber" 
+                                 typeClass="KeggCompound" 
+                                 views="originalId, name, enzymes.ecNumber, enzymes.description" 
+                                 externalLink="/targetmine/portal.do?class=Enzyme&amp;externalids=" />
+<!-- 
+      <enrichmentwidgetdisplayer id="gene_mesh_enrichment"
+                                 title="MeSH Term Enrichment"
+                                 description="MeSH Terms enriched for genes in this list"
+                                 label="MeSH Terms"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="publications.meshTerms.name"
+                                 enrichIdentifier="publications.meshTerms.identifier"
+                                 constraints="organism.taxonId=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, publications.meshTerms.identifier, publications.meshTerms.name" 
+                                 externalLink="/targetmine/portal.do?class=MeshTerm&amp;externalids="/>
+ -->
+
+</widgets>
+</webconfig>

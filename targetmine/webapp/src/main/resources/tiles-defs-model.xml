@@ -1,0 +1,18 @@
+<definition name="geneMicroArrayDisplayer.tile" path="/model/geneMicroArrayDisplayer.jsp"
+        controllerUrl="/initGeneMicroArrayDisplayer.do"/>
+
+<definition name="attributeLinkDisplayer.tile" path="/model/attributeLinkDisplayer.jsp"
+        controllerUrl="/initAttributeLinkDisplayer.do"/>
+
+<definition name="sequenceExportOptions.tile" path="/model/sequenceExportOptions.jsp"
+        controllerUrl="/initSequenceExportOptions.do"/>
+
+<definition name="gff3ExportOptions.tile" path="/model/gff3ExportOptions.jsp" />
+
+<!-- Cytoscape plugin-->
+<definition name="cytoscapeNetworkDisplayer.tile" path="/model/cytoscapeNetworkDisplayer.jsp"
+        controllerUrl="/initCytoscapeNetworkDisplayer.do"/>
+
+<!-- TargetMine -->
+<definition name="pathwayLinkDisplayer.tile" path="/model/tmPathwayLinkDisplayer.jsp" />
+<definition name="compoundLinkDisplayer.tile" path="/model/compoundLinkDisplayer.jsp" />

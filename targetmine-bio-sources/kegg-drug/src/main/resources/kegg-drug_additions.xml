@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<classes>
+
+	<class name="DrugCompound" extends="Compound" is-interface="true">
+		<attribute name="genericName" type="java.lang.String"/>
+		<attribute name="drugBankId" type="java.lang.String"/>
+		<attribute name="keggDrugId" type="java.lang.String"/>
+		<collection name="atcCodes" referenced-type="AtcClassification"/>		
+		<collection name="therapeuticClassifications" referenced-type="TherapeuticClassification"/>		
+		<collection name="metabolisms" referenced-type="DrugMetabolism" reverse-reference="drug"/>		
+		<collection name="interactions" referenced-type="DrugInteraction" reverse-reference="drug"/>		
+	</class>
+
+	<class name="Compound" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="originalId" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<attribute name="inchiKey" type="java.lang.String"/>
+		<attribute name="casRegistryNumber" type="java.lang.String"/>
+		<reference name="compoundGroup" referenced-type="CompoundGroup" reverse-reference="compounds"/>
+		<collection name="targetProteins" referenced-type="CompoundProteinInteraction" reverse-reference="compound"/>
+		<collection name="structures" referenced-type="CompoundStructure" reverse-reference="compound"/>
+		<collection name="synonyms" referenced-type="CompoundSynonym" reverse-reference="subject"/>
+	</class>
+
+	<class name="CompoundStructure" is-interface="true">
+		<attribute name="type" type="java.lang.String"/>
+		<attribute name="value" type="java.lang.String"/>
+		<reference name="compound" referenced-type="Compound" reverse-reference="structures"/>
+		<reference name="dataSet" referenced-type="DataSet"/>
+	</class>
+
+	<class name="CompoundSynonym" is-interface="true">
+		<attribute name="value" type="java.lang.String"/>
+		<attribute name="type" type="java.lang.String"/>
+		<reference name="subject" referenced-type="Compound" reverse-reference="synonyms"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="CompoundGroup" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<collection name="compounds" referenced-type="Compound" reverse-reference="compoundGroup"/>
+	</class>
+
+	<class name="AtcClassification" is-interface="true">
+		<attribute name="atcCode" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<reference name="parent" referenced-type="AtcClassification"/>
+		<collection name="allParents" referenced-type="AtcClassification"/>
+	</class>
+
+	<class name="TherapeuticClassification" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+	</class>
+
+	<class name="DrugMetabolism" is-interface="true">
+		<attribute name="type" type="java.lang.String"/>
+		<reference name="drug" referenced-type="DrugCompound" reverse-reference="metabolisms"/>
+		<reference name="gene" referenced-type="Gene"/>
+	</class>
+	<class name="DrugInteraction" is-interface="true">
+		<attribute name="type" type="java.lang.String"/>
+		<reference name="drug" referenced-type="DrugCompound" reverse-reference="interactions"/>
+		<reference name="gene" referenced-type="Gene"/>
+	</class>
+	<class name="CompoundProteinInteraction" is-interface="true">
+		<reference name="compound" referenced-type="Compound" reverse-reference="targetProteins"/>
+	</class>
+
+</classes>

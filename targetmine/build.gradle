@@ -1,0 +1,74 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
+        }
+    }
+    dependencies {
+        classpath group: 'org.intermine', name: 'plugin', version: System.getProperty("imVersion")
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.3'
+    }
+}
+ext {
+  mineRelease = project.hasProperty('release') ? "." + release : ''
+  mineName = "targetmine"
+  minePropertyFileName = "${mineName}.properties$mineRelease"
+  minePropertyFile = "${System.env.HOME}/.intermine/$minePropertyFileName"
+  println "Using properties file: '$minePropertyFile'"
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'maven'
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  
+  repositories {
+    mavenLocal()
+    jcenter()
+    maven { url 'https://clojars.org/repo' }
+    maven {
+        url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
+    }
+    maven {
+        url 'http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/'
+    }
+  }
+
+  dependencies {
+    compile group: "org.intermine", name: "intermine-resources", version: System.getProperty("imVersion")
+    compile('ant:ant:1.6.5')
+    testCompile group: 'junit', name: 'junit', version: '4.8.2'
+    compile group: 'com.io7m.xom', name: 'xom', version: '1.2.10'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+    compile group: 'org.biopax.paxtools', name: 'paxtools-core', version: '4.3.1'
+  }
+
+  task copyMineProperties(type: Copy) {
+    description "Copies mine specific intermine.properties file (from .intermine directory) into resources output to be included in the war"
+    dependsOn 'processResources'
+    from (minePropertyFile)
+    into sourceSets.main.output.resourcesDir
+    rename { fileName -> fileName.replace("$minePropertyFileName", "intermine.properties") }
+    inputs.sourceFiles.stopExecutionIfEmpty()
+  }
+}
+
+task clean(type: Delete) {
+    println "cleaning"
+    delete "idresolver.cache"
+    println "deleting idresolver cache"
+    delete "datasources.xml"
+    println "deleting datasources.xml"
+    delete "organisms.xml"
+    println "deleting organisms.xml"
+    delete "publications.xml"
+    println "deleting publications.xml"
+    delete fileTree('.') {
+        include '*.log'
+    }
+    println "deleted log files"
+}

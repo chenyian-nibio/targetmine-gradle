@@ -1,0 +1,26 @@
+dependencies {
+    compile group: 'org.biopax.paxtools', name: 'paxtools-core', version: '4.3.1'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/gen']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+processResources {
+    from('.') { include ("*.properties")}
+}

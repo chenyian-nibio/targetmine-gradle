@@ -1,0 +1,51 @@
+MI:0192	acetylation reaction
+MI:0193	amidation reaction
+MI:0194	cleavage reaction
+MI:0195	covalent binding
+MI:0197	deacetylation reaction
+MI:0198	defarnesylation reaction
+MI:0199	deformylation reaction
+MI:0200	degeranylation reaction
+MI:0201	demyristoylation reaction
+MI:0202	depalmitoylation reaction
+MI:0203	dephosphorylation reaction
+MI:0204	deubiquitination reaction
+MI:0206	farnesylation reaction
+MI:0207	formylation reaction
+MI:0209	geranylgeranylation reaction
+MI:0210	hydroxylation reaction
+MI:0211	lipid addition
+MI:0212	lipid cleavage reaction
+MI:0213	methylation reaction
+MI:0214	myristoylation reaction
+MI:0216	palmitoylation reaction
+MI:0217	phosphorylation reaction
+MI:0220	ubiquitination reaction
+MI:0407	direct interaction
+MI:0408	disulfide bond
+MI:0414	enzymatic reaction
+MI:0556	transglutamination reaction
+MI:0557	adp ribosylation reaction
+MI:0558	deglycosylation reaction
+MI:0559	glycosylation reaction
+MI:0566	sumoylation reaction
+MI:0567	neddylation reaction
+MI:0568	desumoylation reaction
+MI:0569	deneddylation reaction
+MI:0570	protein cleavage
+MI:0571	mrna cleavage
+MI:0572	dna cleavage
+MI:0701	dna strand elongation
+MI:0844	phosphotransfer reaction
+MI:0871	demethylation reaction
+MI:0881	nucleoside triphosphatase reaction
+MI:0882	atpase reaction
+MI:0883	gtpase reaction
+MI:0902	rna cleavage
+MI:0910	nucleic acid cleavage
+MI:0945	oxidoreductase activity electron transfer reaction
+MI:0971	phosphopantetheinylation
+MI:0985	deamination reaction
+MI:0986	nucleic acid strand elongation reaction
+MI:0987	rna strand elongation
+MI:1027	diphtamidation reaction

@@ -1,0 +1,165 @@
+rootProject.name = 'bio-sources'
+include ':bio-source-affy-probe-annot'
+project(':bio-source-affy-probe-annot').projectDir = new File(settingsDir, './affy-probe-annot')
+include ':bio-source-amadeus'
+project(':bio-source-amadeus').projectDir = new File(settingsDir, './amadeus')
+include ':bio-source-atc-code'
+project(':bio-source-atc-code').projectDir = new File(settingsDir, './atc-code')
+include ':bio-source-barcode30'
+project(':bio-source-barcode30').projectDir = new File(settingsDir, './barcode30')
+include ':bio-source-barcode30-sample'
+project(':bio-source-barcode30-sample').projectDir = new File(settingsDir, './barcode30-sample')
+include ':bio-source-bioassay'
+project(':bio-source-bioassay').projectDir = new File(settingsDir, './bioassay')
+include ':bio-source-biogrid-legacy'
+project(':bio-source-biogrid-legacy').projectDir = new File(settingsDir, './biogrid-legacy')
+include ':bio-source-biopax3'
+project(':bio-source-biopax3').projectDir = new File(settingsDir, './biopax3')
+include ':bio-source-calculate-bg'
+project(':bio-source-calculate-bg').projectDir = new File(settingsDir, './calculate-bg')
+include ':bio-source-cath-name'
+project(':bio-source-cath-name').projectDir = new File(settingsDir, './cath-name')
+include ':bio-source-ccsb'
+project(':bio-source-ccsb').projectDir = new File(settingsDir, './ccsb')
+include ':bio-source-chebi-db'
+project(':bio-source-chebi-db').projectDir = new File(settingsDir, './chebi-db')
+include ':bio-source-chembl-db'
+project(':bio-source-chembl-db').projectDir = new File(settingsDir, './chembl-db')
+include ':bio-source-chembl-hierarchy'
+project(':bio-source-chembl-hierarchy').projectDir = new File(settingsDir, './chembl-hierarchy')
+include ':bio-source-chembl-protein'
+project(':bio-source-chembl-protein').projectDir = new File(settingsDir, './chembl-protein')
+include ':bio-source-dataset-info'
+project(':bio-source-dataset-info').projectDir = new File(settingsDir, './dataset-info')
+include ':bio-source-dbsnp-db'
+project(':bio-source-dbsnp-db').projectDir = new File(settingsDir, './dbsnp-db')
+include ':bio-source-dbsnp-txt'
+project(':bio-source-dbsnp-txt').projectDir = new File(settingsDir, './dbsnp-txt')
+include ':bio-source-disease-summary'
+project(':bio-source-disease-summary').projectDir = new File(settingsDir, './disease-summary')
+include ':bio-source-disgenet'
+project(':bio-source-disgenet').projectDir = new File(settingsDir, './disgenet')
+include ':bio-source-do-annotation'
+project(':bio-source-do-annotation').projectDir = new File(settingsDir, './do-annotation')
+include ':bio-source-do-mesh'
+project(':bio-source-do-mesh').projectDir = new File(settingsDir, './do-mesh')
+include ':bio-source-drugbank-v4'
+project(':bio-source-drugbank-v4').projectDir = new File(settingsDir, './drugbank-v4')
+include ':bio-source-drugebility'
+project(':bio-source-drugebility').projectDir = new File(settingsDir, './drugebility')
+include ':bio-source-efo'
+project(':bio-source-efo').projectDir = new File(settingsDir, './efo')
+include ':bio-source-efo-xref'
+project(':bio-source-efo-xref').projectDir = new File(settingsDir, './efo-xref')
+include ':bio-source-enzyme'
+project(':bio-source-enzyme').projectDir = new File(settingsDir, './enzyme')
+include ':bio-source-enzyme-pathway'
+project(':bio-source-enzyme-pathway').projectDir = new File(settingsDir, './enzyme-pathway')
+include ':bio-source-fill-missing-genes'
+project(':bio-source-fill-missing-genes').projectDir = new File(settingsDir, './fill-missing-genes')
+include ':bio-source-fill-missing-publications'
+project(':bio-source-fill-missing-publications').projectDir = new File(settingsDir, './fill-missing-publications')
+include ':bio-source-fill-organisms'
+project(':bio-source-fill-organisms').projectDir = new File(settingsDir, './fill-organisms')
+include ':bio-source-fill-proteins-xml'
+project(':bio-source-fill-proteins-xml').projectDir = new File(settingsDir, './fill-proteins-xml')
+include ':bio-source-gene3d'
+project(':bio-source-gene3d').projectDir = new File(settingsDir, './gene3d')
+include ':bio-source-gene-esummary'
+project(':bio-source-gene-esummary').projectDir = new File(settingsDir, './gene-esummary')
+include ':bio-source-gene-info'
+project(':bio-source-gene-info').projectDir = new File(settingsDir, './gene-info')
+include ':bio-source-gene-pubmed'
+project(':bio-source-gene-pubmed').projectDir = new File(settingsDir, './gene-pubmed')
+include ':bio-source-gene-set'
+project(':bio-source-gene-set').projectDir = new File(settingsDir, './gene-set')
+include ':bio-source-go-goslim-annotation'
+project(':bio-source-go-goslim-annotation').projectDir = new File(settingsDir, './go-goslim-annotation')
+include ':bio-source-goslim'
+project(':bio-source-goslim').projectDir = new File(settingsDir, './goslim')
+include ':bio-source-gostar'
+project(':bio-source-gostar').projectDir = new File(settingsDir, './gostar')
+include ':bio-source-gwas'
+project(':bio-source-gwas').projectDir = new File(settingsDir, './gwas')
+include ':bio-source-htridb'
+project(':bio-source-htridb').projectDir = new File(settingsDir, './htridb')
+include ':bio-source-irefindex'
+project(':bio-source-irefindex').projectDir = new File(settingsDir, './irefindex')
+include ':bio-source-kegg-compound'
+project(':bio-source-kegg-compound').projectDir = new File(settingsDir, './kegg-compound')
+include ':bio-source-kegg-drug'
+project(':bio-source-kegg-drug').projectDir = new File(settingsDir, './kegg-drug')
+include ':bio-source-kegg-ec-reaction'
+project(':bio-source-kegg-ec-reaction').projectDir = new File(settingsDir, './kegg-ec-reaction')
+include ':bio-source-kegg-jtc'
+project(':bio-source-kegg-jtc').projectDir = new File(settingsDir, './kegg-jtc')
+include ':bio-source-kegg-relation'
+project(':bio-source-kegg-relation').projectDir = new File(settingsDir, './kegg-relation')
+include ':bio-source-keyword-xml'
+project(':bio-source-keyword-xml').projectDir = new File(settingsDir, './keyword-xml')
+include ':bio-source-ligand_expo'
+project(':bio-source-ligand_expo').projectDir = new File(settingsDir, './ligand_expo')
+include ':bio-source-medgen'
+project(':bio-source-medgen').projectDir = new File(settingsDir, './medgen')
+include ':bio-source-mesh-term'
+project(':bio-source-mesh-term').projectDir = new File(settingsDir, './mesh-term')
+include ':bio-source-metazoan'
+project(':bio-source-metazoan').projectDir = new File(settingsDir, './metazoan')
+include ':bio-source-mirbase'
+project(':bio-source-mirbase').projectDir = new File(settingsDir, './mirbase')
+include ':bio-source-mirbase-genome'
+project(':bio-source-mirbase-genome').projectDir = new File(settingsDir, './mirbase-genome')
+include ':bio-source-mirtarbase'
+project(':bio-source-mirtarbase').projectDir = new File(settingsDir, './mirtarbase')
+include ':bio-source-nci-pathway'
+project(':bio-source-nci-pathway').projectDir = new File(settingsDir, './nci-pathway')
+include ':bio-source-network-analysis'
+project(':bio-source-network-analysis').projectDir = new File(settingsDir, './network-analysis')
+include ':bio-source-omim-gene'
+project(':bio-source-omim-gene').projectDir = new File(settingsDir, './omim-gene')
+include ':bio-source-oreganno'
+project(':bio-source-oreganno').projectDir = new File(settingsDir, './oreganno')
+include ':bio-source-pdbchain-organism'
+project(':bio-source-pdbchain-organism').projectDir = new File(settingsDir, './pdbchain-organism')
+include ':bio-source-pdb-chaintype'
+project(':bio-source-pdb-chaintype').projectDir = new File(settingsDir, './pdb-chaintype')
+include ':bio-source-pdb_ext'
+project(':bio-source-pdb_ext').projectDir = new File(settingsDir, './pdb_ext')
+include ':bio-source-phosphositesplus'
+project(':bio-source-phosphositesplus').projectDir = new File(settingsDir, './phosphositesplus')
+include ':bio-source-predicted-dbp'
+project(':bio-source-predicted-dbp').projectDir = new File(settingsDir, './predicted-dbp')
+include ':bio-source-predicted-ppi'
+project(':bio-source-predicted-ppi').projectDir = new File(settingsDir, './predicted-ppi')
+include ':bio-source-predicted-tft'
+project(':bio-source-predicted-tft').projectDir = new File(settingsDir, './predicted-tft')
+include ':bio-source-protein-ortholog'
+project(':bio-source-protein-ortholog').projectDir = new File(settingsDir, './protein-ortholog')
+include ':bio-source-psp-relation'
+project(':bio-source-psp-relation').projectDir = new File(settingsDir, './psp-relation')
+include ':bio-source-publication-efetch'
+project(':bio-source-publication-efetch').projectDir = new File(settingsDir, './publication-efetch')
+include ':bio-source-pubmed-mesh'
+project(':bio-source-pubmed-mesh').projectDir = new File(settingsDir, './pubmed-mesh')
+include ':bio-source-scop'
+project(':bio-source-scop').projectDir = new File(settingsDir, './scop')
+include ':bio-source-sifts'
+project(':bio-source-sifts').projectDir = new File(settingsDir, './sifts')
+include ':bio-source-snv-freq'
+project(':bio-source-snv-freq').projectDir = new File(settingsDir, './snv-freq')
+include ':bio-source-taxonomy'
+project(':bio-source-taxonomy').projectDir = new File(settingsDir, './taxonomy')
+include ':bio-source-taxon-pathway'
+project(':bio-source-taxon-pathway').projectDir = new File(settingsDir, './taxon-pathway')
+include ':bio-source-tm-clinvar'
+project(':bio-source-tm-clinvar').projectDir = new File(settingsDir, './tm-clinvar')
+include ':bio-source-tm-kegg-orthology'
+project(':bio-source-tm-kegg-orthology').projectDir = new File(settingsDir, './tm-kegg-orthology')
+include ':bio-source-tm-kegg-pathway'
+project(':bio-source-tm-kegg-pathway').projectDir = new File(settingsDir, './tm-kegg-pathway')
+include ':bio-source-tm-protein2ipr'
+project(':bio-source-tm-protein2ipr').projectDir = new File(settingsDir, './tm-protein2ipr')
+include ':bio-source-tm-uniprot'
+project(':bio-source-tm-uniprot').projectDir = new File(settingsDir, './tm-uniprot')
+include ':bio-source-wwpdb'
+project(':bio-source-wwpdb').projectDir = new File(settingsDir, './wwpdb')

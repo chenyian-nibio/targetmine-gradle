@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<classes>
+
+	<class name="Protein" is-interface="true">
+		<collection name="structuralDomains" referenced-type="StructuralDomainRegion" />
+		<collection name="regions" referenced-type="ProteinRegion" reverse-reference="protein" />
+	</class>
+
+	<class name="ProteinRegion" is-interface="true">
+		<attribute name="start" type="java.lang.Integer"/>
+		<attribute name="end" type="java.lang.Integer"/>
+		<attribute name="regionType" type="java.lang.String"/>
+		<reference name="protein" referenced-type="Protein" reverse-reference="regions" />
+	</class>
+
+	<class name="StructuralDomainRegion" extends="ProteinRegion" is-interface="true">
+		<reference name="cathClassification" referenced-type="CathClassification" ordered="true"/>
+		<collection name="dataSets" referenced-type="DataSet" /> 
+	</class>
+
+	<class name="StructuralClassification" is-interface="true"/>
+
+	<class name="CathClassification" extends="StructuralClassification" is-interface="true">
+		<attribute name="cathCode" type="java.lang.String"/>
+	</class>
+
+</classes>

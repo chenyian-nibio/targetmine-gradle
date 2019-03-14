@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="StructuralClassification" is-interface="true">
+		<attribute name="type" type="java.lang.String"/>
+		<attribute name="level" type="java.lang.String"/>
+		<attribute name="code" type="java.lang.String"/>
+	</class>
+
+	<class name="ScopClassification" extends="StructuralClassification" is-interface="true">
+		<attribute name="sccs" type="java.lang.String"/>
+		<attribute name="sunid" type="java.lang.Integer"/>
+	</class>
+
+	<class name="Druggability" is-interface="true">
+		<attribute name="ensembl" type="java.lang.Double"/>
+		<attribute name="tractable" type="java.lang.Boolean"/>
+		<attribute name="druggable" type="java.lang.Boolean"/>
+		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<reference name="scopDomain" referenced-type="ScopClassification"/>
+		<reference name="proteinStructure" referenced-type="ProteinStructure" reverse-reference="druggabilities"/>
+	</class>
+
+	<class name="ProteinStructure" extends="MacroMolecularStructure" is-interface="true">
+		<attribute name="pdbId" type="java.lang.String"/>
+		<collection name="druggabilities" referenced-type="Druggability" reverse-reference="proteinStructure"/>
+	</class>
+
+	<class name="MacroMolecularStructure" is-interface="true"/>
+
+</classes>

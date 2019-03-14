@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<classes>
+	<class name="ProteinStructure" is-interface="true">
+		<collection name="pdbCompounds" referenced-type="PDBCompound" reverse-reference="pdbStructures"/>
+	</class>
+
+	<class name="PDBCompound" extends="Compound" is-interface="true">
+		<collection name="pdbStructures" referenced-type="ProteinStructure" reverse-reference="pdbCompounds"/>
+	</class>
+
+	<class name="Compound" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="originalId" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<attribute name="inchiKey" type="java.lang.String"/>
+		<attribute name="casRegistryNumber" type="java.lang.String"/>
+		<reference name="compoundGroup" referenced-type="CompoundGroup" reverse-reference="compounds"/>
+		<collection name="targetProteins" referenced-type="CompoundProteinInteraction" reverse-reference="compound"/>
+		<collection name="structures" referenced-type="CompoundStructure" reverse-reference="compound"/>
+		<collection name="synonyms" referenced-type="CompoundSynonym" reverse-reference="subject"/>
+	</class>
+
+	<class name="CompoundStructure" is-interface="true">
+		<attribute name="type" type="java.lang.String"/>
+		<attribute name="value" type="java.lang.String"/>
+		<reference name="compound" referenced-type="Compound" reverse-reference="structures"/>
+		<reference name="dataSet" referenced-type="DataSet"/>
+	</class>
+
+	<class name="CompoundSynonym" is-interface="true">
+		<attribute name="value" type="java.lang.String"/>
+		<reference name="subject" referenced-type="Compound" reverse-reference="synonyms"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="CompoundGroup" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<collection name="compounds" referenced-type="Compound" reverse-reference="compoundGroup"/>
+	</class>
+
+	<!-- For post processing -->	
+	<class name="CompoundProteinInteraction" is-interface="true">
+		<reference name="protein" referenced-type="Protein" reverse-reference="compounds"/>
+		<reference name="compound" referenced-type="Compound" reverse-reference="targetProteins"/>
+		<reference name="dataSet" referenced-type="DataSet"/>
+	</class>
+	<class name="PDBInteraction" extends="CompoundProteinInteraction" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+	</class>
+
+	<class name="Protein" is-interface="true">
+		<collection name="compounds" referenced-type="CompoundProteinInteraction" reverse-reference="protein"/>
+	</class>
+
+</classes>

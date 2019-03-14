@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<classes>
+	<class name="Protein" is-interface="true">
+		<collection name="pathways" referenced-type="Pathway"/>
+	</class>
+	<class name="Gene" is-interface="true">
+		<collection name="pathways" referenced-type="Pathway" reverse-reference="genes"/>
+	</class>
+	<class name="Pathway" is-interface="true" >
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<attribute name="description" type="java.lang.String"/>
+		<attribute name="label1" type="java.lang.String"/>
+		<attribute name="label2" type="java.lang.String"/>
+		<reference name="organism" referenced-type="Organism"/>
+		<collection name="genes" referenced-type="Gene" reverse-reference="pathways"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+		<collection name="parents" referenced-type="Pathway"/>
+	</class>
+</classes>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<classes>
+	<class name="Protein" is-interface="true">
+		<attribute name="primaryAccession" type="java.lang.String"/>
+		<collection name="proteinStructureRegions" referenced-type="ProteinStructureRegion" />
+		<collection name="regions" referenced-type="ProteinRegion" reverse-reference="protein" />
+	</class>
+
+	<class name="ProteinRegion" is-interface="true">
+		<attribute name="start" type="java.lang.Integer"/>
+		<attribute name="end" type="java.lang.Integer"/>
+		<attribute name="regionType" type="java.lang.String"/>
+		<reference name="protein" referenced-type="Protein" reverse-reference="regions" />
+	</class>
+
+	<class name="ProteinStructureRegion" extends="ProteinRegion" is-interface="true">
+		<attribute name="seqresStart" type="java.lang.Integer"/>
+		<attribute name="seqresEnd" type="java.lang.Integer"/>
+		<attribute name="pdbSeqStart" type="java.lang.String"/>
+		<attribute name="pdbSeqEnd" type="java.lang.String"/>
+		<reference name="chain" referenced-type="ProteinChain" ordered="true" reverse-reference="structureRegions"/>
+	</class>
+
+	<class name="ProteinChain" is-interface="true">
+		<attribute name="pdbId" type="java.lang.String"/>
+		<attribute name="chain" type="java.lang.String"/>
+		<attribute name="identifier" type="java.lang.String"/>
+		<reference name="structure" referenced-type="ProteinStructure" ordered="true" reverse-reference="chains"/>
+		<collection name="structureRegions" referenced-type="ProteinStructureRegion" reverse-reference="chain"/>
+		<attribute name="moleculeType" type="java.lang.String"/>
+		<collection name="organism" referenced-type="Organism"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="MacroMolecularStructure" is-interface="true"/>
+	
+	<class name="ProteinStructure" extends="MacroMolecularStructure" is-interface="true">
+		<attribute name="pdbId" type="java.lang.String"/>
+		<collection name="chains" referenced-type="ProteinChain" reverse-reference="structure"/>
+		<collection name="publications" referenced-type="Publication"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="Organism" is-interface="true">
+		<attribute name="taxonId" type="java.lang.String"/>
+	</class>
+
+</classes>

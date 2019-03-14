@@ -1,0 +1,471 @@
+<project type="bio">
+  <property name="target.model" value="genomic"/>
+  <property name="common.os.prefix" value="common"/>
+  <property name="intermine.properties.file" value="targetmine.properties"/>
+  <property name="default.intermine.properties.file" location="../default.intermine.integrate.properties"/>
+  <sources>
+    <source name="so" type="so">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/so/so.obo"/>
+    </source>
+    <source name="go" type="go">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/go/gene_ontology.obo"/>
+    </source>
+    <source name="goslim" type="goslim">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/goslim/goslim_generic.obo"/>
+    </source>
+    <source name="uniprot" type="tm-uniprot">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/split"/>
+      <property name="src.data.dir.includes" value="*.xml"/>
+      <property name="ptmlistFile" value="/data/bio/db/Targetmine/uniprot/docs/ptmlist.txt"/>
+    </source>
+    <source name="uniprot-keywords" type="keyword-xml">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/keyword"/>
+      <property name="src.data.dir.includes" value="keywlist.xml"/>
+    </source>
+    <source name="protein-ortholog" type="protein-ortholog">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/protein-ortholog/" />
+      <property name="src.data.dir.includes" value="*.bb" />
+    </source>
+    <source name="go-annotation" type="go-goslim-annotation">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/go-annotation"/>
+      <property name="src.data.dir.includes" value="goa_*.gaf"/>
+      <property name="goslim.map" value="/data/bio/db/Targetmine/goslim/goslim.map"/>
+    </source>
+    <source name="do" type="do">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/do/HumanDO.obo"/>
+    </source>
+    <source name="do-mesh" type="do-mesh">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
+      <property name="src.data.dir.includes" value="HumanDO.obo" />
+    </source>  
+    <source name="gene-info" type="gene-info">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
+      <property name="src.data.dir.includes" value="*.gene_info"/>
+      <property name="geneinfo.organisms" value="9606 10090 10116"/>
+      <property name="unigene.organisms" value="Hs Rn Mm"/>
+      <property name="gene2unigeneFile" value="/data/bio/db/Targetmine/gene_info/gene2unigene"/>
+      <property name="gene2accessionFile" value="/data/bio/db/Targetmine/gene_info/gene2accession"/>
+      <property name="genehistoryFile" value="/data/bio/db/Targetmine/gene_info/gene_history"/>
+      <property name="knownToLocusLinkFile" value="/data/bio/db/Targetmine/ucsc/knownToLocusLink.txt"/>
+    </source>
+    <source name="gene-esummary" type="gene-esummary">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
+      <property name="src.data.dir.includes" value="esummary.*"/>
+    </source>
+    <!-- to be added 
+    <source name="hpo" type="hpo">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/hpo/hp.obo" />
+    </source>
+    -->
+
+    <source name="interpro" type="interpro">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/interpro"/>
+      <property name="src.data.dir.includes" value="interpro_correct_dtd.xml"/>
+    </source>
+    <source name="protein2ipr" type="tm-protein2ipr">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/interpro"/>
+      <property name="src.data.dir.includes" value="protein2ipr.dat"/>
+      <property name="organisms" value="9606 10090 10116"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="sifts" type="sifts">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/sifts"/>
+      <property name="src.data.dir.includes" value="pdb_chain_uniprot.lst"/>
+      <property name="pdbPubmedFile" value="/data/bio/db/Targetmine/sifts/pdb_pubmed.lst" />
+      <property name="pdbChainTaxonFile" value="/data/bio/db/Targetmine/sifts/pdb_chain_taxonomy.lst" />
+    </source>
+    <source name="pdb-chaintype" type="pdb-chaintype">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pdbj"/>
+      <property name="src.data.dir.includes" value="chainType_pdbj.csv"/>
+      <property name="mapFile" value="/data/bio/db/Targetmine/pdbj/type_mapping.csv"/>
+    </source>
+    <source name="scop" type="scop">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/scop"/>
+      <property name="src.data.dir.includes" value="dir.des.scop.txt_1.75"/>
+      <property name="clsFile" value="/data/bio/db/Targetmine/scop/dir.cla.scop.txt_1.75"/>
+    </source>
+
+    <source name="cath" type="cath-name">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/cath"/>
+      <property name="src.data.dir.includes" value="CathNames"/>
+      <property name="domainList" value="/data/bio/db/Targetmine/cath/CathDomainList"/>
+      <property name="domall" value="/data/bio/db/Targetmine/cath/CathDomall"/>
+    </source>
+    <source name="gene3d" type="gene3d">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gene3d"/>
+      <property name="src.data.dir.includes" value="arch_schema_cath.tsv"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="kegg-orthology" type="tm-kegg-orthology">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/ko"/>
+      <property name="src.data.dir.includes" value="ko_genes.list" />
+      <property name="kegg.organism.codes" value="hsa mmu rno"/>
+    </source>
+
+    <source name="atc-code" type="atc-code">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/atc_code"/>
+      <property name="src.data.dir.includes" value="atc_lv1to4.cleaned"/>
+    </source>
+
+    <source name="drugbank" type="drugbank-v4">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/drugbank"/>
+      <property name="src.data.dir.includes" value="full_database.xml"/>
+    </source>
+
+    <source name="kegg-drug" type="kegg-drug">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/drug"/>
+      <property name="src.data.dir.includes" value="drug"/>
+      <property name="inchikeyFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchikey"/>
+      <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchi"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="kegg-jscc" type="kegg-jtc">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/br"/>
+      <property name="src.data.dir.includes" value="br0830*.keg"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+	
+    <source name="kegg-pathway" type="tm-kegg-pathway">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp"/>
+      <property name="src.data.dir.includes" value="*/*_gene_map.tab"/>
+      <property name="pathwayClassFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.list"/>
+      <property name="pathwayDescFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.hrme.desc.txt"/>
+      <property name="kegg.organisms" value="9606 10090 10116"	/>
+    </source>
+
+    <source name="kegg-relation" type="kegg-relation">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/kgml"/>
+      <property name="src.data.dir.includes" value="*/*/*.xml"/>
+    </source>
+
+    <source name="kegg-compound" type="kegg-compound">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/compound"/>
+      <property name="src.data.dir.includes" value="compound"/>
+      <property name="pathwayClassFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.list"/>
+      <property name="pathwayDescFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.hrme.desc.txt"/>
+      <property name="inchikeyFile" value="/data/bio/db/Targetmine/kegg-ftp/compound/compound.inchikey"/>
+      <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/compound/compound.inchi"/>
+      <property name="pathwayFile" value="/data/bio/db/Targetmine/kegg-ftp/compound/links/compound_pathway.list"/>
+      <property name="enzymeFile" value="/data/bio/db/Targetmine/kegg-ftp/compound/links/compound_enzyme.list"/>
+    </source>
+    <source name="kegg-reaction" type="kegg-ec-reaction">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/kgml/ec"/>
+      <property name="src.data.dir.includes" value="*.xml"/>
+      <property name="reactionNameFile" value="/data/bio/db/Targetmine/kegg-ftp/reaction/reaction_name.lst"/>
+    </source>
+
+    <source name="disgenet" type="disgenet">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/disgenet/5.0"/>
+      <property name="src.data.dir.includes" value="curated_gene_disease_associations.tsv"/>
+      <property name="pmidFile" value="/data/bio/db/Targetmine/disgenet/5.0/all_gene_disease_pmid_associations.tsv" />
+      <property name="diseaseMapFile" value="/data/bio/db/Targetmine/disgenet/5.0/disease_mappings.tsv" />
+    </source>
+    <source name="efo" type="efo">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/efo/efo.modi.obo"/>
+    </source>  
+<!-- chenyian: for internal only | start -->
+    <source name="omim" type="omim-gene">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/omim"/>
+      <property name="src.data.dir.includes" value="mim2gene_medgen"/>
+      <property name="titleFile" value="/data/bio/db/Targetmine/omim/omim_phenotype_title" />
+    </source>
+    <source name="gostar" type="gostar">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gostar"/>
+      <property name="src.data.dir.includes" value="ACTIVITY_ASSAY.csv"/>
+      <property name="activityAssayFile" value="/data/bio/db/Targetmine/gostar/ACTIVITY_ASSAY.csv" />
+      <property name="allActivityGostarFile" value="/data/bio/db/Targetmine/gostar/ALL_ACTIVITY_GOSTAR.csv" />
+      <property name="bindingSiteFile" value="/data/bio/db/Targetmine/gostar/BINDING_SITE.csv" />
+      <property name="casFile" value="/data/bio/db/Targetmine/gostar/CAS.csv" />
+      <property name="compoundSynonymsFile" value="/data/bio/db/Targetmine/gostar/COMPOUND_SYNONYMS.csv" />
+      <property name="referenceMasterFile" value="/data/bio/db/Targetmine/gostar/REFERENCE_MASTER.csv" />
+      <property name="structureDetailsFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS.csv" />
+      <property name="structureDetailsInchiInfoFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS_INCHI_INFO.csv" />
+      <property name="targetProteinMasterFile" value="/data/bio/db/Targetmine/gostar/TARGET_PROTEIN_MASTER.csv" />
+   </source>
+<!-- chenyian: for internal only | end -->    
+
+    <source name="efo-xref" type="efo-xref">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
+      <property name="src.data.dir.includes" value="efo.modi.obo" />
+    </source>  
+    <source name="mesh-term" type="mesh-term">
+      <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
+      <property name="src.data.dir.includes" value="*.bin" />
+    </source>  
+    <source name="gwas" type="gwas">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gwas/nhgri-ebi" />
+      <property name="src.data.dir.includes" value="gwas-catalog-associations_ontology-annotated.tsv" />
+    </source>
+
+     <source name="clinvar" type="tm-clinvar">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/clinvar"/>
+      <property name="src.data.dir.includes" value="variant_summary.txt"/>
+      <property name="submissionSummaryFile" value="/data/bio/db/Targetmine/clinvar/submission_summary.txt" />
+      <property name="variationCitationsFile" value="/data/bio/db/Targetmine/clinvar/var_citations.txt" />
+      <property name="variationAlleleFile" value="/data/bio/db/Targetmine/clinvar/variation_allele.txt" />
+      <property name="crossReferencesFile" value="/data/bio/db/Targetmine/clinvar/cross_references.txt" />
+      <property name="alleleGeneFile" value="/data/bio/db/Targetmine/clinvar/allele_gene.txt" />
+      <!-- the following files are homemade -->
+      <property name="variationNameFile" value="/data/bio/db/Targetmine/clinvar/var_name.txt" />
+      <property name="clinicalAssertionPubmedFile" value="/data/bio/db/Targetmine/clinvar/ca_pubmed.txt" />
+    </source>
+
+	<!-- should do after all medgen terms were added -->
+    <source name="medgen" type="medgen">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/medgen"/>
+      <property name="src.data.dir.includes" value="NAMES.csv"/>
+      <!--  property name="pubmedFile" value="/data/bio/db/Targetmine/medgen/medgen_pubmed_lnk.txt" /  -->
+      <property name="definitionFile" value="/data/bio/db/Targetmine/medgen/MGDEF.csv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="dbsnp-info" type="dbsnp-txt">
+      <property name="tableType" value="info"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp"/>
+      <property name="src.data.dir.includes" value="table1-dbsnp-info.txt"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="dbsnp-gene" type="dbsnp-txt">
+      <property name="tableType" value="gene"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp"/>
+      <property name="src.data.dir.includes" value="table3-sorted-snp-gene.txt"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="dbsnp-transcript" type="dbsnp-txt">
+      <property name="tableType" value="transcript"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp"/>
+      <property name="src.data.dir.includes" value="table2-dbsnp-transcript.txt"/>
+      <property name="snpFunctionFile" value="/data/bio/db/Targetmine/dbsnp/snp_function_code.csv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="snv-freq" type="snv-freq">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/snv_freq"/>
+      <property name="src.data.dir.includes" value="*.filtered.txt"/>
+      <property name="populationFile" value="/data/bio/db/Targetmine/snv_freq/population.txt" />
+    </source>
+
+    <source name="wwpdb" type="wwpdb">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/wwpdb/" />
+      <property name="src.data.dir.includes" value="entries.idx" />
+      <property name="structureFactorsFile" value="/data/bio/db/Targetmine/wwpdb/sf.list" />
+      <property name="refinementDetailsFile" value="/data/bio/db/Targetmine/pdbj/refine/refinement_details.csv" />
+    </source>
+    <source name="ligand_expo" type="ligand_expo">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/ligand_expo" />
+      <property name="src.data.dir.includes" value="cc-to-pdb.tdd" />
+      <property name="inchiKeyFile" value="/data/bio/db/Targetmine/ligand_expo/Components-inchikey.ich.fixed" />
+      <property name="inchiFile" value="/data/bio/db/Targetmine/ligand_expo/Components-inchi.ich" />
+      <property name="smilesFile" value="/data/bio/db/Targetmine/ligand_expo/Components-smiles-stereo-oe.smi" />
+    </source>
+    <source name="amadeus" type="amadeus">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/amadeus" />
+      <property name="src.data.dir.includes" value="*.geneid.txt" />
+    </source>
+    <source name="oreganno" type="oreganno">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/oreganno" />
+      <property name="src.data.dir.includes" value="oreg.all.txt" />
+    </source>
+    <source name="htridb" type="htridb">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/htridb" />
+      <property name="src.data.dir.includes" value="HTRIdb_data.csv" />
+    </source>
+    <source name="drugebility" type="drugebility">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/drugebility" />
+      <property name="src.data.dir.includes" value="domain_drugebility.txt" />
+    </source>
+
+    <source name="psi-mi" type="psi-mi-ontology">
+      <property name="src.data.file" location="/data/bio/db/Targetmine/psi-mi/psi-mi25.obo"/>
+    </source>
+    <source name="biogrid" type="biogrid-legacy">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/biogrid"/>
+      <property name="src.data.dir.includes" value="*psi25.xml"/>
+      <property name="biogrid.organisms" value="9606 10090 10116"/>
+    </source>
+
+    <source name="reactome" type="biopax3">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/reactome/current"/>
+      <property name="src.data.dir.includes" value="*.owl"/>
+    </source>
+    <source name="nci-pathway" type="nci-pathway">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/nci-pathway"/>
+      <property name="src.data.dir.includes" value="*.tab"/>
+    </source>
+    <source name="bioassay" type="bioassay">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/bioassay" />
+      <property name="src.data.dir.includes" value="assay_info_3.txt" />
+      <property name="giUniprotaccFile" value="/data/bio/db/Targetmine/bioassay/gi_uniprotacc.txt" />
+      <property name="aidPubmedidFile" value="/data/bio/db/Targetmine/bioassay/aid_pubmedid.txt" />
+      <property name="aidActivecidFile" value="/data/bio/db/Targetmine/bioassay/aid_activecid.txt" />
+      <property name="nameFile" value="/data/bio/db/Targetmine/bioassay/cid-names" />
+      <property name="inchikeyFile" value="/data/bio/db/Targetmine/bioassay/cid-inchikeys" />
+    </source>
+    <source name="chebi" type="chebi-db">
+      <property name="source.db.name" value="chebi-db"/>
+    </source>
+    <source name="chembl" type="chembl-db">
+      <property name="source.db.name" value="chembl-psql"/>
+    </source>
+    <source name="chembl-hie" type="chembl-hierarchy">
+      <property name="source.db.name" value="chembl-psql"/>
+    </source>
+    <source name="chembl-protein" type="chembl-protein">
+      <property name="source.db.name" value="chembl-psql"/>
+    </source>
+    
+    <source name="irefindex" type="irefindex">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>
+      <property name="src.data.dir.includes" value="*.mitab.*.txt"/>
+    </source>
+    <source name="ccsb" type="ccsb">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/interactome/ccsb"/>
+      <property name="src.data.dir.includes" value="HI-II-14.tsv"/>
+    </source>
+
+    <source name="mirbase" type="mirbase">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/mirbase/current" />
+      <property name="src.data.dir.includes" value="m*.*" />
+      <property name="taxonIdFile" value="/data/bio/db/Targetmine/mirbase/current/taxonId.txt" />
+    </source>
+    <source name="mirbase-genome" type="mirbase-genome">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/mirbase/current/genomes" />
+      <property name="src.data.dir.includes" value="*.gff3" />
+      <property name="taxonIdFile" value="/data/bio/db/Targetmine/mirbase/current/taxonId.txt" />
+    </source>
+    <source name="mirtarbase" type="mirtarbase">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/mirtarbase" />
+      <property name="src.data.dir.includes" value="*_MTI.txt" />
+    </source>
+
+    <source name="affy-probe" type="affy-probe-annot">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/affymetrix" />
+      <property name="src.data.dir.includes" value="*.na36.annot.csv" />
+    </source>
+    <source name="barcode" type="barcode30">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/barcode/transcriptome" />
+      <property name="src.data.dir.includes" value="*.csv" />
+    </source>
+    <source name="barcode-sample" type="barcode30-sample">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/barcode/annotation" />
+      <property name="src.data.dir.includes" value="*.csv" />
+    </source>
+
+    <source name="predicted-dbp" type="predicted-dbp">
+      <property name="dbpScoreFile" value="/data/bio/db/Targetmine/pred_annot/dbp/final-predictions-seq-ge-cons1-cons2-sorted.tsv"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pred_annot/dbs" />
+      <property name="src.data.dir.includes" value="all.dbsite.txt" />
+    </source>
+    <source name="predicted-tft" type="predicted-tft">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pred_annot/tft" />
+      <property name="src.data.dir.includes" value="*.predicted.tf-targets.new" />
+    </source>
+    <source name="predicted-ppi" type="predicted-ppi">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pred_annot/ppi" />
+      <property name="src.data.dir.includes" value="score_lc-ppis-homo.csv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="psp" type="phosphositesplus">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/phosphositesplus" />
+      <property name="src.data.dir.includes" value="*_site_dataset" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="psp-relation" type="psp-relation">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/phosphositesplus"/>
+      <property name="src.data.dir.includes" value="Kinase_Substrate_Dataset"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="enzyme" type="enzyme">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/enzyme" />
+      <property name="src.data.dir.includes" value="enzyme.dat" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="enzyme-pathway" type="enzyme-pathway">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/ec" />
+      <property name="src.data.dir.includes" value="ec.list" />
+      <property name="pathwayClassFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.list"/>
+      <property name="pathwayDescFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.hrme.desc.txt"/>
+    </source>
+
+    <source name="disease-summary" type="disease-summary"/>
+    
+    <source name="dataset-info" type="dataset-info">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine" />
+      <property name="src.data.dir.includes" value="*/*current_ver*.txt" />
+    </source>
+
+    <source name="gene-pubmed" type="gene-pubmed">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/publication"/>
+      <property name="pubmed.organisms" value="9606 10090 10116"/>
+      <property name="src.data.dir.includes" value="gene2pubmed"/>
+    </source>
+
+    <!--  following parts should be run after other resources-->
+    <source name="fill-proteins-xml" type="fill-proteins-xml">
+      <property name="src.data.dir" location="/data/bio/db/uniprot"/>
+      <property name="src.data.dir.includes" value="uniprot_*.xml" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="fill-missing-genes" type="fill-missing-genes">
+      <property name="src.data.file" location="genes.txt"/>
+    </source>
+
+    <!--  do nothing but add the necessary data model for the post-processing -->
+    <source name="network-analysis" type="network-analysis"/>
+    <source name="gene-set" type="gene-set"/>
+    <source name="calculate-bg" type="calculate-bg"/>
+
+    <source name="organism" type="fill-organisms">
+      <property name="src.data.file" location="organisms.xml"/>
+      <property name="hasShortName" value="9606 10090 10116"/>
+    </source>
+    <source name="taxon" type="taxonomy">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/taxonomy"/>
+      <property name="src.data.dir.includes" value="nodes.dmp"/>
+      <property name="nameFile" value="/data/bio/db/Targetmine/taxonomy/names.dmp"/>
+    </source>
+    <source name="taxon-pathway" type="taxon-pathway">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/prokaryotes/pathways"/>
+      <property name="src.data.dir.includes" value="*.pathway.list"/>
+      <property name="pathwayClassFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.list"/>
+      <property name="pathwayDescFile" value="/data/bio/db/Targetmine/kegg-ftp/pathway.hrme.desc.txt"/>
+      <property name="taxonMapFile" value="/data/bio/db/Targetmine/kegg-ftp/prokaryotes/taxonomic_rank"/>
+    </source>
+    <source name="pubmed-mesh" type="pubmed-mesh">
+      <property name="src.data.dir" location="/data/bio/db/pubmed/2017"/>
+      <property name="src.data.dir.includes" value="*/mesh/*-mesh.txt"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="publication-info" type="publication-efetch">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/publication/efetch"/>
+      <property name="src.data.dir.includes" value="publications.*.xml"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="update-publications" type="fill-missing-publications">
+      <property name="src.data.file" location="publications.xml"/>
+    </source>
+
+  </sources>
+
+  <post-processing>
+      <post-process name="do-sources"/>
+      <post-process name="transcribe-ncbiGeneId"/>
+      <post-process name="integrated-pathway-clustering"/>
+      <post-process name="associate-gene-to-cluster"/>
+      <post-process name="network-analysis"/>
+      <!-- the coexpression data location is assigned in the CoExpressionInteraction.java -->
+      <post-process name="coexpression"/>
+      <post-process name="transcribe-drugbank"/>
+      <post-process name="calculate-biotheme-background"/>
+      <post-process name="create-references"/>
+      <post-process name="summarise-objectstore"/>
+      <post-process name="create-attribute-indexes"/>
+      <post-process name="create-autocomplete-index"/>
+      <post-process name="create-search-index"/>
+  </post-processing>
+
+</project>

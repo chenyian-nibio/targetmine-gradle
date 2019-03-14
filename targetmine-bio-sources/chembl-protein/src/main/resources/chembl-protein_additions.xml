@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<classes>
+	<class name="Protein" extends="BioEntity" is-interface="true">
+		<attribute name="primaryAccession" type="java.lang.String"/>
+	</class>
+</classes>
