@@ -5,24 +5,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.dataconversion.GostarFileParser;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
-import org.intermine.sql.Database;
 import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 /**
@@ -30,7 +24,7 @@ import org.intermine.xml.full.Item;
  * @author Ishikawa.Motokazu
  */
 public class GostarConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(GostarConverter.class);
+	private static final Logger LOG = LogManager.getLogger(GostarConverter.class);
 	
 	private static final String DATASET_TITLE = "GOSTAR";
 	private static final String DATA_SOURCE_NAME = "GOSTAR";
@@ -45,8 +39,10 @@ public class GostarConverter extends BioFileConverter {
 	private File structureDetailsInchiInfoFile;
 	private File targetProteinMasterFile;
 	
-	// key is assay_id, value is activity Item's identifier
-	private Map<String, List<String>> assayMap = new HashMap<String, List<String>>();
+	// key is assay_id, value is a list of Activity
+	private Map<String, List<Item>> assayActivityMap = new HashMap<String, List<Item>>();
+	// key is assay_id, value is PubMed Ids
+	private Map<String, List<String>> assayPublicationMap = new HashMap<String, List<String>>();
 	// key is gvk_id, value is binding site
 	private Map<String, String> bindingSiteMap = new HashMap<String, String>();
 	// key is gvk_id, value is cas_no
@@ -96,6 +92,8 @@ public class GostarConverter extends BioFileConverter {
 		int countSynonym = 0;
 		int countCompound = 0;
 		
+		LOG.info( "GOSTAR: Processing CAS.csv to collect cas number" );
+		
 		/**
 		 * Processing CAS.csv to collect cas number
 		 */
@@ -107,6 +105,8 @@ public class GostarConverter extends BioFileConverter {
 			String gvkId = casRow[1];
 			casMap.put( gvkId, casNo );
 		}
+		
+		LOG.info( "GOSTAR: Processing COMPOUND_SYNONYMS.csv to collect synonyms" );
 		
 		/**
 		 * Processing COMPOUND_SYNONYMS.csv to collect synonyms
@@ -121,6 +121,8 @@ public class GostarConverter extends BioFileConverter {
 			countSynonym += 1;
 		}
 		
+		LOG.info( "GOSTAR: Processing REFERENCE_MASTER.csv to collect ref_id-pubmed_id relationship" );
+		
 		/**
 		 * Processing REFERENCE_MASTER.csv to collect ref_id-pubmed_id relationship
 		 */
@@ -130,8 +132,11 @@ public class GostarConverter extends BioFileConverter {
 			String[] referenceMasterRow = referenceMasterIterator.next();
 			String pubmedId = referenceMasterRow[5];
 			String refId = referenceMasterRow[9];
-			refPubmedMap.put( refId, pubmedId );
+			if( ! "".equals( pubmedId ) && ! "".equals( refId ) )
+				refPubmedMap.put( refId, pubmedId );
 		}
+		
+		LOG.info( "GOSTAR: Processing TARGET_PROTEIN_MASTER.csv to collect protein information" );
 		
 		/**
 		 * Processing TARGET_PROTEIN_MASTER.csv to collect protein information
@@ -147,8 +152,10 @@ public class GostarConverter extends BioFileConverter {
 			
 		}
 		
+		LOG.info( "GOSTAR: Processing STRUCTURE_DETAILS_INCHI_INFO.csv to collect compound inchikey information" );
+		
 		/**
-		 * Processing  STRUCTURE_DETAILS_INCHI_INFO.csv to collect compound inchikey information
+		 * Processing STRUCTURE_DETAILS_INCHI_INFO.csv to collect compound inchikey information
 		 */
 		Iterator<String[]> structureDetailsInchiInfoIterator = getStructureDetailsInchiInfoIterator();
 		structureDetailsInchiInfoIterator.hasNext(); // Skip header
@@ -164,8 +171,10 @@ public class GostarConverter extends BioFileConverter {
 			inchikeyMap.put( gvkId, iupacInchiKey);
 		}
 		
+		LOG.info( "GOSTAR: Processing STRUCTURE_DETAILS.csv to collect compound information" );
+		
 		/**
-		 * Processing  STRUCTURE_DETAILS.csv to collect compound information
+		 * Processing STRUCTURE_DETAILS.csv to collect compound information
 		 */
 		Iterator<String[]> structureDetailsIterator = getStructureDetailsIterator();
 		structureDetailsIterator.next(); // Skip header
@@ -210,6 +219,8 @@ public class GostarConverter extends BioFileConverter {
 			countCompound += 1;
 		}
 		
+		LOG.info( "GOSTAR: Processing BINDING_SITE.csv to collect activity information" );
+		
 		/**
 		 * Processing BINDING_SITE.csv to collect activity information
 		 */
@@ -221,6 +232,10 @@ public class GostarConverter extends BioFileConverter {
 			String bindingSite = bindingSiteRow[1];
 			bindingSiteMap.put(gvkId, bindingSite);
 		}
+		
+		
+		
+		LOG.info( "GOSTAR: Processing ALL_ACTIVITY_GOSTAR.csv to collect activity information" );
 		
 		/**
 		 * Processing ALL_ACTIVITY_GOSTAR.csv to collect activity information
@@ -240,25 +255,38 @@ public class GostarConverter extends BioFileConverter {
 			String refId = allActivityGostarRow[25];
 			String targetId = allActivityGostarRow[33];
 			
-			if( ! targetProteinMap.containsKey(targetId) ){
+			LOG.debug( "GOSTAR: ACTIVITY: targetID="+targetId+", uniprotID="+targetProteinMap.get(targetId)+", type="+type+", unit="+unit );
+			
+			if( ! compoundMap.containsKey( gvkId ) ) {
+				
+				// Skip this interaction because no GostarCompound found
+				LOG.info( "It has no GostarCompound:"+gvkId );
+				continue;
+				
+			}if( ! targetProteinMap.containsKey(targetId) ){
 				
 				// Skip this interaction because no uniprot id for this target
+				LOG.info( "It has no UniProt Acc" );
 				continue;
 				
-			}else if( type != "IC50" && type != "Kd" && type != "Ki" && type != "EC50" && type != "AC50" ){
+			}else if( ! "IC50".equals( type ) && ! "Kd".equals( type ) && ! "Ki".equals( type ) && ! "EC50".equals( type ) && ! "AC50".equals( type ) ){
 				
 				// Skip this interaction because measurement type is not what we want
+				LOG.info( "It has no adequate type"+type );
 				continue;
 				
-			}else if( unit != "nM" ) {
+			}//else if( unit != "nM" ) {
 				
 				// Skip this interaction because unit is not what we want
-				continue;
+				//continue;
 				
-			}
+			//}
+			LOG.debug( "GOSTAR: setACTIVITY: targetID="+targetId+", uniprotID="+targetProteinMap.get(targetId)+", type="+type+", unit="+unit );
 			setActivity( gvkId, targetId, type, conc, refId, assayId );
 			countActivity += 1;
 		}
+		
+		LOG.info( "GOSTAR: Processing ACTIVITY_ASSAY.csv to collect assay information" );
 		
 		/**
 		 * Processing ACTIVITY_ASSAY.csv to collect assay information
@@ -275,16 +303,23 @@ public class GostarConverter extends BioFileConverter {
 			String assayId = activityAssayRow[6];
 			String activity = activityAssayRow[10];
 			
-			if( ! assayMap.containsKey( assayId ) ) {
-				
-				// Skip because this assay has not been related to stored activity
-				continue;
-				
+			if ( assayActivityMap.containsKey( assayId ) ) {
+				setAssay( assayId, enzymeCellAssay, activity );
+				countAssay += 1;
 			}
-			
-			setAssay( assayId, enzymeCellAssay, activity );
-			countAssay += 1;
 		}
+		
+		/**
+		 * Storing Assay items if it has activities
+		 */
+		//for ( Item assay : assayMap.values() ) {
+		//	if ( assay.hasCollection( "activities" ) && 0 != assay.getCollection( "activities" ).getRefIds().size() ) {
+		//		store( assay );
+				
+		//	}
+		//}
+		
+		LOG.debug( "GOSTAR: Finish processing" );
 		
 		/**
 		 * Output how many items have been imported
@@ -293,6 +328,7 @@ public class GostarConverter extends BioFileConverter {
 		LOG.info( "GOSTAR: number of assay imported="+countAssay );
 		LOG.info( "GOSTAR: number of synonym imported="+countSynonym );
 		LOG.info( "GOSTAR: number of compound imported="+countCompound );
+		
 	}
 
 	private void registerTarget( String targetId, String uniprotId ) throws ObjectStoreException {
@@ -305,34 +341,81 @@ public class GostarConverter extends BioFileConverter {
 	
 	private void setActivity( String gvkId, String targetId, String type, String conc, String refId, String assayId ) throws ObjectStoreException {
 		
+		//if ( ! assayMap.containsKey( assayId ) ) {
+			
+		//	LOG.warn( "Assay:"+ assayId + " doesn't seem to exist in ACTIVITY_ASSAY.csv" );
+		//	return;
+			
+		//}
+		
 		String interactionRef = getInteraction( gvkId, targetId );
 		Item item = createItem( "Activity" );
 		item.setAttribute( "type", type );
-		item.setAttribute( "conc", conc );
+		if ( ! "".equals( conc ) )
+			item.setAttribute( "conc", conc );
 		item.setReference( "interaction", interactionRef );
-		if( refId != null && refId != "" && refPubmedMap.containsKey( refId ) ) {
-			item.addToCollection( "publications", publicationMap.get( refPubmedMap.get( refId ) ) );
+		
+		if ( ! assayPublicationMap.containsKey( assayId ) ) {
+			assayPublicationMap.put( assayId, new ArrayList<String>() );
 		}
+		if ( null != refPubmedMap.get( refId ) ) {
+			assayPublicationMap.get( assayId ).add( refPubmedMap.get( refId ) );
+		}
+		//addPublicationToAssay( assayId, refPubmedMap.get( refId ) );
 		store( item );
 		
-		if( ! assayMap.containsKey( assayId ) ) {
-			assayMap.put( assayId, new ArrayList<String>() );
+		if ( ! assayActivityMap.containsKey( assayId ) ) {
+			assayActivityMap.put( assayId, new ArrayList<Item>() );
 		}
-		
-		assayMap.get( assayId ).add( item.getIdentifier() );
+		assayActivityMap.get( assayId ).add( item );
+		//assayMap.get( assayId ).addToCollection( "activities", item );
 		
 	}
+	
+	/*private void addPublicationToAssay( String assayId, String pubMedId ) throws ObjectStoreException {
+		
+		if ( null == pubMedId || "".equals( pubMedId ) ) {
+			return;
+		}
+		
+		// Not add if already added to this assay
+		if ( assayPublicationMap.containsKey( assayId )  ) {
+			for ( String addedPubMedId : assayPublicationMap.get( assayId ) ) {
+				if ( addedPubMedId.equals( pubMedId ) ) {
+					return;
+				}
+			}
+		} else {
+			assayPublicationMap.put( assayId, new ArrayList<String>() );
+		}
+		
+		assayMap.get( assayId ).addToCollection( "publications", getPublication( pubMedId ) );
+		assayPublicationMap.get( assayId ).add( pubMedId );
+		
+	}*/
 	
 	private void setAssay( String assayId, String enzymeCellAssay, String activity ) throws ObjectStoreException {
 		
 		Item item = createItem( "CompoundProteinInteractionAssay" );
 		item.setAttribute( "identifier", assayId );
 		item.setAttribute( "originalId", assayId );
-		item.setAttribute( "name", enzymeCellAssay );
-		item.setAttribute( "assayType", activity );
+		if ( ! "".equals( enzymeCellAssay ) )
+			item.setAttribute( "name", enzymeCellAssay );
+		if ( ! "".equals( activity ) )
+			item.setAttribute( "assayType", activity );
 		item.setAttribute( "source", "GOSTAR" );
+		
+		for ( Item activityItem : assayActivityMap.get( assayId ) ) {
+			item.addToCollection( "activities", activityItem );
+		}
+		
+		for ( String pubmedId : assayPublicationMap.get( assayId ) ) {
+			item.addToCollection( "publications", getPublication( pubmedId ) );
+		}
+		
 		store( item );
 		
+		//assayMap.put( assayId , item );
 		
 	}
 	
@@ -350,7 +433,7 @@ public class GostarConverter extends BioFileConverter {
 		if (ret == null) {
 			Item item = createItem( "GostarCompound" );
 			item.setAttribute( "identifier", String.format("GOSTAR:%s", gvkId) );
-			item.setAttribute( "originalId", gvkId );
+			item.setAttribute( "originalId", String.format("GOSTAR_GVK:%s", gvkId) );
 			if( null != compoundName && ! "".equals( compoundName ) ){
 				item.setAttribute( "name", compoundName );
 			}
@@ -390,7 +473,7 @@ public class GostarConverter extends BioFileConverter {
 			store( item );
 			publicationMap.put( pubmedId, item.getIdentifier() );
 		}
-		return ref;
+		return publicationMap.get( pubmedId );
 		
 	}
 	
@@ -451,12 +534,17 @@ public class GostarConverter extends BioFileConverter {
 		String intId = gvkId + "_" + targetId;
 		String interactionRef = interactionMap.get(intId);
 		if ( interactionRef == null ){
+			
 			Item item = createItem("GostarInteraction");
 			item.setReference( "compound", compoundMap.get(gvkId) );
 			item.setReference( "protein", targetProteinMap.get(targetId) );
 			if( bindingSiteMap.containsKey(gvkId) ){
 				item.setAttribute( "bindingSite", bindingSiteMap.get(gvkId) );
 			}
+			store(item);
+			interactionRef = item.getIdentifier();
+			interactionMap.put( intId, interactionRef );
+			
 		}
 		return interactionRef;
 		

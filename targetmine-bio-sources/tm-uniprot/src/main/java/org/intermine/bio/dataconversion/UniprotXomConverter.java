@@ -20,7 +20,9 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.metadata.Util;
@@ -36,7 +38,7 @@ import org.intermine.xml.full.Item;
  */
 public class UniprotXomConverter extends BioFileConverter {
 
-	private static final Logger LOG = Logger.getLogger(UniprotXomConverter.class);
+	private static final Logger LOG = LogManager.getLogger(UniprotXomConverter.class);
 
 	private static final String DATA_SOURCE_NAME = "UniProt";
 	private static final int POSTGRES_INDEX_SIZE = 2712;
@@ -79,7 +81,7 @@ public class UniprotXomConverter extends BioFileConverter {
 		if (ptmListMap == null || ptmListMap.isEmpty()) {
 			loadPtmListFile();
 		}
-		
+		LOG.info("Start to process uniprot");
 		try {
 			BufferedReader br = new BufferedReader(reader);
 

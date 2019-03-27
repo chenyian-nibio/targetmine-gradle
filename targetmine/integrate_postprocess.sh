@@ -1,5 +1,7 @@
-
 LOG_FILE=integrate_postprocess_`date "+%Y%m%d"`.log
+./gradlew integrate -Psource=gostar --stacktrace >> ${LOG_FILE} 2>&1
+./gradlew integrate -Psource=gobiom --stacktrace >> ${LOG_FILE} 2>&1
+./gradlew integrate -Psource=orphanet --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=so --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=go --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=goslim --stacktrace >> ${LOG_FILE} 2>&1
@@ -29,7 +31,6 @@ LOG_FILE=integrate_postprocess_`date "+%Y%m%d"`.log
 ./gradlew integrate -Psource=kegg-reaction --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=disgenet --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=efo --stacktrace >> ${LOG_FILE} 2>&1
-./gradlew integrate -Psource=gostar --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=efo-xref --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=mesh-term --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=gwas --stacktrace >> ${LOG_FILE} 2>&1

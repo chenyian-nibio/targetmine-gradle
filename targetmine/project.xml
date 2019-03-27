@@ -37,7 +37,7 @@
     <source name="do-mesh" type="do-mesh">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
       <property name="src.data.dir.includes" value="HumanDO.obo" />
-    </source>  
+    </source>
     <source name="gene-info" type="gene-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="*.gene_info"/>
@@ -120,6 +120,7 @@
       <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchi"/>
       <property name="osAlias" value="os.production"/>
     </source>
+  	
     <source name="kegg-jscc" type="kegg-jtc">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/br"/>
       <property name="src.data.dir.includes" value="br0830*.keg"/>
@@ -183,8 +184,21 @@
       <property name="structureDetailsInchiInfoFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS_INCHI_INFO.csv" />
       <property name="targetProteinMasterFile" value="/data/bio/db/Targetmine/gostar/TARGET_PROTEIN_MASTER.csv" />
    </source>
-<!-- chenyian: for internal only | end -->    
+   <source name="gobiom" type="gobiom">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gobiom"/>
+      <property name="src.data.dir.includes" value="BIOM_STRUCTURE_MASTER.csv"/>
+      <property name="locusMasterFile" value="/data/bio/db/Targetmine/gobiom/BIOM_LOCUS_MASTER.csv" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="humanIdMappingFile" value="/data/bio/db/Targetmine/gobiom/HUMAN_9606_idmapping.dat" />
+   </source>
+<!-- chenyian: for internal only | end -->
 
+    <source name="orphanet" type="orphanet">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/orphanet"/>
+      <property name="src.data.dir.includes" value="en_product6.xml"/>
+      <property name="ordoOwlFile" value="/data/bio/db/Targetmine/orphanet/ORDO_en_2.7.owl" />
+    </source>
+  	
     <source name="efo-xref" type="efo-xref">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
       <property name="src.data.dir.includes" value="efo.modi.obo" />
