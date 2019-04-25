@@ -1,10 +1,12 @@
 package org.intermine.bio.dataconversion;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,7 @@ import nu.xom.ValidityException;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 
 /**
@@ -33,6 +36,7 @@ public class OrphanetConverter extends BioFileConverter {
 	
 	private static final String HOMO_SAPIENS_TAXON_ID = "9606";
 	
+	private File humanGeneInfoFile;
 	private File ordoOwlFile;
 	
 	// key is CUI, value is a reference to DiseaseTerm Item
@@ -41,6 +45,8 @@ public class OrphanetConverter extends BioFileConverter {
 	private Map<String, String> disorderMap = new HashMap<String, String>();
 	// key is gene symbol, value is a reference to Gene Item
 	private Map<String, String> geneMap = new HashMap<String, String>();
+	// key is gene symbol, value is Entrez Gene ID
+	private Map<String, String> geneSymbolMap = new HashMap<String, String>();
 	// key is PubMed ID, value is a reference to Publication Item
 	private Map<String, String> publicationMap = new HashMap<String, String>();
 	
@@ -60,7 +66,13 @@ public class OrphanetConverter extends BioFileConverter {
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
-
+		
+		LOG.info( "Start parseHumanGeneInfoFile()" );
+		/**
+		 * Collecting orphanet term and CUI pair information into cuiMap dictionary
+		 */
+		parseHumanGeneInfoFile();
+		
 		LOG.info( "Start parseOrdoOwlFile()" );
 		/**
 		 * Collecting orphanet term and CUI pair information into cuiMap dictionary
@@ -117,6 +129,11 @@ public class OrphanetConverter extends BioFileConverter {
 			return false;
 		}
 		
+		if( ! this.geneSymbolMap.containsKey(geneSymbol) ) {
+			// If Entrez Gene ID doesn't exist for this symbol, we should skip this gene
+			return false;
+		}
+		
 		Item item = createItem("Disease");
 		item.setAttribute( "associationType", associationType );
 		item.setReference( "gene", getGene( geneSymbol ) );
@@ -159,6 +176,8 @@ public class OrphanetConverter extends BioFileConverter {
 		String ret = geneMap.get( geneSymbol );
 		if (ret == null) {
 			Item item = createItem( "Gene" );
+			item.setAttribute( "primaryIdentifier", this.geneSymbolMap.get( geneSymbol ) );
+			item.setAttribute( "ncbiGeneId", this.geneSymbolMap.get( geneSymbol ) );
 			item.setAttribute( "symbol", geneSymbol );
 			item.setReference( "organism", getOrganism( HOMO_SAPIENS_TAXON_ID ) );
 			store(item);
@@ -172,6 +191,38 @@ public class OrphanetConverter extends BioFileConverter {
 	public String getDataSetTitle(String taxonId) {
 		
 		return DATASET_TITLE;
+		
+	}
+	
+	private void parseHumanGeneInfoFile() throws FileNotFoundException, IOException {
+		
+		Iterator<String[]> humanGeneInfoIterator = FormattedTextParser.parseTabDelimitedReader( new FileReader( this.humanGeneInfoFile ) );
+		int rowCount = 0;
+		while( humanGeneInfoIterator.hasNext() ) {
+			
+			rowCount += 1;
+			if( rowCount == 1 ) {
+				// Skip header
+				continue;
+			}			
+			
+			String[] humanGeneInfoRow = humanGeneInfoIterator.next();
+			
+			if( humanGeneInfoRow.length < 16 ) {
+				continue;
+			}
+			
+			String idColumn = humanGeneInfoRow[ 1 ];
+			String symbolColumn = humanGeneInfoRow[ 2 ];
+			
+			if( idColumn == null || symbolColumn == null ) {
+				
+				continue;
+				
+			}
+			geneSymbolMap.put( symbolColumn, idColumn );
+			
+		}
 		
 	}
 	
@@ -257,6 +308,12 @@ public class OrphanetConverter extends BioFileConverter {
 			}
 			
 		}
+		
+	}
+	
+	public void setHumanGeneInfoFile(File humanGeneInfoFile ) {
+		
+		this.humanGeneInfoFile = humanGeneInfoFile;
 		
 	}
 	

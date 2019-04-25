@@ -11,8 +11,10 @@
 	<class name="DiseaseTerm" extends="OntologyTerm" is-interface="true" >
 		<collection name="genes" referenced-type="Disease" reverse-reference="diseaseTerm"/>
 	</class>
-	<class name="Gene" is-interface="true">
+	<class name="Gene" extends="SequenceFeature" is-interface="true">
 		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<attribute name="ncbiGeneId" type="java.lang.String"/>
+		<attribute name="symbol" type="java.lang.String"/>
 		<collection name="diseases" referenced-type="Disease" reverse-reference="gene"/>
 		<reference name="organism" referenced-type="Organism"/>
 	</class>
