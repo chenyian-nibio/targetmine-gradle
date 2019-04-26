@@ -31,10 +31,6 @@
 		<collection name="compounds" referenced-type="CompoundProteinInteraction" reverse-reference="protein"/>
 	</class>
 
-	<class name="DrugType" is-interface="true">
-		<attribute name="name" type="java.lang.String"/>
-	</class>
-
 	<class name="GostarCompound" extends="Compound" is-interface="true">
 		<attribute name="iupacName" type="java.lang.String"/>
 	</class>
@@ -56,7 +52,7 @@
 		<attribute name="value" type="java.lang.String"/>
 		<reference name="compound" referenced-type="Compound" reverse-reference="structures"/>
 		<reference name="dataSet" referenced-type="DataSet"/>
-	</class>k
+	</class>
     
 	<class name="CompoundSynonym" is-interface="true">
 		<attribute name="value" type="java.lang.String"/>

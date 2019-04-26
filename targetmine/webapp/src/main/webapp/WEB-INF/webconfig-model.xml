@@ -873,6 +873,17 @@
     </fields>
   </class>
 
+<!-- Start: Added by Ishikawa.Motokazu -->
+  <class className="org.intermine.model.bio.Biomarker">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="biomarkerType"/>
+      <fieldconfig fieldExpr="chemicalNature"/>
+    </fields>
+  </class>
+
+<!-- End: Added by Ishikawa.Motokazu -->
+
 <!-- exporters -->
   <tableExportConfig id="sequence" className="org.intermine.bio.web.export.SequenceHttpExporter"/>
   <tableExportConfig id="gff3" className="org.intermine.bio.web.export.GFF3HttpExporter"/>

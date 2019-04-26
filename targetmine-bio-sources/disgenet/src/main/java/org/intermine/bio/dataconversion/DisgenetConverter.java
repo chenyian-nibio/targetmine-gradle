@@ -11,7 +11,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -27,7 +28,7 @@ import org.intermine.xml.full.Item;
  */
 public class DisgenetConverter extends BioFileConverter {
 	
-	private static final Logger LOG = Logger.getLogger(DisgenetConverter.class);
+	private static final Logger LOG = LogManager.getLogger(DisgenetConverter.class);
     //
 	private static final String DATASET_TITLE = "DisGeNET";
 	private static final String DATA_SOURCE_NAME = "DisGeNET";
@@ -84,6 +85,11 @@ public class DisgenetConverter extends BioFileConverter {
     		String diseaseName = cols[3];
     		String geneId = cols[0];
     		String source = cols[7];
+    		
+    		if( source.contains("ORPHANET")) {
+    			// Orphanet data will be imported from orphanet data source
+    			continue;
+    		}
     		
     		Item item = createItem("Disease");
 			item.setReference("diseaseTerm", getDiseaseTerm(diseaseId, diseaseName));
@@ -200,7 +206,7 @@ public class DisgenetConverter extends BioFileConverter {
 		}
 		return ret;
 	}
-
+	
 	private Map<String, String> diseaseTermMap = new HashMap<String, String>();
 	private String getDiseaseTerm(String identifier, String title) throws ObjectStoreException {
 		String ret = diseaseTermMap.get(identifier);

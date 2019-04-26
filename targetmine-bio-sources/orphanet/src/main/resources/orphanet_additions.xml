@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<classes>
+	<class name="Disease" is-interface="true" >
+		<reference name="diseaseTerm" referenced-type="DiseaseTerm"/>
+		<reference name="gene" referenced-type="Gene" reverse-reference="diseases"/>
+		<attribute name="associationType" type="java.lang.String"/>
+		<collection name="sources" referenced-type="DataSource"/>
+		<collection name="publications" referenced-type="Publication"/>
+		<reference name="dataSet" referenced-type="DataSet"/>
+	</class>
+	<class name="DiseaseTerm" extends="OntologyTerm" is-interface="true" >
+		<collection name="genes" referenced-type="Disease" reverse-reference="diseaseTerm"/>
+	</class>
+	<class name="Gene" extends="SequenceFeature" is-interface="true">
+		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<attribute name="ncbiGeneId" type="java.lang.String"/>
+		<attribute name="symbol" type="java.lang.String"/>
+		<collection name="diseases" referenced-type="Disease" reverse-reference="gene"/>
+		<reference name="organism" referenced-type="Organism"/>
+	</class>
+</classes>

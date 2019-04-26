@@ -75,6 +75,8 @@ include ':bio-source-gene-set'
 project(':bio-source-gene-set').projectDir = new File(settingsDir, './gene-set')
 include ':bio-source-go-goslim-annotation'
 project(':bio-source-go-goslim-annotation').projectDir = new File(settingsDir, './go-goslim-annotation')
+include ':bio-source-gobiom'
+project(':bio-source-gobiom').projectDir = new File(settingsDir, './gobiom')
 include ':bio-source-goslim'
 project(':bio-source-goslim').projectDir = new File(settingsDir, './goslim')
 include ':bio-source-gostar'
@@ -119,6 +121,8 @@ include ':bio-source-omim-gene'
 project(':bio-source-omim-gene').projectDir = new File(settingsDir, './omim-gene')
 include ':bio-source-oreganno'
 project(':bio-source-oreganno').projectDir = new File(settingsDir, './oreganno')
+include ':bio-source-orphanet'
+project(':bio-source-orphanet').projectDir = new File(settingsDir, './orphanet')
 include ':bio-source-pdbchain-organism'
 project(':bio-source-pdbchain-organism').projectDir = new File(settingsDir, './pdbchain-organism')
 include ':bio-source-pdb-chaintype'
