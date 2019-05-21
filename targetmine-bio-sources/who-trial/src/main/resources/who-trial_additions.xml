@@ -3,5 +3,10 @@
 
 <classes>
 <!-- add any <class> elements here -->
+    <class name="WhoTrial" is-interface="true">
 
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="title" type="java.lang.String"/>
+        <attribute name="condition" type="java.lang.String"/>
+    </class>
 </classes>
