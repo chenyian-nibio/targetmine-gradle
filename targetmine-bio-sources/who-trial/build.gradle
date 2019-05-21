@@ -1,3 +1,6 @@
+dependencies {
+    compile group: 'org.openscience.cdk', name: 'cdk-bundle', version: '2.1.1'
+}
 sourceSets {
     main {
         java {

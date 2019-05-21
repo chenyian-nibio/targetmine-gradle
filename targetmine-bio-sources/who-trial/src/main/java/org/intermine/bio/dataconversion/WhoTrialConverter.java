@@ -10,11 +10,13 @@ package org.intermine.bio.dataconversion;
  *
  */
 
+import java.io.BufferedReader;
 import java.io.Reader;
 
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.xml.full.Item;
+import org.json.JSONObject;
 
 
 /**
@@ -24,8 +26,8 @@ import org.intermine.xml.full.Item;
 public class WhoTrialConverter extends BioFileConverter
 {
     //
-    private static final String DATASET_TITLE = "Add DataSet.title here";
-    private static final String DATA_SOURCE_NAME = "Add DataSource.name here";
+    private static final String DATASET_TITLE = "who-trials";
+    private static final String DATA_SOURCE_NAME = "who-trials";
 
     /**
      * Constructor
@@ -42,6 +44,15 @@ public class WhoTrialConverter extends BioFileConverter
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
-
+        try(BufferedReader br = new BufferedReader(reader)){
+            String line = br.readLine();
+            JSONObject jsonObject = new JSONObject(line);
+            JSONObject main = jsonObject.getJSONObject("main");
+            Item whoTrial = createItem("WhoTrial");
+            whoTrial.setAttribute("name",main.getString("Main ID"));
+            whoTrial.setAttribute("title",jsonObject.getString("Public title"));
+            whoTrial.setAttribute("condition",jsonObject.getString("disease"));
+            store(whoTrial);
+        }
     }
 }
