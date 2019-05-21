@@ -1,6 +1,3 @@
-dependencies {
-    compile group: 'org.openscience.cdk', name: 'cdk-bundle', version: '2.1.1'
-}
 sourceSets {
     main {
         java {
@@ -18,9 +15,6 @@ sourceSets {
             srcDirs = ['src/test/resources']
         }
     }
-}
-dependencies {
-   compile project(':bio-source-utils')
 }
 
 processResources {
