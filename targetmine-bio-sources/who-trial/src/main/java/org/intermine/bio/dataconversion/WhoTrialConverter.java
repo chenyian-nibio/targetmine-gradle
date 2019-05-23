@@ -26,8 +26,8 @@ import org.json.JSONObject;
 public class WhoTrialConverter extends BioFileConverter
 {
     //
-    private static final String DATASET_TITLE = "who-trials";
-    private static final String DATA_SOURCE_NAME = "who-trials";
+    private static final String DATASET_TITLE = "who-trial";
+    private static final String DATA_SOURCE_NAME = "who-trial";
 
     /**
      * Constructor
@@ -50,7 +50,7 @@ public class WhoTrialConverter extends BioFileConverter
             JSONObject main = jsonObject.getJSONObject("main");
             Item whoTrial = createItem("WhoTrial");
             whoTrial.setAttribute("name",main.getString("Main ID"));
-            whoTrial.setAttribute("title",jsonObject.getString("Public title"));
+            whoTrial.setAttribute("title",main.getString("Public title"));
             whoTrial.setAttribute("condition",jsonObject.getString("disease"));
             store(whoTrial);
         }
