@@ -44,6 +44,10 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
       <property name="src.data.dir.includes" value="HumanDO.obo" />
     </source>
+    <source name="who-trial" type="who-trial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
+      <property name="src.data.dir.includes" value="data.jl" />
+    </source>
     <source name="gene-info" type="gene-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="*.gene_info"/>
