@@ -39,7 +39,7 @@ public class WhoTrialConverter extends BioFileConverter {
     // key is string of source vocabularies, value is CUI
     private Map<String, String> mrConsoMap = new HashMap<String, String>();
     // key is CUI, value is reference to DiseaseTerm item
-    private Map<String, String> diseaseTermMap = new HashMap<String, String>();
+    private Map<String, Item> diseaseTermMap = new HashMap<String, Item>();
 
     /**
      * Constructor
@@ -65,7 +65,7 @@ public class WhoTrialConverter extends BioFileConverter {
         propertyNames.put("registrationDate","Date of registration");
         propertyNames.put("lastRefreshed","Date of registration");
         propertyNames.put("targetSampleSize","Target sample size");
-        propertyNames.put("originalURL","URL");
+        propertyNames.put("originalUrl","URL");
         propertyNames.put("url","url");
         propertyNames.put("interventions","interventions");
         propertyNames.put("countries","countries");
@@ -97,18 +97,22 @@ public class WhoTrialConverter extends BioFileConverter {
         JSONObject main = jsonObject.getJSONObject("main");
         Item whoTrial = createItem("WhoTrial");
         propertyNames.forEach((key,name)->{
+	    String obj = null;
             if(main.has(name)){
-                whoTrial.setAttribute(key,toString(main.get(name)));
+		obj = toString(main.get(name));
             }else if(jsonObject.has(name)){
-                whoTrial.setAttribute(key,toString(jsonObject.get(name)));
+	        obj = toString(jsonObject.get(name));
             }
+	    if(obj!=null && !obj.isEmpty() ){
+                whoTrial.setAttribute(key,obj);
+	    }
         });
         String diseaseName = jsonObject.getString("disease");
         whoTrial.setAttribute("condition", diseaseName);
         String cui = mrConsoMap.get(diseaseName.toLowerCase());
         try {
             if (null != cui) {
-                whoTrial.setAttribute("diseaseTerms", getDiseaseTerm(cui, diseaseName));
+                whoTrial.setReference("disease", getDiseaseTerm(cui, diseaseName));
             }
             store(whoTrial);
         } catch (ObjectStoreException e) {
@@ -117,20 +121,19 @@ public class WhoTrialConverter extends BioFileConverter {
 
     }
 
-    private String getDiseaseTerm(String cui, String diseaseName) throws ObjectStoreException {
+    private Item getDiseaseTerm(String cui, String diseaseName) throws ObjectStoreException {
 
-        String diseaseTermRef = diseaseTermMap.get(cui);
-        if (diseaseTermRef == null) {
+        Item item = diseaseTermMap.get(cui);
+        if (item == null) {
 
-            Item item = createItem("DiseaseTerm");
+            item = createItem("DiseaseTerm");
             item.setAttribute("identifier", cui);
             item.setAttribute("name", diseaseName);
             item.setAttribute("description", diseaseName);
             store(item);
-            String ref = item.getIdentifier();
-            diseaseTermMap.put(cui, ref);
+            diseaseTermMap.put(cui, item);
         }
-        return diseaseTermMap.get(cui);
+        return item;
 
     }
 
