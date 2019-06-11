@@ -16,3 +16,6 @@ productionLog
 .gradle/
 .idea/
 
+.classpath
+.project
+
