@@ -165,7 +165,18 @@ public class UniprotXomConverter extends BioFileConverter {
 						}
 
 						protein.setAttribute("primaryIdentifier", primaryIdentifier);
+						// TODO do we really need this?
 						protein.setAttribute("uniprotName", primaryIdentifier);
+						
+						Element geneEntity = entry.getFirstChildElement("gene", UNIPROT_NAMESPACE);
+						if (geneEntity != null) {
+							String geneSymbol = geneEntity
+									.getFirstChildElement("name", UNIPROT_NAMESPACE).getValue();
+							protein.setAttribute("symbol", geneSymbol);
+						} else {
+							LOG.info(String.format("No gene entity: %s", primaryIdentifier));
+							protein.setAttribute("symbol", primaryIdentifier);
+						}
 
 						protein.setAttribute("isUniprotCanonical", "true");
 
