@@ -74,7 +74,7 @@ public class TmKeggOrthologyConverter extends BioFileConverter {
 
 		for (String koId: koMap.keySet()) {	
 			Set<String> genes = koMap.get(koId);
-			Item item = createItem("KeggOrthology");
+			Item item = createItem("GeneOrtholog");
 			item.setAttribute("identifier", koId);
 			for (String gene : genes) {
 				item.addToCollection("genes", getGene(gene.substring(4)));

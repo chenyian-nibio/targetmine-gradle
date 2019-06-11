@@ -44,9 +44,9 @@ public class HomologInfoDisplayer extends ReportDisplayer {
 			
 			// pre-process KO to identify orthologues and paralogues
 			Organism org = (Organism) gene.getFieldValue("organism");
-			Set<InterMineObject> keggOrthology =  (Set<InterMineObject>) gene.getFieldValue("keggOrthology");
+			Set<InterMineObject> geneOrtholog =  (Set<InterMineObject>) gene.getFieldValue("geneOrtholog");
 			Map<InterMineObject, Map<String, Set<InterMineObject>>> koMap = new HashMap<InterMineObject, Map<String, Set<InterMineObject>>>();
-			for (InterMineObject ko : keggOrthology) {
+			for (InterMineObject ko : geneOrtholog) {
 				HashMap<String, Set<InterMineObject>> orthologMap = new HashMap<String, Set<InterMineObject>>();
 				Set<Gene> genes = (Set<Gene>) ko.getFieldValue("genes");
 				for (Gene ortholog : genes) {

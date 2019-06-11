@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <classes>
-	<class name="KeggOrthology" is-interface="true">
+	<class name="GeneOrtholog" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
-		<collection name="genes" referenced-type="Gene" reverse-reference="keggOrthology"/>
+		<collection name="genes" referenced-type="Gene" reverse-reference="geneOrtholog"/>
+		<reference name="dataSet" referenced-type="DataSet"/>
 	</class>
 	<class name="Gene" is-interface="true">
 		<attribute name="primaryIdentifier" type="java.lang.String"/>
-		<collection name="keggOrthology" referenced-type="KeggOrthology" reverse-reference="genes"/>
+		<collection name="geneOrtholog" referenced-type="GeneOrtholog" reverse-reference="genes"/>
 	</class>
 </classes>
