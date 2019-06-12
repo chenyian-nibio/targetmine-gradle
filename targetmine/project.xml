@@ -101,6 +101,24 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/ko"/>
       <property name="src.data.dir.includes" value="ko_genes.list" />
       <property name="kegg.organism.codes" value="hsa mmu rno cjc mcf mcc cfa ocu dre dme"/>
+      <property name="taxonRankFile" value="/data/bio/db/Targetmine/kegg-ftp/ko/taxonomic_rank"/>
+      <property name="flyIdMapFile" value="/data/bio/db/Targetmine/gene_info/orthologs/Drosophila_melanogaster.gene_info"/>
+    </source>
+    <source name="gene-orthologs" type="gene-orthologs">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
+      <property name="src.data.dir.includes" value="gene_orthologs" />
+      <property name="ortholog.organisms" value="9606 10090 10116 9483 9541 9544 9615 9986 7955 7227"/>
+    </source>
+    <source name="homologene" type="tm-homologene">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/homologene/build68"/>
+      <property name="src.data.dir.includes" value="homologene.data" />
+      <property name="ortholog.organisms" value="9606 10090 10116 9483 9541 9544 9615 9986 7955 7227"/>
+    </source>
+    <source name="ortholog-info" type="ortholog-info">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info/orthologs"/>
+      <property name="src.data.dir.includes" value="*.gene_info"/>
+      <property name="ortholog.organisms" value="9483 9541 9544 9615 9986 7955 7227"/>
+      <property name="osAlias" value="os.production"/>
     </source>
 
     <source name="atc-code" type="atc-code">
@@ -426,7 +444,7 @@
     </source>
 
     <source name="fill-missing-genes" type="fill-missing-genes">
-      <property name="src.data.file" location="genes.txt"/>
+      <property name="src.data.file" location="build/genes.txt"/>
     </source>
 
     <!--  do nothing but add the necessary data model for the post-processing -->

@@ -220,7 +220,7 @@ public class MissingGeneXomRetriever {
 		q.addFrom(qc);
 		q.addToSelect(qc);
 
-		SimpleConstraint sc = new SimpleConstraint(new QueryField(qc, "name"),
+		SimpleConstraint sc = new SimpleConstraint(new QueryField(qc, "type"),
 				ConstraintOp.IS_NULL);
 
 		q.setConstraint(sc);

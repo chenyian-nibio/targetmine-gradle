@@ -8,66 +8,61 @@
 
 <c:set var="gene" value="${reportObject.object}"/>
 
-<h3>Orthologous gene (Bi-directional Best Hit)</h3>
-<c:choose>
-	<c:when test="${empty orthologs}">
-		<p style="margin: 10px;">No orthologous gene.</p>
-	</c:when>
-	<c:otherwise>
-		<table>
-		<thead>
+<h3>Homology</h3>
+<table>
+	<thead>
+		<tr><th colspan="4"><p style="margin-top: 10px; color: #000000; font-weight: bold;">Bi-directional Best Hit</b></th></tr>
 		<tr>
 			<th>Organism</th>
 			<th>DB Identifier</th>
 			<th>Symbol</th>
+			<th>&nbsp;&nbsp;</th>
 		</tr>
-		</thead>
-		<tbody>
-				<c:forEach var="entry" items="${orthologs}">
-					<tr>
-						<td><a href="report.do?id=${entry.organism.id}">${entry.organism.name}</a></td>
-						<td><a href="report.do?id=${entry.id}">${entry.primaryIdentifier}</a></td>
-						<td><a href="report.do?id=${entry.id}">${entry.symbol}</a></td>
-					</tr>
-				</c:forEach>
-		</tbody>
-		</table>
-	</c:otherwise>
-</c:choose>
-<br/>
-<h3>KEGG Orthology (KO)</h3>
-<c:choose>
-	<c:when test="${empty gene.keggOrthology}">
-    	<p style="margin: 10px;">No KO annotation.</p>
-	</c:when>
-	<c:otherwise>
+	</thead>
+	<tbody>
+	<c:choose>
+		<c:when test="${empty orthologs}">
+			<tr><td colspan="4"><p style="margin: 10px;">No orthologous gene.</p></td></tr>
+		</c:when>
+		<c:otherwise>
+			<c:forEach var="entry" items="${orthologs}">
+				<tr>
+					<td><a href="report.do?id=${entry.organism.id}">${entry.organism.name}</a></td>
+					<td><a href="report.do?id=${entry.id}">${entry.primaryIdentifier}</a></td>
+					<td><a href="report.do?id=${entry.id}">${entry.symbol}</a></td>
+					<td>&nbsp;&nbsp;</td>
+				</tr>
+			</c:forEach>
+		</c:otherwise>
+	</c:choose>
+	</tbody>
 
-		<table>
-		<c:forEach var="koEntry" items="${koSet}">
-		<thead>
-			<tr>
-				<th><a href="report.do?id=${koEntry.id}">${fn:substringAfter(koEntry.identifier, ":")}</a></th>
-			</tr>
-		</thead>
-		<tbody>
-	    	<tr>
-	    		<td style="padding-left: 16px; padding-bottom: 12px;">
-	    			<c:forTokens var="type" items="paralogue orthologue" delims=" ">
-	    				<c:if test="${!empty koMap[koEntry][type]}"> 
-	    				<div><b>${type}</b><br/>
-			    			<c:forEach var="sample" items="${koMap[koEntry][type]}" varStatus="status">
-			    				<a href="report.do?id=${sample.id}" title="${sample.organism.shortName}">${sample.primaryIdentifier} (${sample.symbol})</a><c:if test="${status.count < fn:length(koMap[koEntry][type])}">, </c:if> 
-			    			</c:forEach>
-		    			</div>
-		    			</c:if>
-	    			</c:forTokens>
-	    		</td>
-	    	</tr>
-		</tbody>
-		</c:forEach>
-		</table>
-		
-	</c:otherwise>
-</c:choose>
+	<thead>
+		<tr><th colspan="4"><p style="margin-top: 10px; color: #000000; font-weight: bold;">Other homology annotations</p></th></tr>
+		<tr>
+			<th>Organism</th>
+			<th>DB Identifier</th>
+			<th>Symbol</th>
+			<th>Source</th>
+		</tr>
+	</thead>
+	<tbody>
+	<c:choose>
+		<c:when test="${empty gene.homology}">
+			<tr><td colspan="4"><p style="margin: 10px;">No information.</p></td></tr>
+		</c:when>
+		<c:otherwise>
+			<c:forEach var="homologEntry" items="${retHomologyList}">
+    			<tr>
+		    		<td><a href="report.do?id=${homologEntry.organism.id}">${homologEntry.organism.name}</a></td>
+		    		<td><a href="report.do?id=${homologEntry.id}">${homologEntry.primaryIdentifier}</a></td>
+		    		<td><a href="report.do?id=${homologEntry.id}">${homologEntry.symbol}</a></td>
+		    		<td>${retHomologyMap[homologEntry]}</td>
+	    		</tr>
+			</c:forEach>
+		</c:otherwise>
+	</c:choose>
+	</tbody>
+</table>
 
 </div>

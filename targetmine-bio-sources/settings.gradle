@@ -167,3 +167,9 @@ include ':bio-source-tm-uniprot'
 project(':bio-source-tm-uniprot').projectDir = new File(settingsDir, './tm-uniprot')
 include ':bio-source-wwpdb'
 project(':bio-source-wwpdb').projectDir = new File(settingsDir, './wwpdb')
+include ':bio-source-gene-orthologs'
+project(':bio-source-gene-orthologs').projectDir = new File(settingsDir, './gene-orthologs')
+include ':bio-source-tm-homologene'
+project(':bio-source-tm-homologene').projectDir = new File(settingsDir, './tm-homologene')
+include ':bio-source-ortholog-info'
+project(':bio-source-ortholog-info').projectDir = new File(settingsDir, './ortholog-info')

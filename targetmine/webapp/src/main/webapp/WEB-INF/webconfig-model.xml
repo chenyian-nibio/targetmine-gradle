@@ -255,7 +255,7 @@
       <fieldconfig fieldExpr="identifier"/>
       <fieldconfig fieldExpr="originalId"/>
       <fieldconfig fieldExpr="name"/>
-      <fieldconfig fieldExpr="inchiKey"/>
+      <fieldconfig fieldExpr="inchiKey" showInSummary="false"/>
     </fields>
   </class>
   
@@ -351,7 +351,7 @@
       <fieldconfig fieldExpr="name" />
     </fields>
   </class>
-  <class className="org.intermine.model.bio.KeggOrthology">
+  <class className="org.intermine.model.bio.Homology">
     <fields>
       <fieldconfig fieldExpr="identifier"/>
     </fields>
@@ -499,6 +499,7 @@
         </titles>
     </headerconfig>
     <fields>
+      <fieldconfig fieldExpr="identifier"/>
       <fieldconfig fieldExpr="genericName"/>
       <fieldconfig fieldExpr="drugBankId"/>
       <fieldconfig fieldExpr="keggDrugId"/>
@@ -895,7 +896,7 @@
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.HomologInfoDisplayer"
                      jspName="model/homologInfoDisplayer.jsp"
-                     replacesFields="keggOrthology"
+                     replacesFields="homology"
                      placement="Genes"
                      types="Gene"/>
 
