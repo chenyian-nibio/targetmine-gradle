@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="ChemblCompound" extends="Compound" is-interface="true">
+		<collection name="mechanisms" referenced-type="DrugMechanism" reverse-reference="compound"/>
+	</class>
+
+	<class name="Compound" is-interface="true">
+		<attribute name="originalId" type="java.lang.String"/>
+	</class>
+
+	<class name="Protein" is-interface="true">
+		<collection name="mechanisms" referenced-type="DrugMechanism" reverse-reference="target"/>
+	</class>
+
+	<class name="DrugMechanism" is-interface="true">
+		<attribute name="action" type="java.lang.String"/>
+		<attribute name="actionType" type="java.lang.String"/>
+		<attribute name="targetClass" type="java.lang.String"/>
+		<reference name="compound" referenced-type="ChemblCompound" reverse-reference="mechanisms"/>
+		<reference name="target" referenced-type="Protein" reverse-reference="mechanisms"/>
+		<collection name="references" referenced-type="Reference"/>
+	</class>
+
+	<class name="Reference" is-interface="true">
+		<attribute name="source" type="java.lang.String"/>
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="url" type="java.lang.String"/>
+		<reference name="publication" referenced-type="Publication"/>
+	</class>
+
+</classes>

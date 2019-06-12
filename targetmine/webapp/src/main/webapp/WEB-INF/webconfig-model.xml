@@ -417,6 +417,35 @@
     </fields>
   </class>
 
+  <class className="org.intermine.model.bio.Indication">
+    <fields>
+      <fieldconfig fieldExpr="title" />
+      <fieldconfig fieldExpr="maxPhase" />
+      <fieldconfig fieldExpr="compound.originalId" />
+      <fieldconfig fieldExpr="compound.name" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.DrugMechanism">
+    <fields>
+      <fieldconfig fieldExpr="action" />
+      <fieldconfig fieldExpr="actionType" />
+      <fieldconfig fieldExpr="targetClass" />
+      <fieldconfig fieldExpr="compound.originalId" />
+      <fieldconfig fieldExpr="compound.name" />
+      <fieldconfig fieldExpr="target.primaryAccession" />
+      <fieldconfig fieldExpr="target.geneSymbol" />
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Reference">
+    <fields>
+      <fieldconfig fieldExpr="source" />
+      <fieldconfig fieldExpr="identifier" doNotTruncate="true" showInResults="false" showInInlineCollection="false" showInSummary="false" />
+      <fieldconfig fieldExpr="url" doNotTruncate="true" showInResults="false" showInInlineCollection="false" showInSummary="false" />
+    </fields>
+  </class>
+
   <class className="org.intermine.model.bio.Enzyme">
     <fields>
       <fieldconfig fieldExpr="ecNumber"/>
@@ -1020,6 +1049,11 @@
                      replacesFields="diseases, geneDiseasePairs" 
                      placement="Disease"
                      types="Gene"/>
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
+                     jspName="model/chemblReferenceDisplayer.jsp"
+                     replacesFields="references" 
+                     types="Indication, DrugMechanism"/>
 
   </reportdisplayers>
 

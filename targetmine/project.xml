@@ -347,6 +347,12 @@
     <source name="chembl-protein" type="chembl-protein">
       <property name="source.db.name" value="chembl-psql"/>
     </source>
+    <source name="chembl-ind" type="chembl-indication">
+      <property name="source.db.name" value="chembl-psql"/>
+    </source>
+    <source name="chembl-mec" type="chembl-mechanism">
+      <property name="source.db.name" value="chembl-psql"/>
+    </source>
     
     <source name="irefindex" type="irefindex">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>

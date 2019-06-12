@@ -4,8 +4,7 @@
 		<attribute name="pubMedId" type="java.lang.String"/>
 		<collection name="meshTerms" referenced-type="MeshTerm" reverse-reference="publications" />
 	</class>
-	<class name="MeshTerm" is-interface="true">
-		<attribute name="identifier" type="java.lang.String"/>
+	<class name="MeshTerm" extends="OntologyTerm" is-interface="true">
 		<collection name="publications" referenced-type="Publication" reverse-reference="meshTerms"/>
 	</class>
 

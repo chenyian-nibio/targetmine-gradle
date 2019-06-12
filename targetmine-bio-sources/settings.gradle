@@ -173,3 +173,7 @@ include ':bio-source-tm-homologene'
 project(':bio-source-tm-homologene').projectDir = new File(settingsDir, './tm-homologene')
 include ':bio-source-ortholog-info'
 project(':bio-source-ortholog-info').projectDir = new File(settingsDir, './ortholog-info')
+include ':bio-source-chembl-indication'
+project(':bio-source-chembl-indication').projectDir = new File(settingsDir, './chembl-indication')
+include ':bio-source-chembl-mechanism'
+project(':bio-source-chembl-mechanism').projectDir = new File(settingsDir, './chembl-mechanism')

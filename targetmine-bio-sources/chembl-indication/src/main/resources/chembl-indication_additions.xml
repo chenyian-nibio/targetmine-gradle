@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="ChemblCompound" extends="Compound" is-interface="true">
+		<collection name="indications" referenced-type="Indication" reverse-reference="compound"/>
+	</class>
+
+	<class name="Compound" is-interface="true">
+		<attribute name="originalId" type="java.lang.String"/>
+	</class>
+
+	<class name="Indication" is-interface="true">
+		<attribute name="title" type="java.lang.String"/>
+		<attribute name="maxPhase" type="java.lang.Integer"/>
+		<reference name="compound" referenced-type="ChemblCompound" reverse-reference="indications"/>
+		<collection name="ontologyTerms" referenced-type="OntologyTerm"/>
+		<collection name="references" referenced-type="Reference"/>
+	</class>
+
+	<class name="Reference" is-interface="true">
+		<attribute name="source" type="java.lang.String"/>
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="url" type="java.lang.String"/>
+		<reference name="publication" referenced-type="Publication"/>
+	</class>
+
+	<class name="EFOTerm" extends="OntologyTerm" is-interface="true"/>
+
+	<class name="MeshTerm" extends="OntologyTerm" is-interface="true"/>
+
+</classes>
