@@ -8,7 +8,9 @@
 	</class>
 	<class name="Activity" is-interface="true">
 		<attribute name="type" type="java.lang.String"/>
+		<attribute name="relation" type="java.lang.String"/>
 		<attribute name="conc" type="java.lang.Float"/>
+		<attribute name="unit" type="java.lang.String"/>
 		<reference name="interaction" referenced-type="CompoundProteinInteraction" reverse-reference="activities"/>
 		<reference name="assay" referenced-type="CompoundProteinInteractionAssay" reverse-reference="activities"/>
 	</class>

@@ -401,7 +401,9 @@
       <fieldconfig fieldExpr="interaction.protein.primaryAccession" showInSummary="false"/>
       <fieldconfig fieldExpr="interaction.compound.identifier" showInSummary="false"/>
       <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="relation"/>
       <fieldconfig fieldExpr="conc"/>
+      <fieldconfig fieldExpr="unit"/>
       <fieldconfig fieldExpr="assay.name" showInSummary="false"/>
       <fieldconfig fieldExpr="assay.source" showInSummary="false"/>
     </fields>

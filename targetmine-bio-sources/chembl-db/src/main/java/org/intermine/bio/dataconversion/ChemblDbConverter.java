@@ -234,7 +234,8 @@ public class ChemblDbConverter extends BioDBConverter {
 
 		// query all interactions with activities 
 		String queryInteraction = " select distinct md.chembl_id, "
-				+ " act.standard_type, act.standard_value, cseq.accession, cseq.tax_id, docs.pubmed_id, "
+				+ " act.standard_type, act.standard_relation, act.standard_value, act.standard_units, "
+				+ " cseq.accession, cseq.tax_id, docs.pubmed_id, "
 				+ " ass.chembl_id as assay_id, ass.description, ass.assay_type, ass.confidence_score " 
 				+ " from activities as act "
 				+ " join molecule_dictionary as md on md.molregno=act.molregno "
@@ -246,8 +247,7 @@ public class ChemblDbConverter extends BioDBConverter {
 				+ " where ass.confidence_score >= 4 "
 				+ " and td.target_type = 'SINGLE PROTEIN' "
 				+ " and act.standard_type in ('IC50','Kd','Ki','EC50','AC50') "
-				+ " and act.standard_relation = '=' "
-				+ " and act.standard_units = 'nM' ";
+				+ " and act.standard_units is not null ";
 		ResultSet resInteraction = stmt.executeQuery(queryInteraction);
 		int i = 0;
 		while (resInteraction.next()) {
@@ -255,7 +255,12 @@ public class ChemblDbConverter extends BioDBConverter {
 			String uniprotId = resInteraction.getString("accession");
 			String pubmedId = String.valueOf(resInteraction.getInt("pubmed_id"));
 			String standardType = resInteraction.getString("standard_type");
+			String standardRelation = resInteraction.getString("standard_relation");
+			if (standardRelation == null || standardRelation.equals("")) {
+				standardRelation = "=";
+			}
 			float conc = resInteraction.getFloat("standard_value");
+			String standardUnit = resInteraction.getString("standard_units");
 			String assayId = resInteraction.getString("assay_id");
 			String assayDesc = resInteraction.getString("description");
 			String assayType = assayTypeMap.get(resInteraction.getString("assay_type"));
@@ -289,7 +294,9 @@ public class ChemblDbConverter extends BioDBConverter {
 
 			Item activity = createItem("Activity");
 			activity.setAttribute("type", standardType);
+			activity.setAttribute("relation", standardRelation);
 			activity.setAttribute("conc", String.valueOf(conc));
+			activity.setAttribute("unit", standardUnit);
 			activity.setReference("assay", assayRef);
 			activity.setReference("interaction", interactionRef);
 			store(activity);
