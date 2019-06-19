@@ -129,14 +129,15 @@ public class OrphanetConverter extends BioFileConverter {
 			return false;
 		}
 		
-		if( ! this.geneSymbolMap.containsKey(geneSymbol) ) {
-			// If Entrez Gene ID doesn't exist for this symbol, we should skip this gene
+		String geneId = geneSymbolMap.get(geneSymbol);
+		// If Entrez Gene ID doesn't exist for this symbol, we should skip this gene
+		if (geneId == null) {
 			return false;
 		}
 		
 		Item item = createItem("Disease");
 		item.setAttribute( "associationType", associationType );
-		item.setReference( "gene", getGene( geneSymbol ) );
+		item.setReference( "gene", getGene(geneId) );
 		item.setReference( "diseaseTerm", diseaseTerm );
 		setPublications( item, sourceOfValidation );
 		
@@ -171,59 +172,46 @@ public class OrphanetConverter extends BioFileConverter {
 		
 	}
 	
-	private String getGene( String geneSymbol ) throws ObjectStoreException {
-		
-		String ret = geneMap.get( geneSymbol );
+	private String getGene(String geneId) throws ObjectStoreException {
+		String ret = geneMap.get(geneId);
 		if (ret == null) {
-			Item item = createItem( "Gene" );
-			item.setAttribute( "primaryIdentifier", this.geneSymbolMap.get( geneSymbol ) );
-			item.setAttribute( "ncbiGeneId", this.geneSymbolMap.get( geneSymbol ) );
-			item.setAttribute( "symbol", geneSymbol );
-			item.setReference( "organism", getOrganism( HOMO_SAPIENS_TAXON_ID ) );
+			Item item = createItem("Gene");
+			item.setAttribute("primaryIdentifier", geneId);
+			item.setReference("organism", getOrganism(HOMO_SAPIENS_TAXON_ID));
 			store(item);
 			ret = item.getIdentifier();
-			geneMap.put( geneSymbol, ret );
+			geneMap.put(geneId, ret);
 		}
 		return ret;
-		
 	}
 	
 	public String getDataSetTitle(String taxonId) {
-		
 		return DATASET_TITLE;
-		
 	}
 	
 	private void parseHumanGeneInfoFile() throws FileNotFoundException, IOException {
-		
-		Iterator<String[]> humanGeneInfoIterator = FormattedTextParser.parseTabDelimitedReader( new FileReader( this.humanGeneInfoFile ) );
-		int rowCount = 0;
-		while( humanGeneInfoIterator.hasNext() ) {
-			
-			rowCount += 1;
-			if( rowCount == 1 ) {
-				// Skip header
-				continue;
-			}			
-			
+
+		Iterator<String[]> humanGeneInfoIterator = FormattedTextParser
+				.parseTabDelimitedReader(new FileReader(this.humanGeneInfoFile));
+		while (humanGeneInfoIterator.hasNext()) {
 			String[] humanGeneInfoRow = humanGeneInfoIterator.next();
-			
-			if( humanGeneInfoRow.length < 16 ) {
+
+			if (humanGeneInfoRow.length < 16) {
 				continue;
 			}
-			
-			String idColumn = humanGeneInfoRow[ 1 ];
-			String symbolColumn = humanGeneInfoRow[ 2 ];
-			
-			if( idColumn == null || symbolColumn == null ) {
-				
+
+			String idColumn = humanGeneInfoRow[1];
+			// to prevent unofficial symbol happened, use Symbol_from_nomenclature_authority
+			// instead
+			String symbolColumn = humanGeneInfoRow[10];
+
+			if (idColumn == null || symbolColumn == null) {
 				continue;
-				
 			}
-			geneSymbolMap.put( symbolColumn, idColumn );
-			
+			geneSymbolMap.put(symbolColumn, idColumn);
+
 		}
-		
+
 	}
 	
 	private void parseOrdoOwlFile() throws IOException, ValidityException, ParsingException, ObjectStoreException {
@@ -311,16 +299,12 @@ public class OrphanetConverter extends BioFileConverter {
 		
 	}
 	
-	public void setHumanGeneInfoFile(File humanGeneInfoFile ) {
-		
+	public void setHumanGeneInfoFile(File humanGeneInfoFile) {
 		this.humanGeneInfoFile = humanGeneInfoFile;
-		
 	}
-	
-	public void setOrdoOwlFile(File ordoOwlFile ) {
-		
+
+	public void setOrdoOwlFile(File ordoOwlFile) {
 		this.ordoOwlFile = ordoOwlFile;
-		
 	}
 	
 }
