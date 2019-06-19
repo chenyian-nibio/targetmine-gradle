@@ -514,12 +514,6 @@
     <constraint path="Gene" editable="true" op="LOOKUP" value="6774"/>
   </query>
 </template>
-<template name="Homologue_Query" title="Gene(s) --&gt; Homologous gene(s)" comment="">
-  <query name="Homologue_Query" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.keggOrthology.genes.primaryIdentifier Gene.keggOrthology.genes.symbol Gene.keggOrthology.genes.organism.name" longDescription="Find homologous genes among human, rat and mouse." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.keggOrthology.genes" code="B" editable="false" op="!=" loopPath="Gene"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="10"/>
-  </query>
-</template>
 <template name="Gene_RelationTypeSet" title="Gene(s) + Relation type set --&gt; Downstream gene(s)" comment="">
   <query name="Gene_RelationTypeSet" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.text Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name Gene.relations.pathways.identifier" longDescription="Given a gene or a list of genes and a specific set of the relation types, find all downstream genes and the related pathways." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
     <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>

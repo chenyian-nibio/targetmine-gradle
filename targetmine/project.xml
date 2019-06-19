@@ -52,11 +52,6 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="esummary.*"/>
     </source>
-    <!-- to be added 
-    <source name="hpo" type="hpo">
-      <property name="src.data.file" location="/data/bio/db/Targetmine/hpo/hp.obo" />
-    </source>
-    -->
 
     <source name="interpro" type="interpro">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/interpro"/>
@@ -189,6 +184,8 @@
       <property name="src.data.dir.includes" value="mim2gene_medgen"/>
       <property name="titleFile" value="/data/bio/db/Targetmine/omim/omim_phenotype_title" />
     </source>
+<!-- 
+	chenyian: (2019.6.19) This part is unchecked. I cannot guarantee this part will work fine. USE FOR YOUR OWN RISK.
     <source name="gostar" type="gostar">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gostar"/>
       <property name="src.data.dir.includes" value="ACTIVITY_ASSAY.csv"/>
@@ -209,6 +206,7 @@
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="humanIdMappingFile" value="/data/bio/db/Targetmine/gobiom/HUMAN_9606_idmapping.dat" />
    </source>
+-->
 <!-- chenyian: for internal only | end -->
 
     <source name="orphanet" type="orphanet">
@@ -450,7 +448,7 @@
     </source>
 
     <source name="fill-missing-genes" type="fill-missing-genes">
-      <property name="src.data.file" location="build/genes.txt"/>
+      <property name="src.data.file" location="genes.txt"/>
     </source>
 
     <!--  do nothing but add the necessary data model for the post-processing -->
