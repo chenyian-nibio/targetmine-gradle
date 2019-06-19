@@ -34,12 +34,12 @@ public class OrthologInfoConverter extends BioFileConverter {
 	private static final String DATASET_TITLE = "Gene";
 	private static final String DATA_SOURCE_NAME = "NCBI";
 
-	private Set<Integer> taxonIds = new HashSet<Integer>();
+	private Set<String> taxonIds = new HashSet<String>();
 
 	public void setOrthologOrganisms(String idListString) {
 		String[] taxonStringIds = StringUtils.split(idListString, " ");
 		for (String string : taxonStringIds) {
-			this.taxonIds.add(Integer.valueOf(string));
+			this.taxonIds.add(string);
 		}
 		LOG.info("Setting list of organisms to " + this.taxonIds);
 		System.out.println("Setting list of organisms to " + this.taxonIds);
