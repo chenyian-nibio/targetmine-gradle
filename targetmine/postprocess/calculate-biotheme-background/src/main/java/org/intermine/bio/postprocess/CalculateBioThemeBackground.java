@@ -216,12 +216,12 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	private String getSqlQueryForGOClass(String taxonId, boolean withIEA) {
 		String sql = " select count(distinct(g.id)), got.namespace " + " from gene as g "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id=goa.ontologytermid "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' "
 				+ " and got.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ") + " and goa.qualifier is null "
 				+ " group by got.namespace ";
@@ -232,14 +232,15 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	private String getSqlQueryForGOTerm(String taxonId, String namespace, boolean withIEA) {
 		String sqlQuery = " select pgot.identifier, count(distinct(g.id)) " + " from gene as g "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id = goa.ontologytermid "
 				+ " join ontologytermparents as otp on otp.ontologyterm = got.id"
 				+ " join goterm as pgot on pgot.id = otp.parents "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and pgot.namespace = '" + namespace + "' "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and pgot.namespace = '" + namespace + "' "
 				+ " and pgot.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " and goa.qualifier is null " + (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " group by pgot.identifier ";
@@ -254,12 +255,13 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join goterm as pgot on pgot.id = otp.parents "
 				+ " where got.id in ( select got.id " + " from gene as g "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id = goa.ontologytermid "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and goa.qualifier is null  "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and goa.qualifier is null  "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " ) and pgot.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " group by pgot.namespace ";
@@ -343,8 +345,9 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join pathway as p on p.id=gp.pathways " + " join gene as g on g.id=genes "
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and ds.name = '" + dataSetName + "'"
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and ds.name = '" + dataSetName + "'"
 				+ " group by p.identifier ";
 
 		return sqlQuery;
@@ -355,8 +358,8 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join pathway as p on p.id=gp.pathways " + " join gene as g on g.id=genes "
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " ";
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' ";
 		if (dataSetName != null) {
 			sql += " and ds.name like '" + dataSetName + "'";
 		}
@@ -367,8 +370,9 @@ public class CalculateBioThemeBackground extends PostProcessor {
 		String sql = " select count(p.id), ds.name " + " from pathway as p "
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = p.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " group by ds.name ";
+				+ " join organism as org on org.id = p.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " group by ds.name ";
 		return sql;
 	}
 
@@ -422,7 +426,7 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join expression as e on e.probesetid = ps.id "
 				+ " join tissue as t on t.id=e.tissueid "
 				+ " join organism as org on org.id = g.organismid " 
-				+ " where org.taxonId = " + taxonId 
+				+ " where org.taxonId = '" + taxonId + "' " 
 				+ " and e.isexpressed = 't' " + " group by t.identifier ";
 		
 		return sqlQuery;
@@ -436,7 +440,7 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join expression as e on e.probesetid = ps.id "
 				+ " join tissue as t on t.id=e.tissueid "
 				+ " join organism as org on org.id = g.organismid " 
-				+ " where org.taxonId =  " + taxonId 
+				+ " where org.taxonId = '" + taxonId + "' " 
 				+ " and e.isexpressed = 't' ";
 		return sql;
 	}
@@ -447,7 +451,7 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join expression as e on e.probesetid = ps.id " 
 				+ " join tissue as t on t.id=e.tissueid "
 				+ " join organism as org on org.id = ps.organismid " 
-				+ " where org.taxonId = " + taxonId + " ";
+				+ " where org.taxonId = '" + taxonId + "' ";
 		return sql;
 	}
 	
@@ -567,13 +571,13 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	private String getSqlQueryForGOSlimClassOfGene(String taxonId, boolean withIEA) {
 		String sql = " select count(distinct(g.id)), gost.namespace " + " from gene as g "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' "
 				+ " and gost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ") + " and goa.qualifier is null "
 				+ " group by gost.namespace ";
@@ -584,15 +588,16 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	private String getSqlQueryForGOSlimTermOfGene(String taxonId, String namespace, boolean withIEA) {
 		String sqlQuery = " select pgost.identifier, count(distinct(g.id)) " + " from gene as g "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
 				+ " join ontologytermparents as otp on otp.ontologyterm = gost.id "
 				+ " join goslimterm as pgost on pgost.id = otp.parents "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and pgost.namespace = '" + namespace + "' "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and pgost.namespace = '" + namespace + "' "
 				+ " and pgost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " and goa.qualifier is null " + (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " group by pgost.identifier ";
@@ -607,13 +612,14 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join goslimterm as pgost on pgost.id = otp.parents " + " where gost.id in ( "
 				+ " select gost.id " + " from gene as g "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and goa.qualifier is null "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and goa.qualifier is null "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " ) and pgost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " group by pgost.namespace ";
@@ -694,8 +700,9 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join probeset as ps on ps.id = gps.probesets"
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and ds.name = '" + dataSetName + "'"
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and ds.name = '" + dataSetName + "'"
 				+ " group by p.identifier ";
 
 		return sqlQuery;
@@ -708,8 +715,8 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join probeset as ps on ps.id = gps.probesets"
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " ";
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' ";
 		if (dataSetName != null) {
 			sql += " and ds.name = '" + dataSetName + "'";
 		}
@@ -835,12 +842,12 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesprobesets as gps on gps.genes = g.id " 
 				+ " join probeset as ps on ps.id = gps.probesets"
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id=goa.ontologytermid "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' "
 				+ " and got.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ") + " and goa.qualifier is null "
 				+ " group by got.namespace ";
@@ -853,14 +860,15 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesprobesets as gps on gps.genes = g.id " 
 				+ " join probeset as ps on ps.id = gps.probesets"
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id = goa.ontologytermid "
 				+ " join ontologytermparents as otp on otp.ontologyterm = got.id"
 				+ " join goterm as pgot on pgot.id = otp.parents "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and pgot.namespace = '" + namespace + "' "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and pgot.namespace = '" + namespace + "' "
 				+ " and pgot.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " and goa.qualifier is null " + (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " group by pgot.identifier ";
@@ -941,8 +949,9 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join protein as pr on pr.id = gpr.proteins "
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and ds.name = '" + dataSetName + "'"
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and ds.name = '" + dataSetName + "'"
 				+ " group by p.identifier ";
 		
 		return sqlQuery;
@@ -955,8 +964,8 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join protein as pr on pr.id = gpr.proteins "
 				+ " join datasetspathway as dsp on dsp.pathway = p.id "
 				+ " join dataset as ds on ds.id = dsp.datasets "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " ";
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' ";
 		if (dataSetName != null) {
 			sql += " and ds.name like '" + dataSetName + "'";
 		}
@@ -1082,12 +1091,12 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesproteins as gpr on gpr.genes = g.id "
 				+ " join protein as pr on pr.id = gpr.proteins "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id=goa.ontologytermid "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' "
 				+ " and got.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ") + " and goa.qualifier is null "
 				+ " group by got.namespace ";
@@ -1100,14 +1109,15 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesproteins as gpr on gpr.genes = g.id "
 				+ " join protein as pr on pr.id = gpr.proteins "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goterm as got on got.id = goa.ontologytermid "
 				+ " join ontologytermparents as otp on otp.ontologyterm = got.id"
 				+ " join goterm as pgot on pgot.id = otp.parents "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and pgot.namespace = '" + namespace + "' "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and pgot.namespace = '" + namespace + "' "
 				+ " and pgot.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " and goa.qualifier is null " + (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " group by pgot.identifier ";
@@ -1234,13 +1244,13 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesproteins as gpr on gpr.genes = g.id "
 				+ " join protein as pr on pr.id = gpr.proteins "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' "
 				+ " and gost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ") + " and goa.qualifier is null "
 				+ " group by gost.namespace ";
@@ -1254,15 +1264,16 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesproteins as gpr on gpr.genes = g.id "
 				+ " join protein as pr on pr.id = gpr.proteins "
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
 				+ " join ontologytermparents as otp on otp.ontologyterm = gost.id "
 				+ " join goslimterm as pgost on pgost.id = otp.parents "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and pgost.namespace = '" + namespace + "' "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and pgost.namespace = '" + namespace + "' "
 				+ " and pgost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " and goa.qualifier is null " + (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " group by pgost.identifier ";
@@ -1389,13 +1400,13 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesprobesets as gps on gps.genes = g.id " 
 				+ " join probeset as ps on ps.id = gps.probesets"
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' "
 				+ " and gost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ (withIEA ? "" : " and goec.code <> 'IEA' ") + " and goa.qualifier is null "
 				+ " group by gost.namespace ";
@@ -1409,15 +1420,16 @@ public class CalculateBioThemeBackground extends PostProcessor {
 				+ " join genesprobesets as gps on gps.genes = g.id " 
 				+ " join probeset as ps on ps.id = gps.probesets"
 				+ " join goannotation as goa on goa.subjectid = g.id "
-				+ " join evidencegoannotation as egoa on egoa.goannotation = goa.id "
+				+ " join evidenceontologyannotation as egoa on egoa.ontologyannotation = goa.id "
 				+ " join goevidence as goe on goe.id = egoa.evidence "
 				+ " join goevidencecode as goec on goec.id = goe.codeid "
 				+ " join goannotationgoslimterms as gogos on gogos.goannotation = goa.id "
 				+ " join goslimterm as gost on gost.id = gogos.goslimterms "
 				+ " join ontologytermparents as otp on otp.ontologyterm = gost.id "
 				+ " join goslimterm as pgost on pgost.id = otp.parents "
-				+ " join organism as org on org.id = g.organismid " + " where org.taxonId = "
-				+ taxonId + " " + " and pgost.namespace = '" + namespace + "' "
+				+ " join organism as org on org.id = g.organismid " 
+				+ " where org.taxonId = '" + taxonId + "' " 
+				+ " and pgost.namespace = '" + namespace + "' "
 				+ " and pgost.identifier not in ('GO:0008150','GO:0003674','GO:0005575') "
 				+ " and goa.qualifier is null " + (withIEA ? "" : " and goec.code <> 'IEA' ")
 				+ " group by pgost.identifier ";

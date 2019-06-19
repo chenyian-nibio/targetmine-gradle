@@ -5,11 +5,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,31 +26,27 @@ import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.metadata.StringUtil;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 import org.intermine.xml.full.ReferenceList;
 
 /**
- * NOTE: modified from InterMine go-annotation source <br/>
- * DataConverter to parse a go annotation file into Items. *
+ * This is a customized version of GoConverter.java from InterMine go-annotation source  
+ * which incorporates GOSlim annotations.
  * 
  * @author Andrew Varley
  * @author Peter Mclaren - some additions to record the parents of a go term.
  * @author Julie Sullivan - updated to handle GAF 2.0
  * @author Xavier Watkins - refactored model
- * @author chenyian - add GoSlim
+ * @author chenyian - GOSlim part
  */
 public class GoGoslimConverter extends BioFileConverter {
-	// protected static final String PROP_FILE = "go-annotation_config.properties";
-
-	// configuration maps
-	// private Map<String, Config> configs = new HashMap<String, Config>();
 	private static final Map<String, String> WITH_TYPES = new LinkedHashMap<String, String>();
 
 	// maps retained across all files
 	protected Map<String, String> goTerms = new LinkedHashMap<String, String>();
 	private Map<String, String> evidenceCodes = new LinkedHashMap<String, String>();
 	private Map<String, String> publications = new LinkedHashMap<String, String>();
-	// private Map<String, Item> organisms = new LinkedHashMap<String, Item>();
 	protected Map<String, String> bioentityMap = new LinkedHashMap<String, String>();
 
 	// maps renewed for each file
@@ -66,7 +66,6 @@ public class GoGoslimConverter extends BioFileConverter {
 	// chenyian
 	private static final String DATASET_TITLE = "UniProt-GOA";
 	private static final String DATA_SOURCE_NAME = "UniProt";
-	private boolean excludeComputational = false;
 
 	private Map<String, Set<String>> goGoslimMap = new HashMap<String, Set<String>>();
 	private Map<String, String> goSlimTerms = new HashMap<String, String>();
@@ -86,6 +85,7 @@ public class GoGoslimConverter extends BioFileConverter {
 		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
 		productCollectionsMap = new LinkedHashMap<Integer, List<String>>();
 		storedProductIds = new HashMap<String, Integer>();
+		loadEvidenceCodes();
 	}
 
 	// TODO chenyian: testing...
@@ -136,16 +136,6 @@ public class GoGoslimConverter extends BioFileConverter {
 			String annotationExtension = null;
 			if (array.length >= 16) {
 				annotationExtension = array[15];
-			}
-			if (StringUtils.isNotEmpty(strEvidence)) {
-				// chenyian: skip IEA annotation
-				if (excludeComputational && strEvidence.equals("IEA")) {
-					continue;
-				}
-				storeEvidenceCode(strEvidence);
-			} else {
-				throw new IllegalArgumentException("Evidence is a required column but not "
-						+ "found for goterm " + goId + " and productId " + productId);
 			}
 
 			String type = ANNOTATION_TYPE;
@@ -445,15 +435,6 @@ public class GoGoslimConverter extends BioFileConverter {
 		return ret;
 	}
 
-	private void storeEvidenceCode(String code) throws ObjectStoreException {
-		if (evidenceCodes.get(code) == null) {
-			Item item = createItem("GOEvidenceCode");
-			item.setAttribute("code", code);
-			evidenceCodes.put(code, item.getIdentifier());
-			store(item);
-		}
-	}
-
 	private String newPublication(String codes) throws ObjectStoreException {
 		String pubRefId = null;
 		Item item = null;
@@ -620,6 +601,27 @@ public class GoGoslimConverter extends BioFileConverter {
 			toStringBuff.append(qualifier);
 
 			return toStringBuff.toString();
+		}
+	}
+	
+	// this part is borrow from InterMine's implementation
+	protected static final String EVIDENCE_CODES_FILE = "go-evidence-codes";
+	private void loadEvidenceCodes()
+			throws URISyntaxException, FileNotFoundException, IOException, ObjectStoreException {
+		InputStream is = getClass().getClassLoader().getResourceAsStream(EVIDENCE_CODES_FILE);
+		Iterator<String[]> lineIter = FormattedTextParser.parseTabDelimitedReader(new InputStreamReader(is));
+		while (lineIter.hasNext()) {
+			String[] line = (String[]) lineIter.next();
+			String code = line[0];
+			String name = line[1];
+			String url = line[2];
+
+			Item item = createItem("GOEvidenceCode");
+			item.setAttribute("code", code);
+			item.setAttribute("name", name);
+			item.setAttribute("url", url);
+			evidenceCodes.put(code, item.getIdentifier());
+			store(item);
 		}
 	}
 
