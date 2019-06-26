@@ -21,18 +21,18 @@ import org.intermine.web.logic.results.ReportObject;
 
 public class HomologInfoDisplayer extends ReportDisplayer {
 	protected static final Logger LOG = Logger.getLogger(HomologInfoDisplayer.class);
-	private static final Map<Integer, Integer> ORGANISM_ORDER_MAP = new HashMap<Integer, Integer>();
+	private static final Map<String, Integer> ORGANISM_ORDER_MAP = new HashMap<String, Integer>();
 	{
-		ORGANISM_ORDER_MAP.put(9606, 1);
-		ORGANISM_ORDER_MAP.put(10116, 2);
-		ORGANISM_ORDER_MAP.put(10090, 3);
-		ORGANISM_ORDER_MAP.put(9483, 4);
-		ORGANISM_ORDER_MAP.put(9541, 5);
-		ORGANISM_ORDER_MAP.put(9544, 6);
-		ORGANISM_ORDER_MAP.put(9615, 7);
-		ORGANISM_ORDER_MAP.put(9986, 8);
-		ORGANISM_ORDER_MAP.put(7955, 9);
-		ORGANISM_ORDER_MAP.put(7227, 10);
+		ORGANISM_ORDER_MAP.put("9606", 1);
+		ORGANISM_ORDER_MAP.put("10116", 2);
+		ORGANISM_ORDER_MAP.put("10090", 3);
+		ORGANISM_ORDER_MAP.put("9483", 4);
+		ORGANISM_ORDER_MAP.put("9541", 5);
+		ORGANISM_ORDER_MAP.put("9544", 6);
+		ORGANISM_ORDER_MAP.put("9615", 7);
+		ORGANISM_ORDER_MAP.put("9986", 8);
+		ORGANISM_ORDER_MAP.put("7955", 9);
+		ORGANISM_ORDER_MAP.put("7227", 10);
 	}
 	private static final Map<String, String> DATA_SET_DISPLAY_NAME_MAP = new HashMap<String, String>();
 	{
@@ -120,17 +120,20 @@ public class HomologInfoDisplayer extends ReportDisplayer {
 				@Override
 				public int compare(InterMineObject o1, InterMineObject o2) {
 					try {
-						Integer taxonId1 = (Integer) ((InterMineObject) o1
+						String taxonId1 = (String) ((InterMineObject) o1
 								.getFieldValue("organism")).getFieldValue("taxonId");
-						Integer taxonId2 = (Integer) ((InterMineObject) o2
+						String taxonId2 = (String) ((InterMineObject) o2
 								.getFieldValue("organism")).getFieldValue("taxonId");
-						LOG.info(String.format("taxonId1: %d, taxonId2: %d", taxonId1, taxonId2));
-						LOG.info(String.format("taxonId1_idx: %d, taxonId2_idx: %d",
-								ORGANISM_ORDER_MAP.get(taxonId1),
-								ORGANISM_ORDER_MAP.get(taxonId2)));
-						if (ORGANISM_ORDER_MAP.get(taxonId1)
-								.equals(ORGANISM_ORDER_MAP.get(taxonId2))) {
-							return taxonId1.compareTo(taxonId2);
+//						LOG.info(String.format("taxonId1: %d, taxonId2: %d", taxonId1, taxonId2));
+//						LOG.info(String.format("taxonId1_idx: %d, taxonId2_idx: %d",
+//								ORGANISM_ORDER_MAP.get(taxonId1),
+//								ORGANISM_ORDER_MAP.get(taxonId2)));
+						if (taxonId1.equals(taxonId2)) {
+							// if same organism, sort by gene id
+							String id1 = (String) o1.getFieldValue("primaryIdentifier");
+							String id2 = (String) o2.getFieldValue("primaryIdentifier");
+							// gene ids are integer
+							return Integer.valueOf(id1).compareTo(Integer.valueOf(id2));
 						} else {
 							return ORGANISM_ORDER_MAP.get(taxonId1)
 									.compareTo(ORGANISM_ORDER_MAP.get(taxonId2));

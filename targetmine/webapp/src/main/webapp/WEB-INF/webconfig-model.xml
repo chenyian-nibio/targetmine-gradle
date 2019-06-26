@@ -434,7 +434,7 @@
       <fieldconfig fieldExpr="compound.originalId" />
       <fieldconfig fieldExpr="compound.name" />
       <fieldconfig fieldExpr="target.primaryAccession" />
-      <fieldconfig fieldExpr="target.geneSymbol" />
+      <fieldconfig fieldExpr="target.symbol" />
     </fields>
   </class>
 
@@ -754,7 +754,7 @@
   <class className="org.intermine.model.bio.Allele">
     <fields>
       <fieldconfig fieldExpr="identifier"/>
-      <fieldconfig fieldExpr="type"/>
+      <fieldconfig fieldExpr="variantType"/>
       <fieldconfig fieldExpr="name"/>
       <fieldconfig fieldExpr="clinicalSignificance"/>
       <fieldconfig fieldExpr="reviewStatus"/>

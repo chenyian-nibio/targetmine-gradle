@@ -33,7 +33,7 @@
         <br/>
 
         <!-- powered -->
-        <p>Powered by</p>
+        <p style="text-align: center;">Powered by</p>
         <a target="new" href="http://intermine.org" title="InterMine">
             <img src="/${WEB_PROPERTIES['webapp.path']}/images/icons/intermine-footer-logo.png" alt="InterMine logo" />
 		    &nbsp;<span style="font-style: italic; color: #666"><fmt:message key="im.version" /></span>
