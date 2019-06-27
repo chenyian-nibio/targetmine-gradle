@@ -11,144 +11,11 @@
     <constraint path="Gene" editable="true" description="" op="LOOKUP" value="3633"/>
   </query>
 </template>
-<template name="Drug_Protein" title="Drug(s) --&gt; Target proteins" comment="">
-  <query name="Drug_Protein" model="genomic" view="DrugBankInteraction.compound.identifier DrugBankInteraction.compound.name DrugBankInteraction.actions.type DrugBankInteraction.protein.primaryAccession DrugBankInteraction.protein.name DrugBankInteraction.protein.organism.name" longDescription="Given a drug compound or a list of drug compounds, find all target proteins." sortOrder="DrugBankInteraction.compound.identifier desc">
-    <constraint path="DrugBankInteraction.compound" editable="true" op="LOOKUP" value="Levomilnacipran"/>
-  </query>
-</template>
-<template name="TF_DownstreamGene" title="Transcription factor(s) --&gt; Downstream targets" comment="">
-  <query name="TF_DownstreamGene" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.transcriptionalRegulations.targetGene.primaryIdentifier Gene.transcriptionalRegulations.targetGene.symbol Gene.transcriptionalRegulations.targetGene.name Gene.transcriptionalRegulations.dataSets.name" longDescription="Given a transcription factor or a list of transcription factors, retrieve all downstream targeted genes compiled by the public resources (AMADEUS, ORegAnno and HtriDB)." sortOrder="Gene.primaryIdentifier asc" constraintLogic="B and A">
-    <constraint path="Gene.transcriptionalRegulations.dataSets.name" code="B" editable="false" description="" op="!=" value="ENCODE ChIP-seq data"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_Compound" title="Gene(s) --&gt; Compound(s)" comment="">
-  <query name="Gene_Compound" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.proteins.compounds.compound.identifier Gene.proteins.compounds.compound.name Gene.proteins.compounds.dataSet.name" longDescription="Given a gene or a list of genes, find the compounds which target the gene products (proteins)." sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" op="LOOKUP" value="8566"/>
-  </query>
-</template>
-<template name="Gene_UpstreamTF" title="Gene(s) --&gt; Upstream transcription factors" comment="">
-  <query name="Gene_UpstreamTF" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.transcriptionalRegulations.targetGene.primaryIdentifier Gene.transcriptionalRegulations.targetGene.symbol Gene.transcriptionalRegulations.targetGene.name Gene.transcriptionalRegulations.dataSets.name" longDescription="Given a gene or a list of genes, retrieve all upstream regulatory genes (transcription factors) compiled by the the public resources (AMADEUS, ORegAnno and HtriDB)." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.transcriptionalRegulations.dataSets.name" code="B" editable="false" description="" op="!=" value="ENCODE ChIP-seq data"/>
-    <constraint path="Gene.transcriptionalRegulations.targetGene" code="A" editable="true" op="LOOKUP" value="APOB" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_BnHub_Compound" title="Gene list --&gt; Compounds that target hub or bottleneck genes" comment="">
-  <query name="Gene_BnHub_Compound" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.name Gene.networkProperties.isBottleneck Gene.networkProperties.isHub Gene.proteins.compounds.compound.compoundGroup.name" longDescription="Given a list of gene, find compounds which target the hub or the bottleneck genes in the interactome." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and (B or C)">
-    <constraint path="Gene.networkProperties.isBottleneck" code="B" editable="false" description="" op="=" value="true"/>
-    <constraint path="Gene.networkProperties.isHub" code="C" editable="false" description="" op="=" value="true"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="TGFB1"/>
-  </query>
-</template>
-<template name="Compound_Bioactivity" title="Compound(s) --&gt; Target proteins with bioactivities" comment="">
-  <query name="Compound_Bioactivity" model="genomic" view="Compound.identifier Compound.targetProteins.protein.primaryAccession Compound.targetProteins.protein.name Compound.targetProteins.activities.type Compound.targetProteins.activities.conc" longDescription="Given a compound or a list of compounds, show the target proteins and the known bioactivities (IC50, Kd and Ki by the unit nM)." sortOrder="Compound.targetProteins.protein.primaryAccession asc" constraintLogic="A and B">
-    <constraint path="Compound" code="A" editable="true" op="LOOKUP" value="CHEMBL153479"/>
-    <constraint path="Compound.targetProteins.activities.conc" code="B" editable="false" description="" op="IS NOT NULL"/>
-  </query>
-</template>
-<template name="Gene_IPC" title="Gene(s) --&gt; Integrated Pathway clusters" comment="">
-  <query name="Gene_IPC" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.name Gene.integratedPathwayClusters.identifier Gene.integratedPathwayClusters.name" longDescription="Given a gene or a list of genes, find all associated Integrated Pathway Clusters(IPCs)." sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" description="" op="LOOKUP" value="6774"/>
-  </query>
-</template>
 <template name="Protein_Pathway" title="Protein --&gt; Pathway" comment="">
   <query name="Protein_Pathway" model="genomic" view="Protein.uniprotAccession Protein.name Protein.genes.pathways.identifier Protein.genes.pathways.name" longDescription="Query pathways from proteins.&lt;br /&gt; Users of this product/service may not download large quantities of KEGG Data." sortOrder="Protein.uniprotAccession asc">
     <join path="Protein.genes" style="OUTER"/>
     <pathDescription pathString="Protein.genes.pathways" description="Pathway"/>
     <constraint path="Protein" editable="true" description="" op="LOOKUP" value="P32019"/>
-  </query>
-</template>
-<template name="Gene_NetworkProperties" title="Gene(s) --&gt; PPI Network properties (Bottleneck and Hub)" comment="">
-  <query name="Gene_NetworkProperties" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.networkProperties.isBottleneck Gene.networkProperties.isHub" longDescription="Given a gene or a list of genes, show wether it is a the bottlenecks or a hub in the species specific high-confidence protein interactome" sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" description="" op="LOOKUP" value="AKT1" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Protein_Compound" title="Protein(s) --&gt; Compound(s)" comment="">
-  <query name="Protein_Compound" model="genomic" view="Protein.primaryAccession Protein.name Protein.organism.name Protein.compounds.compound.identifier Protein.compounds.compound.name Protein.compounds.dataSet.name" longDescription="Given a protein or a list of proteins, find all known compounds which interact with the protein(s)." sortOrder="Protein.primaryAccession asc">
-    <constraint path="Protein" editable="true" op="LOOKUP" value="CREB-binding protein" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_Tissue" title="Gene(s) --&gt; Expressed tissues" comment="">
-  <query name="Gene_Tissue" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.probeSets.probeSetId Gene.probeSets.expressions.tissue.name" longDescription="Given a gen or a list of genes, show the tissues which express the gene(s) in a specific microarray platform." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and C">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.probeSets.expressions.platform.title" code="B" editable="true" op="=" value="[HG-U133A] Affymetrix Human Genome U133A Array"/>
-    <constraint path="Gene.probeSets.expressions.value" code="C" editable="true" description="" op="&gt;" value="0.5"/>
-  </query>
-</template>
-<template name="Protein_Drug" title="Protein(s) --&gt; Drug interactions" comment="">
-  <query name="Protein_Drug" model="genomic" view="DrugBankInteraction.protein.primaryAccession DrugBankInteraction.protein.name DrugBankInteraction.actions.type DrugBankInteraction.compound.identifier DrugBankInteraction.compound.name" longDescription="Given a protein or a list of proteins, show all the drug compounds in DrugBank which target the protein." sortOrder="DrugBankInteraction.protein.primaryAccession asc">
-    <constraint path="DrugBankInteraction.protein" editable="true" op="LOOKUP" value="P08253"/>
-  </query>
-</template>
-<template name="MiRNA_Gene" title="miRNA --&gt; All target genes" comment="">
-  <query name="MiRNA_Gene" model="genomic" view="MiRNA.primaryIdentifier MiRNA.secondaryIdentifier MiRNA.organism.name MiRNA.miRNAInteractions.targetGene.primaryIdentifier MiRNA.miRNAInteractions.targetGene.symbol MiRNA.miRNAInteractions.targetGene.organism.shortName MiRNA.miRNAInteractions.supportType" longDescription="Given a miRNA or a list of miRNA, find all the targeting genes including those with weak evidence. (Data source: miRTarBase)" sortOrder="MiRNA.primaryIdentifier asc">
-    <constraint path="MiRNA" editable="true" op="LOOKUP" value="hsa-let-7a-5p"/>
-  </query>
-</template>
-<template name="ATC_DrugCompound" title="ATC Code --&gt; Drug Compound(s)" comment="">
-  <query name="ATC_DrugCompound" model="genomic" view="DrugCompound.identifier DrugCompound.genericName DrugCompound.atcCodes.atcCode" longDescription="Given an ATC code, find all drug compounds (from DrugBank or KEGG Drug) assigned with this classification.&lt;br/&gt; NOTE: Use asterisk symbol (*) for the higher level code (see the example)." sortOrder="DrugCompound.identifier asc">
-    <constraint path="DrugCompound.atcCodes.atcCode" editable="true" description="" op="=" value="C05B*"/>
-  </query>
-</template>
-<template name="Tissue_Gene" title="Tissue(s) --&gt; Expressed Gene" comment="">
-  <query name="Tissue_Gene" model="genomic" view="ProbeSet.expressions.tissue.name ProbeSet.genes.primaryIdentifier ProbeSet.genes.symbol ProbeSet.genes.organism.shortName" longDescription="Given a tissue or a list of tissues, show the genes expressed in the tissue(s) of a specific microarray platform." sortOrder="ProbeSet.genes.primaryIdentifier asc" constraintLogic="A and B and C">
-    <constraint path="ProbeSet.expressions.tissue.name" code="A" editable="true" op="=" value="liver"/>
-    <constraint path="ProbeSet.expressions.platform.title" code="B" editable="true" op="=" value="[HG-U133A] Affymetrix Human Genome U133A Array"/>
-    <constraint path="ProbeSet.expressions.value" code="C" editable="true" op="&gt;" value="0.5"/>
-  </query>
-</template>
-<template name="MiRNA_Func_MTI" title="miRNA --&gt; Functional targeting genes" comment="">
-  <query name="MiRNA_Func_MTI" model="genomic" view="MiRNA.primaryIdentifier MiRNA.secondaryIdentifier MiRNA.organism.name MiRNA.miRNAInteractions.targetGene.primaryIdentifier MiRNA.miRNAInteractions.targetGene.symbol MiRNA.miRNAInteractions.targetGene.organism.shortName MiRNA.miRNAInteractions.supportType" longDescription="Given a miRNA or a list of miRNA, find all the functional targeting genes excluding those with weak evidence. (Data source: miRTarBase)" sortOrder="MiRNA.primaryIdentifier asc" constraintLogic="A and B and C">
-    <constraint path="MiRNA.miRNAInteractions.supportType" code="B" editable="false" description="" op="=" value="Functional MTI"/>
-    <constraint path="MiRNA.miRNAInteractions.targetGene.organism" code="C" editable="false" op="=" loopPath="MiRNA.organism"/>
-    <constraint path="MiRNA" code="A" editable="true" op="LOOKUP" value="hsa-let-7a-5p"/>
-  </query>
-</template>
-<template name="Gene_Disease" title="Gene(s) --&gt; Disease(s)" comment="">
-  <query name="Gene_Disease" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.name Gene.diseases.diseaseTerm.name" longDescription="Given a gene or a list of genes, identify all the diseases which they are associated with." sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" op="LOOKUP" value="APOB" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Protein_CompoundGroup" title="Protein(s) --&gt; Compound Group(s)" comment="">
-  <query name="Protein_CompoundGroup" model="genomic" view="Protein.primaryAccession Protein.name Protein.organism.name Protein.compounds.compound.compoundGroup.identifier Protein.compounds.compound.compoundGroup.name" longDescription="Given a protein or a list of proteins, show all the compounds which target the protein." sortOrder="Protein.primaryAccession asc">
-    <constraint path="Protein" editable="true" op="LOOKUP" value="CREB-binding protein" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Drug_Protein_Structure" title="Drug --&gt; Interacting protein structures" comment="">
-  <query name="Drug_Protein_Structure" model="genomic" view="DrugCompound.genericName DrugCompound.drugBankId DrugCompound.compoundGroup.compounds.targetProteins.protein.primaryAccession DrugCompound.compoundGroup.compounds.targetProteins.protein.organism.name DrugCompound.compoundGroup.compounds.targetProteins.protein.proteinStructureRegions.chain.structure.pdbId" longDescription="Given a drug, find the target proteins which contain 3D structures." sortOrder="DrugCompound.genericName asc">
-    <constraint path="DrugCompound" editable="true" op="LOOKUP" value="acetaminophen"/>
-  </query>
-</template>
-<template name="Enzyme_Pathway" title="Enzyme --&gt; Pathway" comment="">
-  <query name="Enzyme_Pathway" model="genomic" view="Enzyme.ecNumber Enzyme.description Enzyme.pathways.identifier Enzyme.pathways.name Enzyme.pathways.dataSets.name" longDescription="Query pathways by enzyme. (It is unnecessary to specify the organism.)&lt;br /&gt; Users of this product/service may not download large quantities of KEGG Data" sortOrder="Enzyme.ecNumber asc">
-    <join path="Enzyme.pathways" style="OUTER"/>
-    <pathDescription pathString="Enzyme.pathways.dataSets" description="DataSet"/>
-    <pathDescription pathString="Enzyme.pathways" description="Pathway"/>
-    <constraint path="Enzyme" editable="true" description="" op="LOOKUP" value="1.1.1.1"/>
-  </query>
-</template>
-<template name="Gene_Intermediate_Interaction" title="Gene A --&gt; Gene X --&gt; Gene B" comment="">
-  <query name="Gene_Intermediate_Interaction" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.confidences.type Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.gene2.interactions.gene2.primaryIdentifier Gene.interactions.gene2.interactions.gene2.symbol Gene.interactions.gene2.interactions.confidences.type" longDescription="Given a pair of genes, find all the genes (Gene X) the products of which physically interact with those of Gene A and Gene B." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <join path="Gene.interactions.confidences" style="OUTER"/>
-    <join path="Gene.interactions.gene2.interactions.confidences" style="OUTER"/>
-    <constraint path="Gene" code="A" editable="true" description="Gene A" op="LOOKUP" value="APOE" extraValue="H. sapiens"/>
-    <constraint path="Gene.interactions.gene2.interactions.gene2" code="B" editable="true" description="Gene B" op="LOOKUP" value="RELA" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_BioGrid_n_iRef_Physical_Species_Spec" title="Gene list --&gt; Species specific BIOGRID and iRefIndex PHYSICAL Interactions" comment="">
-  <query name="Gene_BioGrid_n_iRef_Physical_Species_Spec" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.details.role1 Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.details.type Gene.interactions.details.relationshipType.name Gene.interactions.details.dataSets.name" longDescription="Give a list of genes, retrieve all physical interactions from the BIOGRID and iRefIndex database for specific species" sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and (C or D) and (E or F) and B and G">
-    <join path="Gene.interactions.details.relationshipType" style="OUTER"/>
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <pathDescription pathString="Gene.interactions.details" description="Interaction"/>
-    <pathDescription pathString="Gene.interactions.details.relationshipType" description="Interaction Term"/>
-    <pathDescription pathString="Gene.interactions.details.dataSets" description="Data Set"/>
-    <constraint path="Gene.interactions.details.type" code="F" editable="false" description="" op="IS NULL"/>
-    <constraint path="Gene.interactions.details.type" code="E" editable="false" description="" op="=" value="physical"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="D" editable="false" description="" op="=" value="iRefIndex"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="C" editable="false" description="" op="=" value="BioGRID"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="10011"/>
-    <constraint path="Gene.organism.shortName" code="B" editable="true" description="For querying gene(s)" switchable="on" op="=" value="H. sapiens"/>
-    <constraint path="Gene.interactions.gene2.organism.shortName" code="G" editable="true" description="For interacting gene(s)" switchable="on" op="=" value="H. sapiens"/>
   </query>
 </template>
 <template name="Gene_Protein" title="Gene --&gt; Proteins." comment="">
@@ -157,104 +24,10 @@
     <constraint path="Gene" editable="true" description="" op="LOOKUP" value="ENSG00000196177"/>
   </query>
 </template>
-<template name="GO_Parent_Gene" title="GO term --&gt; Genes" comment="">
-  <query name="GO_Parent_Gene" model="genomic" view="Gene.goAnnotation.ontologyTerm.parents.identifier Gene.goAnnotation.ontologyTerm.parents.name Gene.goAnnotation.ontologyTerm.identifier Gene.goAnnotation.ontologyTerm.name Gene.goAnnotation.evidence.code.code Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.name" longDescription="Given a Gene ontology(GO) term, find all genes which are annotated with this GO term or its child terms. You can edit the template to remove the non-IEA constraint if you want all annotations." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and C and D">
-    <constraint path="Gene.goAnnotation.ontologyTerm.parents" code="D" editable="true" op="LOOKUP" value="GO:0006954"/>
-    <constraint path="Gene.goAnnotation.evidence.code.code" code="C" editable="true" op="!=" value="IEA"/>
-    <constraint path="Gene.organism.shortName" code="A" editable="true" op="=" value="H. sapiens"/>
-  </query>
-</template>
-<template name="Drug_ATCCodes" title="Drug --&gt; ATC Codes" comment="">
-  <query name="Drug_ATCCodes" model="genomic" view="DrugCompound.drugBankId DrugCompound.name DrugCompound.atcCodes.atcCode" longDescription="Given a drug or a list of drugs, retrieve the corresponding Anatomical Therapeutic Chemical (ATC) codes." sortOrder="DrugCompound.drugBankId asc">
-    <constraint path="DrugCompound" editable="true" description="" op="LOOKUP" value="DB00001"/>
-  </query>
-</template>
-<template name="MiRNA_Gene_HC" title="miRNA --&gt; High confidence functional miRNA target genes" comment="">
-  <query name="MiRNA_Gene_HC" model="genomic" view="MiRNA.primaryIdentifier MiRNA.secondaryIdentifier MiRNA.organism.name MiRNA.miRNAInteractions.targetGene.primaryIdentifier MiRNA.miRNAInteractions.targetGene.symbol MiRNA.miRNAInteractions.targetGene.organism.shortName MiRNA.miRNAInteractions.supportType" longDescription="Given a miRNA or a list of miRNA, retrieve all high confidence functional miRNA-target gene interactions (MTIs). (Data source: miRTarBase)" sortOrder="MiRNA.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="MiRNA.miRNAInteractions.supportType" code="B" editable="false" description="" op="=" value="Functional MTI"/>
-    <constraint path="MiRNA" code="A" editable="true" op="LOOKUP" value="hsa-let-7a-5p"/>
-  </query>
-</template>
-<template name="Gene_MiRNA" title="Gene --&gt; All upstream miRNA(s)" comment="">
-  <query name="Gene_MiRNA" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.miRNAInteractions.miRNA.primaryIdentifier Gene.miRNAInteractions.miRNA.secondaryIdentifier Gene.miRNAInteractions.miRNA.organism.name Gene.miRNAInteractions.supportType" longDescription="Given a gene or a list of genes, find the miRNAs which target the gene(s), including those with week evidence. (Data source: miRTarBase)" sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" op="LOOKUP" value="1019"/>
-  </query>
-</template>
-<template name="Protein_ProteinDomainAll" title="Protein --&gt; All Protein Domains" comment="">
-  <query name="Protein_ProteinDomainAll" model="genomic" view="Protein.primaryAccession Protein.name Protein.proteinDomainRegions.originalDb Protein.proteinDomainRegions.originalId Protein.proteinDomainRegions.start Protein.proteinDomainRegions.end Protein.proteinDomainRegions.proteinDomain.primaryIdentifier Protein.proteinDomainRegions.proteinDomain.name" longDescription="For given protein(s), list all domain annotations." sortOrder="Protein.primaryAccession asc">
-    <pathDescription pathString="Protein.proteinDomainRegions" description="Domain"/>
-    <pathDescription pathString="Protein.proteinDomainRegions.proteinDomain" description="InterPro"/>
-    <constraint path="Protein" editable="true" description="" op="LOOKUP" value="P01031"/>
-  </query>
-</template>
-<template name="ChEMBL_Protein_Activity" title="ChEMBL compound + Protein --&gt; Activities" comment="">
-  <query name="ChEMBL_Protein_Activity" model="genomic" view="ChemblCompound.originalId ChemblCompound.name ChemblCompound.targetProteins.activities.type ChemblCompound.targetProteins.activities.conc ChemblCompound.targetProteins.protein.primaryAccession ChemblCompound.targetProteins.protein.name" longDescription="Given a ChEMBL compound and a target protein show the known bioactivities (IC50, Kd and Ki by the unit nM)." sortOrder="ChemblCompound.originalId asc" constraintLogic="B and A">
-    <constraint path="ChemblCompound" code="A" editable="true" op="LOOKUP" value="CHEMBL153479"/>
-    <constraint path="ChemblCompound.targetProteins.protein" code="B" editable="true" op="LOOKUP" value="P31645"/>
-  </query>
-</template>
-<template name="Gene-bottleneck" title="Gene(s) --&gt; PPI Network Bottlenecks" comment="">
-  <query name="Gene-bottleneck" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.networkProperties.isBottleneck" longDescription="Given a gene or a list of genes, retrieve the bottlenecks in the species specific high-confidence protein interactome" sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.networkProperties.isBottleneck" code="A" editable="false" description="" op="=" value="true"/>
-    <constraint path="Gene" code="B" editable="true" op="LOOKUP" value="207"/>
-  </query>
-</template>
-<template name="Gene_HCDP_Interaction" title="Gene(s) --&gt; High confidence direct physical (HCDP) PPIs" comment="">
-  <query name="Gene_HCDP_Interaction" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.gene2.organism.shortName" longDescription="Given a gene or a list of genes, find all high confidence direct physical interacting partners (within the same species)." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.interactions.confidences.type" code="B" editable="false" description="" op="=" value="HCDP"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="3676"/>
-  </query>
-</template>
-<template name="IntraSet_HCDP" title="Gene list --&gt; Intra-set High confidence direct physical (HCDP) Interactions" comment="">
-  <query name="IntraSet_HCDP" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.gene2.organism.shortName" longDescription="Give a list of genes, retrieve all high confidence direct physical(HCDP) interactions within the list." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and C">
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <constraint path="Gene.interactions.confidences.type" code="C" editable="false" description="" op="=" value="HCDP"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="10011"/>
-    <constraint path="Gene.interactions.gene2" code="B" editable="true" op="LOOKUP" value="2099"/>
-  </query>
-</template>
-<template name="TF_Gene_Both" title="Gene(s) --&gt; Gene regulatory associations" comment="">
-  <query name="TF_Gene_Both" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.transcriptionalRegulations.targetGene.primaryIdentifier Gene.transcriptionalRegulations.targetGene.symbol Gene.transcriptionalRegulations.targetGene.name Gene.transcriptionalRegulations.dataSets.name" longDescription="Given a gene or a list of genes, retrieve all upstream regulators (regulatory transcription factors) and/or downstream targets compiled by the the public resources (AMADEUS, ORegAnno and HtriDB)." sortOrder="Gene.primaryIdentifier asc" constraintLogic="B and A and C">
-    <constraint path="Gene.transcriptionalRegulations.dataSets.name" code="B" editable="false" description="" op="!=" value="ENCODE ChIP-seq data"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="CREB1" extraValue="H. sapiens"/>
-    <constraint path="Gene.transcriptionalRegulations.targetGene" code="C" editable="true" op="LOOKUP" value="ATF2" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Network_topology" title="Gene(s) --&gt; Bottleneck (s) and/or Hub(s)" comment="">
-  <query name="Network_topology" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.networkProperties.isBottleneck Gene.networkProperties.isHub" longDescription="Given a gene or a list of genes, show whether it is a  bottleneck or a hub in the species specific high-confidence protein interactome" sortOrder="Gene.symbol asc" constraintLogic="A and (B or C)">
-    <constraint path="Gene.networkProperties.isHub" code="C" editable="false" description="" op="=" value="true"/>
-    <constraint path="Gene.networkProperties.isBottleneck" code="B" editable="false" description="" op="=" value="true"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Drug_Protein_wo_substrate" title="Drug(s) --&gt; Target Proteins, excluding 'substrate'" comment="">
-  <query name="Drug_Protein_wo_substrate" model="genomic" view="DrugCompound.identifier DrugCompound.name DrugCompound.targetProteins.actions.type DrugCompound.targetProteins.protein.primaryAccession DrugCompound.targetProteins.protein.name DrugCompound.targetProteins.protein.organism.name" longDescription="Given a drug or a list of drugs, find all target proteins reported in DrugBank excluding those acted as the 'substrate'." sortOrder="DrugCompound.identifier asc" constraintLogic="A and B">
-    <constraint path="DrugCompound.targetProteins.actions.type" code="B" editable="false" description="" op="!=" value="substrate"/>
-    <constraint path="DrugCompound.targetProteins" editable="false" type="DrugBankInteraction"/>
-    <constraint path="DrugCompound" code="A" editable="true" op="LOOKUP" value="imatinib"/>
-  </query>
-</template>
-<template name="Gene_RelationType_Source" title="Gene(s) + Relation type --&gt; Upstream gene(s)" comment="">
-  <query name="Gene_RelationType_Source" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.text Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name" longDescription="Given a gene or a list of genes and the relation type, find all upstream genes and the source pathways. (to be refined)" sortOrder="Gene.primaryIdentifier asc" constraintLogic="B and A">
-    <constraint path="Gene.relations.gene2" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.relations.types.name" code="B" editable="true" op="=" value="activation"/>
-  </query>
-</template>
 <template name="Gene_Enzyme" title="Gene --&gt; Enzyme" comment="">
   <query name="Gene_Enzyme" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.proteins.enzymes.ecNumber Gene.proteins.enzymes.description" longDescription="Find enzymes from a gene or a gene list." sortOrder="Gene.primaryIdentifier asc">
     <pathDescription pathString="Gene.proteins.enzymes" description="Enzyme"/>
     <constraint path="Gene" editable="true" description="" op="LOOKUP" value="130"/>
-  </query>
-</template>
-<template name="Kinase_Substrate_Modification" title="Kinase Gene --&gt; Substrate and the phosphorylation sites" comment="">
-  <query name="Kinase_Substrate_Modification" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.text Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name Gene.relations.modifications.protein.primaryAccession Gene.relations.modifications.position Gene.relations.modifications.residue" longDescription="Given a kinase gene or a list of kinase genes, find all substrate genes and the phosphorylation sites." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.relations.text" code="B" editable="false" description="" op="=" value="phosphorylation"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="PRKD3" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Protein_Compounds_Assay" title="Protein --&gt; Compounds --&gt; Assay" comment="">
-  <query name="Protein_Compounds_Assay" model="genomic" view="Protein.primaryAccession Protein.name Protein.organism.name Protein.compounds.compound.identifier Protein.compounds.compound.name Protein.compounds.dataSet.name Protein.compounds.activities.assay.identifier Protein.compounds.activities.assay.name" longDescription="Given a protein or a list of proteins, show the compounds which target the protein(s) and their assay from ChEMBL and PubChem BioAssay." sortOrder="Protein.primaryAccession asc">
-    <constraint path="Protein" editable="true" op="LOOKUP" value="CREB-binding protein" extraValue="H. sapiens"/>
   </query>
 </template>
 <template name="ProbeSet_Gene" title="ProbeSets --&gt; Genes" comment="">
@@ -262,206 +35,9 @@
     <constraint path="ProbeSet" editable="true" op="LOOKUP" value="1432442_at"/>
   </query>
 </template>
-<template name="Gene_BioGrid_All" title="Gene(s) --&gt; Interacting genes (BIOGRID)" comment="">
-  <query name="Gene_BioGrid_All" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.details.role1 Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.gene2.organism.shortName Gene.interactions.details.type" longDescription="Give a gene or a list of genes, retrieve all interactions from the BIOGRID database. May contain cross species interactions." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <join path="Gene.interactions.gene2.organism" style="OUTER"/>
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <pathDescription pathString="Gene.interactions" description="Gene"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="B" editable="false" description="" op="=" value="BioGRID"/>
-    <constraint path="Gene" code="A" editable="true" description="" op="LOOKUP" value="2199"/>
-  </query>
-</template>
-<template name="Gene_BioGrid_n_iRef_Physical_Both" title="Gene list --&gt; Intra-set BIOGRID and iRefIndex PHYSICAL Interactions" comment="">
-  <query name="Gene_BioGrid_n_iRef_Physical_Both" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.details.role1 Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.details.type Gene.interactions.details.relationshipType.name Gene.interactions.details.dataSets.name" longDescription="Give a list of genes, retrieve all physical interactions between them from the BIOGRID and iRefIndex database" sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and (C or D) and (E or F)">
-    <join path="Gene.interactions.details.relationshipType" style="OUTER"/>
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <pathDescription pathString="Gene.interactions.details" description="Interaction"/>
-    <pathDescription pathString="Gene.interactions.details.relationshipType" description="Interaction Term"/>
-    <pathDescription pathString="Gene.interactions.details.dataSets" description="Data Set"/>
-    <constraint path="Gene.interactions.details.type" code="F" editable="false" description="" op="IS NULL"/>
-    <constraint path="Gene.interactions.details.type" code="E" editable="false" description="" op="=" value="physical"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="D" editable="false" description="" op="=" value="iRefIndex"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="C" editable="false" description="" op="=" value="BioGRID"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="10011"/>
-    <constraint path="Gene.interactions.gene2" code="B" editable="true" op="LOOKUP" value="10521"/>
-  </query>
-</template>
-<template name="Gene_Ortholog_Conversion" title="Convert Gene --&gt; Orthologus Gene" comment="">
-  <query name="Gene_Ortholog_Conversion" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.proteins.orthologProteins.genes.primaryIdentifier Gene.proteins.orthologProteins.genes.symbol" longDescription="Given a gene or a list of genes, convert it/them to its/their orthologs." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and C">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="Apob"/>
-    <constraint path="Gene.organism.shortName" code="B" editable="true" description="FROM" op="=" value="M. musculus"/>
-    <constraint path="Gene.proteins.orthologProteins.genes.organism.shortName" code="C" editable="true" description="TO" op="=" value="H. sapiens"/>
-  </query>
-</template>
-<template name="PubChem_Protein" title="PubChem Compound --&gt; Target Proteins" comment="">
-  <query name="PubChem_Protein" model="genomic" view="PubChemCompound.identifier PubChemCompound.name PubChemCompound.targetProteins.protein.primaryAccession PubChemCompound.targetProteins.protein.name PubChemCompound.targetProteins.dataSet.name" longDescription="Given a PubChem compound or a list of PubChem compounds find all know target proteins (BioAssay and STITCH)." sortOrder="PubChemCompound.identifier asc">
-    <constraint path="PubChemCompound" editable="true" op="LOOKUP" value="imatinib"/>
-  </query>
-</template>
-<template name="Gene_Protein_Phosphorylation_Kinase" title="Gene(s) --&gt; Phosphorylation sites and catalyzed kinase" comment="">
-  <query name="Gene_Protein_Phosphorylation_Kinase" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.proteins.primaryAccession Gene.proteins.primaryIdentifier Gene.proteins.modifications.residue Gene.proteins.modifications.position Gene.proteins.modifications.relations.gene1.primaryIdentifier Gene.proteins.modifications.relations.gene1.symbol" longDescription="Given a gene or a list of genes, show all phosphorylation sites (protein resides) and the catalyzed kinase." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.proteins.modifications.type" code="A" editable="false" description="" op="=" value="Phosphorylation"/>
-    <constraint path="Gene" code="B" editable="true" op="LOOKUP" value="BCL2L11" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_HCDP_Tissue_Spec" title="Gene(s) --&gt; HCDP (tissue constrained)" comment="">
-  <query name="Gene_HCDP_Tissue_Spec" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.name Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.gene2.name Gene.interactions.gene2.organism.name" longDescription="Given a gene or a list of genes, retrieve HCDPs where the interacting genes are highly expressed in specific tissues and/or cell types." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and C and D">
-    <constraint path="Gene.interactions.gene2.probeSets.expressions.isExpressed" code="A" editable="false" description="" op="=" value="true"/>
-    <constraint path="Gene.interactions.confidences.type" code="D" editable="false" description="" op="=" value="HCDP"/>
-    <constraint path="Gene" code="C" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.interactions.gene2.probeSets.expressions.tissue.name" code="B" editable="true" op="CONTAINS" value="lung"/>
-  </query>
-</template>
-<template name="Protein_Structure_Drug" title="Protein(s) --&gt; PDB entries with approved drugs" comment="">
-  <query name="Protein_Structure_Drug" model="genomic" view="Protein.primaryAccession Protein.name Protein.organism.shortName Protein.proteinStructureRegions.chain.structure.pdbId Protein.proteinStructureRegions.chain.structure.pdbCompounds.compoundGroup.compounds.identifier Protein.proteinStructureRegions.chain.structure.pdbCompounds.compoundGroup.compounds.genericName" longDescription="Given a list of proteins, show all the approved drugs solved in complex with any structure of these proteins if present." sortOrder="Protein.primaryAccession asc" constraintLogic="A and B">
-    <pathDescription pathString="Protein.proteinStructureRegions.chain.structure.pdbCompounds.compoundGroup.compounds" description="Drug"/>
-    <pathDescription pathString="Protein.proteinStructureRegions.chain.structure" description="Structure"/>
-    <pathDescription pathString="Protein.organism" description="Organism"/>
-    <constraint path="Protein.proteinStructureRegions.chain.structure.pdbCompounds.compoundGroup.compounds.drugTypes.name" code="B" editable="false" op="=" value="approved"/>
-    <constraint path="Protein.proteinStructureRegions.chain.structure.pdbCompounds.compoundGroup.compounds" editable="false" type="DrugCompound"/>
-    <constraint path="Protein" code="A" editable="true" op="LOOKUP" value="P03372"/>
-  </query>
-</template>
-<template name="Gene_BioGrid_SP" title="Gene(s) --&gt; Species specific BIOGRID Interactions" comment="">
-  <query name="Gene_BioGrid_SP" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.details.role1 Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.details.type Gene.interactions.details.relationshipType.name" longDescription="Given a gene or a list of genes, retrieve all species-specific interactions from the BIOGRID database " sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and C">
-    <join path="Gene.interactions.details.relationshipType" style="OUTER"/>
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="B" editable="false" description="" op="=" value="BioGRID"/>
-    <constraint path="Gene" code="A" editable="true" description="" op="LOOKUP" value="2199"/>
-    <constraint path="Gene.interactions.gene2.organism.shortName" code="C" editable="true" description="Species of Interacting gene" op="=" value="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_Disease_Compound_Structure" title="Gene(s) --&gt; Diseases --&gt; Compound with 3D structure" comment="">
-  <query name="Gene_Disease_Compound_Structure" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.diseases.diseaseTerm.name Gene.proteins.compounds.compound.identifier" longDescription="Given a gene or a list of genes, identify all the diseases which they are associated with and all the drugs which target these genes and the 3D structure of the complex has been resolved." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.proteins.compounds.compound.compoundGroup.compounds" editable="false" type="PDBCompound"/>
-    <constraint path="Gene.proteins.compounds.compound.compoundGroup.compounds" code="B" editable="false" description="" op="IS NOT NULL"/>
-    <constraint path="Gene" code="A" editable="true" description="" op="LOOKUP" value="CACNA2D2" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_MiRNA_SpSpec" title="Gene --&gt; Species specific upstream miRNA(s)" comment="">
-  <query name="Gene_MiRNA_SpSpec" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.miRNAInteractions.miRNA.primaryIdentifier Gene.miRNAInteractions.miRNA.secondaryIdentifier Gene.miRNAInteractions.miRNA.organism.name Gene.miRNAInteractions.supportType" longDescription="Given a gene or a list of genes, find the miRNAs of a specific species which target these gene(s). (Data source: miRTarBase)" sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="1021"/>
-    <constraint path="Gene.miRNAInteractions.miRNA.organism.shortName" code="B" editable="true" op="=" value="H. sapiens"/>
-  </query>
-</template>
-<template name="ProteinDomain_Gene" title="Protein Domain --&gt; Genes" comment="">
-  <query name="ProteinDomain_Gene" model="genomic" view="Protein.proteinDomainRegions.proteinDomain.primaryIdentifier Protein.proteinDomainRegions.proteinDomain.name Protein.genes.primaryIdentifier Protein.genes.symbol Protein.genes.organism.shortName Protein.genes.name" longDescription="For given protein domain, list all genes which could translate to the protein containing this domain." sortOrder="Protein.proteinDomainRegions.proteinDomain.primaryIdentifier asc" constraintLogic="A and B">
-    <pathDescription pathString="Protein.proteinDomainRegions.proteinDomain" description="Protein Domain"/>
-    <pathDescription pathString="Protein.genes.organism" description="Organism"/>
-    <pathDescription pathString="Protein.genes" description="Gene"/>
-    <constraint path="Protein.proteinDomainRegions.proteinDomain" code="A" editable="true" description="" op="LOOKUP" value="IPR000904"/>
-    <constraint path="Protein.organism" code="B" editable="true" description="" op="LOOKUP" value="Homo sapiens"/>
-  </query>
-</template>
-<template name="Gene_RelationTypeSet_Upstream" title="Gene(s) + Relation type set --&gt; Upstream gene(s)" comment="">
-  <query name="Gene_RelationTypeSet_Upstream" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.text Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name Gene.relations.pathways.identifier" longDescription="Given a gene or a list of genes and a specific set of the relation types, find all upstream genes and the related pathways." sortOrder="Gene.primaryIdentifier asc" constraintLogic="B and A">
-    <constraint path="Gene.relations.gene2" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.relations.text" code="B" editable="true" op="=" value="activation, indirect effect"/>
-  </query>
-</template>
-<template name="Gene_HC_Interaction" title="Gene(s) --&gt; High confidence (HC) or high confidence direct physical (HCDP) PPIs" comment="">
-  <query name="Gene_HC_Interaction" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.gene2.organism.shortName Gene.interactions.confidences.type" longDescription="Given a gene or a list of genes, find all high confident or high confident direct physical interacting partners (within same species)." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="3676"/>
-    <constraint path="Gene.interactions.confidences.type" code="B" editable="true" description="HC: high confidence; HCDP: high confidence direct physical" op="LIKE" value="HC*"/>
-  </query>
-</template>
-<template name="Drug_ActionType_Protein" title="Drug(s) + Action type --&gt; Target proteins" comment="">
-  <query name="Drug_ActionType_Protein" model="genomic" view="DrugBankInteraction.compound.identifier DrugBankInteraction.compound.name DrugBankInteraction.actions.type DrugBankInteraction.protein.primaryAccession DrugBankInteraction.protein.name DrugBankInteraction.protein.organism.name" longDescription="Given a drug compound or a list of drug compounds, find all target proteins for a specific action type (agonist, inhibitor and so on)." sortOrder="DrugBankInteraction.compound.identifier desc" constraintLogic="A and B">
-    <constraint path="DrugBankInteraction.compound" code="A" editable="true" op="LOOKUP" value="droxidopa"/>
-    <constraint path="DrugBankInteraction.actions.type" code="B" editable="true" op="=" value="agonist"/>
-  </query>
-</template>
-<template name="Gene_Gene3D" title="Gene(s) --&gt; Protein(s) --&gt; Gene3D CATH classification annotations" comment="">
-  <query name="Gene_Gene3D" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.proteins.primaryAccession Gene.proteins.structuralDomains.start Gene.proteins.structuralDomains.end Gene.proteins.structuralDomains.cathClassification.cathCode Gene.proteins.structuralDomains.cathClassification.description" longDescription="Given a gene or a list of genes, find the corresponding proteins and list all structural domains (CATH) assigned by Gene3D. " sortOrder="Gene.primaryIdentifier asc">
-    <pathDescription pathString="Gene.proteins.structuralDomains.cathClassification" description="Classification"/>
-    <pathDescription pathString="Gene.proteins" description="Protein"/>
-    <pathDescription pathString="Gene.proteins.structuralDomains" description="Region"/>
-    <constraint path="Gene" editable="true" op="LOOKUP" value="124"/>
-  </query>
-</template>
-<template name="Gene_BioGrid_n_iRef_Both" title="Gene list --&gt; Intra-set BIOGRID and iRefIndex Interactions" comment="">
-  <query name="Gene_BioGrid_n_iRef_Both" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.details.role1 Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.details.type Gene.interactions.details.relationshipType.name Gene.interactions.details.dataSets.name" longDescription="Give a list of genes, retrieve all interactions between them from the BIOGRID and iRefIndex database" sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B and (C or D)">
-    <pathDescription pathString="Gene.interactions.details" description="Interaction"/>
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <pathDescription pathString="Gene.interactions.details.relationshipType" description="Interaction Term"/>
-    <pathDescription pathString="Gene.interactions.details.dataSets" description="Data Set"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="C" editable="false" description="" op="=" value="BioGRID"/>
-    <constraint path="Gene.interactions.details.dataSets.name" code="D" editable="false" description="" op="=" value="iRefIndex"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="10011"/>
-    <constraint path="Gene.interactions.gene2" code="B" editable="true" op="LOOKUP" value="10521"/>
-  </query>
-</template>
-<template name="Protein_Modifications" title="Protein(s) --&gt; Residue modifications" comment="">
-  <query name="Protein_Modifications" model="genomic" view="Protein.primaryIdentifier Protein.primaryAccession Protein.name Protein.organism.name Protein.modifications.type Protein.modifications.position Protein.modifications.residue" longDescription="Given a protein or a list of proteins, find all known post translational modifications." sortOrder="Protein.primaryIdentifier asc">
-    <constraint path="Protein" editable="true" description="" op="LOOKUP" value="Q9C0B2"/>
-  </query>
-</template>
-<template name="Gene_GO" title="Gene(s) --&gt; GO terms." comment="">
-  <query name="Gene_GO" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.goAnnotation.evidence.code.code Gene.goAnnotation.ontologyTerm.identifier Gene.goAnnotation.ontologyTerm.name Gene.goAnnotation.ontologyTerm.namespace" longDescription="Given a gene or a list of genes, find all GO annotations." sortOrder="Gene.primaryIdentifier asc">
-    <join path="Gene.goAnnotation.ontologyTerm" style="OUTER"/>
-    <pathDescription pathString="Gene.goAnnotation" description="GO annotation"/>
-    <pathDescription pathString="Gene.goAnnotation.evidence.code" description="GO annotation &gt; evidence"/>
-    <constraint path="Gene.goAnnotation" editable="false" type="GOAnnotation"/>
-    <constraint path="Gene" editable="true" description="Show GO annotations for gene:" op="LOOKUP" value="ACADSB" extraValue="H. sapiens"/>
-  </query>
-</template>
-<template name="Gene_allGOTerms" title="Gene --&gt; GO terms and parents of those terms." comment="">
-  <query name="Gene_allGOTerms" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.goAnnotation.ontologyTerm.relations.childTerm.identifier Gene.goAnnotation.ontologyTerm.relations.childTerm.name Gene.goAnnotation.ontologyTerm.relations.relationship Gene.goAnnotation.ontologyTerm.relations.parentTerm.identifier Gene.goAnnotation.ontologyTerm.relations.parentTerm.name Gene.goAnnotation.evidence.code.code" longDescription="Given a gene show the associated GO terms, and the all parents to the top of the directed graph." sortOrder="Gene.primaryIdentifier asc">
-    <pathDescription pathString="Gene.goAnnotation.ontologyTerm.relations.parentTerm" description="GO annotation &gt; parent term"/>
-    <pathDescription pathString="Gene.goAnnotation.ontologyTerm.relations" description="Relation"/>
-    <pathDescription pathString="Gene.goAnnotation.ontologyTerm.relations.childTerm" description="GO annotation &gt; child term"/>
-    <pathDescription pathString="Gene.goAnnotation.evidence.code" description="GO annotation &gt; evidence"/>
-    <constraint path="Gene.goAnnotation.ontologyTerm.relations.parentTerm" editable="false" type="OntologyTerm"/>
-    <constraint path="Gene.goAnnotation.ontologyTerm.relations.childTerm" editable="false" type="OntologyTerm"/>
-    <constraint path="Gene.goAnnotation.ontologyTerm.relations" editable="false" type="OntologyRelation"/>
-    <constraint path="Gene.goAnnotation.ontologyTerm" editable="false" type="OntologyTerm"/>
-    <constraint path="Gene.goAnnotation.evidence.code" editable="false" type="GOEvidenceCode"/>
-    <constraint path="Gene.goAnnotation" editable="false" type="GOAnnotation"/>
-    <constraint path="Gene" editable="true" description="Show GO annotations for gene:" op="LOOKUP" value="ENSG00000196177"/>
-  </query>
-</template>
-<template name="Gene_MiRNA_HC" title="Gene --&gt; High confidence functional upstream miRNA(s)" comment="">
-  <query name="Gene_MiRNA_HC" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.miRNAInteractions.miRNA.primaryIdentifier Gene.miRNAInteractions.miRNA.secondaryIdentifier Gene.miRNAInteractions.miRNA.organism.name Gene.miRNAInteractions.supportType" longDescription="Given a gene or a list of genes, retrieve all high confidence functional miRNAs which target the genes. (Data source: miRTarBase)" sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene.miRNAInteractions.supportType" code="B" editable="false" description="" op="=" value="Functional MTI"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="1019"/>
-  </query>
-</template>
-<template name="Protein_PDB" title="Protein(s) --&gt; PDB entries" comment="">
-  <query name="Protein_PDB" model="genomic" view="Protein.primaryAccession Protein.name Protein.proteinStructureRegions.start Protein.proteinStructureRegions.end Protein.proteinStructureRegions.pdbSeqStart Protein.proteinStructureRegions.pdbSeqEnd Protein.proteinStructureRegions.chain.structure.pdbId Protein.proteinStructureRegions.chain.chain Protein.proteinStructureRegions.chain.structure.resolution Protein.proteinStructureRegions.chain.structure.experimentType" longDescription="Retrieve all PDB structures for a protein or a list of proteins." sortOrder="Protein.primaryAccession asc">
-    <pathDescription pathString="Protein.proteinStructureRegions.chain.structure" description="Structure"/>
-    <pathDescription pathString="Protein.proteinStructureRegions" description="Protein"/>
-    <pathDescription pathString="Protein.proteinStructureRegions.chain" description="Structure"/>
-    <constraint path="Protein" editable="true" description="" op="LOOKUP" value="P06213"/>
-  </query>
-</template>
-<template name="Gene_RelationType" title="Gene(s) + Relation type --&gt; Reacted gene(s)" comment="">
-  <query name="Gene_RelationType" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.types.name Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name Gene.relations.pathways.identifier Gene.relations.pathways.name" longDescription="Given a gene or a list of genes and the relation type, find all reacted genes and the source pathways." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene" code="B" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.relations.types.name" code="A" editable="true" op="=" value="activation"/>
-  </query>
-</template>
-<template name="Gene_Interaction_SourceDB" title="Gene(s) --&gt; Interacting genes (Data source specific)" comment="">
-  <query name="Gene_Interaction_SourceDB" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.interactions.details.role1 Gene.interactions.gene2.primaryIdentifier Gene.interactions.gene2.symbol Gene.interactions.details.type Gene.interactions.details.sources.sourceDb" longDescription="Given a gene or a list of genes, retrieve all interactions from a specific data source. May contain cross species interactions." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <pathDescription pathString="Gene.interactions.gene2" description="Interacting Gene"/>
-    <pathDescription pathString="Gene.interactions" description="Gene"/>
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="2199"/>
-    <constraint path="Gene.interactions.details.sources.sourceDb" code="B" editable="true" op="=" value="intact"/>
-  </query>
-</template>
-<template name="Gene_Specific_Orthologues" title="Gene(s) --&gt; Species specific orthologous Gene(s)" comment="">
-  <query name="Gene_Specific_Orthologues" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.name Gene.proteins.orthologProteins.genes.primaryIdentifier Gene.proteins.orthologProteins.genes.symbol Gene.proteins.orthologProteins.genes.name Gene.proteins.orthologProteins.genes.organism.name" longDescription="Given a gene or a list of genes, retrieve all orthologous genes of a specific species." sortOrder="Gene.proteins.orthologProteins.genes.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="S100a8" extraValue="M. musculus"/>
-    <constraint path="Gene.proteins.orthologProteins.genes.organism.shortName" code="B" editable="true" description="Designated species" op="=" value="H. sapiens"/>
-  </query>
-</template>
 <template name="Protein_Gene" title="Protein(s) --&gt; Gene(s)" comment="">
   <query name="Protein_Gene" model="genomic" view="Protein.primaryAccession Protein.primaryIdentifier Protein.genes.primaryIdentifier Protein.genes.symbol" longDescription="Given a protein or a list of proteins, find the corresponding gene(s)." sortOrder="Protein.primaryAccession asc">
     <constraint path="Protein" editable="true" op="LOOKUP" value="APOE_HUMAN"/>
-  </query>
-</template>
-<template name="JSCC_DrugCompound" title="JTC Code --&gt; Drug Compound(s)" comment="">
-  <query name="JSCC_DrugCompound" model="genomic" view="DrugCompound.identifier DrugCompound.name DrugCompound.jsccCodes.jsccCode DrugCompound.jsccCodes.name" longDescription="Given a JSCC code, find all drug compounds (from DrugBank or KEGG Drug) assigned with this classification.&lt;br/&gt; NOTE: Use asterisk symbol (*) for the higher level code (see the example)." sortOrder="DrugCompound.identifier asc">
-    <constraint path="DrugCompound.jsccCodes.jsccCode" editable="true" op="=" value="121*"/>
   </query>
 </template>
 <template name="Gene_Orthologues" title="Gene(s) --&gt; Orthologous Gene(s)" comment="">
@@ -469,343 +45,83 @@
     <constraint path="Gene" editable="true" op="LOOKUP" value="S100a8" extraValue="M. musculus"/>
   </query>
 </template>
-<template name="Gene_RelationType_Target" title="Gene(s) + Relation type --&gt; Downstream gene(s)" comment="">
-  <query name="Gene_RelationType_Target" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.text Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name" longDescription="Given a gene or a list of genes and the relation type, find all Downstream genes and the source pathways. (to be refined)" sortOrder="Gene.primaryIdentifier asc" constraintLogic="B and A">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.relations.types.name" code="B" editable="true" op="=" value="activation"/>
+<template name="DrugCompound_To_CompoundGroup_Type_Converter" title="DrugCompound to CompoundGroup type converter" comment="">
+  <query name="DrugCompound_To_CompoundGroup_Type_Converter" model="genomic" view="DrugCompound.id DrugCompound.compoundGroup.id" longDescription="" sortOrder="DrugCompound.id asc">
+    <constraint path="DrugCompound.id" editable="true" op="=" value="0"/>
   </query>
 </template>
-<template name="CG_DrugBank_wo_substrate" title="CompoundGroup --&gt; Target Proteins, excluding 'substrate'" comment="">
-  <query name="CG_DrugBank_wo_substrate" model="genomic" view="CompoundGroup.identifier CompoundGroup.name CompoundGroup.compounds.targetProteins.actions.type CompoundGroup.compounds.targetProteins.protein.primaryIdentifier CompoundGroup.compounds.targetProteins.protein.primaryAccession CompoundGroup.compounds.targetProteins.protein.name CompoundGroup.compounds.targetProteins.protein.organism.name" longDescription="Given a compound group or a list of compound group, find all target proteins reported in DrugBank excluding those acted as the 'substrate'." sortOrder="CompoundGroup.identifier asc" constraintLogic="A and B">
-    <constraint path="CompoundGroup.compounds.targetProteins.actions.type" code="B" editable="false" description="" op="!=" value="substrate"/>
-    <constraint path="CompoundGroup.compounds.targetProteins" editable="false" type="DrugBankInteraction"/>
-    <constraint path="CompoundGroup" code="A" editable="true" op="LOOKUP" value="imatinib"/>
+<template name="Gene_To_Protein_Type_Converter" title="Gene to protein type converter" comment="">
+  <query name="Gene_To_Protein_Type_Converter" model="genomic" view="Gene.id Gene.proteins.id" longDescription="" sortOrder="Gene.id asc">
+    <constraint path="Gene.id" editable="true" description="Gene.id" op="=" value="0"/>
   </query>
 </template>
-<template name="A_IdentifierSynonym_Object" title="Identifier or synonym --&gt; Database object." comment="This is the template that the quick search runs.  If the name is changed it also has to be changed for the quick search configuration - Rachel. Removed tags so no longer displayed - just used for quick search now.  Rachel.">
-  <query name="A_IdentifierSynonym_Object" model="genomic" view="Synonym.subject.primaryIdentifier Synonym.value Synonym.subject.organism.name" longDescription="Find an entry in the database using any identifier or synonym." sortOrder="Synonym.subject.primaryIdentifier asc">
-    <constraint path="Synonym.value" editable="true" description="" op="=" value="timeout"/>
+<template name="Protein_To_Enzyme_Type_Converter" title="Protein to Enzyme type converter" comment="">
+  <query name="Protein_To_Enzyme_Type_Converter" model="genomic" view="Protein.id Protein.enzymes.id" longDescription="" sortOrder="Protein.id asc">
+    <constraint path="Protein.id" editable="true" description="Protein.id" op="=" value="0"/>
   </query>
 </template>
-<template name="Protein_GOSlim" title="Protein(s) --&gt; GOSlim annotations" comment="">
-  <query name="Protein_GOSlim" model="genomic" view="Protein.primaryIdentifier Protein.primaryAccession Protein.name Protein.goAnnotation.evidence.code.code Protein.organism.name Protein.goAnnotation.goSlimTerms.identifier Protein.goAnnotation.goSlimTerms.name Protein.goAnnotation.goSlimTerms.namespace" longDescription="Given a protein or a list of proteins, find all GOSlim annotations." sortOrder="Protein.primaryIdentifier asc">
-    <constraint path="Protein" editable="true" description="" op="LOOKUP" value="P22301"/>
-  </query>
-</template>
-<template name="CompoundGroup_TargetProtein" title="CompoundGroup--&gt;TargetProtein" comment="">
-  <query name="CompoundGroup_TargetProtein" model="genomic" view="CompoundGroup.identifier CompoundGroup.name CompoundGroup.compounds.targetProteins.protein.primaryIdentifier CompoundGroup.compounds.targetProteins.protein.primaryAccession CompoundGroup.compounds.targetProteins.protein.name CompoundGroup.compounds.targetProteins.protein.organism.name CompoundGroup.compounds.targetProteins.dataSet.name" longDescription="Given a compound group or a list of compound group, find all target proteins." sortOrder="CompoundGroup.identifier asc">
-    <constraint path="CompoundGroup" editable="true" op="LOOKUP" value="imatinib"/>
-  </query>
-</template>
-<template name="Gene_GOSlim" title="Gene(s) --&gt; GO Slim Annotation" comment="">
-  <query name="Gene_GOSlim" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.shortName Gene.goAnnotation.evidence.code.code Gene.goAnnotation.goSlimTerms.identifier Gene.goAnnotation.goSlimTerms.name Gene.goAnnotation.goSlimTerms.namespace" longDescription="Given a gene or a list of genes, find all GO Slim annotations." sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" description="" op="LOOKUP" value="3676"/>
-  </query>
-</template>
-<template name="CATH_Protein" title="CATH classification --&gt; Proteins" comment="">
-  <query name="CATH_Protein" model="genomic" view="Protein.primaryAccession Protein.name Protein.structuralDomains.start Protein.structuralDomains.end Protein.structuralDomains.cathClassification.cathCode Protein.structuralDomains.cathClassification.description" longDescription="Given a CATH node, find all proteins which are assigned with this structural domain by Gene3D." sortOrder="Protein.primaryAccession asc">
-    <pathDescription pathString="Protein.structuralDomains.cathClassification" description="Classification"/>
-    <pathDescription pathString="Protein.structuralDomains" description="Region"/>
-    <constraint path="Protein.structuralDomains.cathClassification" editable="true" op="LOOKUP" value="3.40.50.1910"/>
-  </query>
-</template>
-<template name="Gene_Relation" title="Gene(s) --&gt; Relations" comment="">
-  <query name="Gene_Relation" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.types.name Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name" longDescription="Given a gene or a list of gene, find the relations the gene involved in. (to be refined)" sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" op="LOOKUP" value="6774"/>
-  </query>
-</template>
-<template name="Gene_RelationTypeSet" title="Gene(s) + Relation type set --&gt; Downstream gene(s)" comment="">
-  <query name="Gene_RelationTypeSet" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.organism.name Gene.relations.text Gene.relations.gene2.primaryIdentifier Gene.relations.gene2.symbol Gene.relations.gene2.organism.name Gene.relations.pathways.identifier" longDescription="Given a gene or a list of genes and a specific set of the relation types, find all downstream genes and the related pathways." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Gene" code="A" editable="true" op="LOOKUP" value="STAT3" extraValue="H. sapiens"/>
-    <constraint path="Gene.relations.text" code="B" editable="true" op="=" value="activation, indirect effect"/>
-  </query>
-</template>
-<template name="Protein_Bioactivity" title="Protein(s) --&gt; Compounds with bioactivities" comment="">
-  <query name="Protein_Bioactivity" model="genomic" view="Protein.primaryIdentifier Protein.primaryAccession Protein.compounds.compound.identifier Protein.compounds.activities.type Protein.compounds.activities.conc" longDescription="Given a protein or a list of proteins, show the compounds which target the protein(s) with known bioactivities (IC50, Kd and Ki by the unit nM)." sortOrder="Protein.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Protein" code="A" editable="true" op="LOOKUP" value="APOB_HUMAN"/>
-    <constraint path="Protein.compounds.activities.conc" code="B" editable="false" description="" op="IS NOT NULL"/>
-  </query>
-</template>
-<template name="Protein_Namespace_GOterms" title="Protein(s) --&gt; GO terms of a specific name space" comment="">
-  <query name="Protein_Namespace_GOterms" model="genomic" view="Protein.primaryAccession Protein.primaryIdentifier Protein.organism.name Protein.goAnnotation.ontologyTerm.namespace Protein.goAnnotation.ontologyTerm.identifier Protein.goAnnotation.ontologyTerm.name" longDescription="GIveb a protein or a list of proteins, find the GO annotations in a specific name space (biological_process, cellular_component or molecular_function)." sortOrder="Protein.primaryAccession asc" constraintLogic="A and B">
-    <pathDescription pathString="Protein.goAnnotation" description="GOAnnotation"/>
-    <constraint path="Protein" code="A" editable="true" op="LOOKUP" value="P45954"/>
-    <constraint path="Protein.goAnnotation.ontologyTerm.namespace" code="B" editable="true" op="=" value="cellular_component"/>
-  </query>
-</template>
-<template name="UniprotType_Protein" title="Type of UniProt Feature --&gt; Proteins" comment="">
-  <query name="UniprotType_Protein" model="genomic" view="Protein.features.type Protein.features.start Protein.features.end Protein.features.description Protein.primaryIdentifier Protein.primaryAccession Protein.name Protein.organism.name" longDescription="Given an UniProt feature type, find all proteins of a specific species that contain this feature." sortOrder="Protein.primaryIdentifier asc" constraintLogic="A and B">
-    <constraint path="Protein.features.type" code="A" editable="true" description="" op="=" value="DNA-binding region"/>
-    <constraint path="Protein.organism.shortName" code="B" editable="true" op="=" value="H. sapiens"/>
-  </query>
-</template>
-<template name="CATH_Druggability" title="CATH Homologous Superfamily --&gt; Druggability" comment="">
-  <query name="CATH_Druggability" model="genomic" view="CathClassification.parents.code CathClassification.level CathClassification.regions.proteinChain.structure.pdbId CathClassification.regions.proteinChain.structure.druggabilities.primaryIdentifier CathClassification.regions.proteinChain.structure.druggabilities.druggable CathClassification.regions.proteinChain.structure.druggabilities.tractable CathClassification.regions.proteinChain.structure.druggabilities.ensembl" longDescription="Given a CATH Homologous Superfamily code, find the druggability of known protein structures within the same superfamily. &lt;br/&gt; &lt;b&gt;NOTE:&lt;/b&gt; You can use the &lt;a href=&quot;/targetmine/template.do?name=Protein_Gene3D&quot;&gt;Protein --&gt; Gene3D&lt;/a&gt; template first to identify the CATH superfamily, then run this template to check the druggabilities." sortOrder="CathClassification.parents.code asc">
-    <constraint path="CathClassification.parents.code" editable="true" description="Homologous Superfamily" op="=" value="1.10.1000.11"/>
-  </query>
-</template>
-<template name="Drug_JSCCCodes" title="Drug --&gt; JSCC Codes" comment="">
-  <query name="Drug_JSCCCodes" model="genomic" view="DrugCompound.identifier DrugCompound.name DrugCompound.jsccCodes.jsccCode DrugCompound.jsccCodes.name" longDescription="Given a drug or a list of drugs, retrieve the corresponding classification of Japan Standard Commodity Classification (JSCC)." sortOrder="DrugCompound.identifier asc">
-    <constraint path="DrugCompound" editable="true" op="LOOKUP" value="Phenol"/>
-  </query>
-</template>
-<template name="EFO_GWAS_Gene" title="EFO --&gt; Related Genes" comment="">
-  <query name="EFO_GWAS_Gene" model="genomic" view="GenomeWideAssociation.snp.relatedGenes.gene.primaryIdentifier GenomeWideAssociation.snp.relatedGenes.gene.symbol GenomeWideAssociation.snp.relatedGenes.gene.name GenomeWideAssociation.snp.relatedGenes.gene.organism.name" longDescription="Given an EFO term or al list of EFO terms, find the associated genes from the genome wide association studies.">
-    <constraint path="GenomeWideAssociation.efoTerms" editable="true" op="LOOKUP" value="Parkinson's disease"/>
-  </query>
-</template>
-<template name="EFO_GWAS_Gene_Pathway" title="EFO --&gt; Related Pathways" comment="">
-  <query name="EFO_GWAS_Gene_Pathway" model="genomic" view="GenomeWideAssociation.snp.relatedGenes.gene.pathways.identifier GenomeWideAssociation.snp.relatedGenes.gene.pathways.name GenomeWideAssociation.snp.relatedGenes.gene.pathways.dataSets.name" longDescription="Given an EFO term or al list of EFO terms, find the pathways of the associated genes from the genome wide association studies." sortOrder="GenomeWideAssociation.snp.relatedGenes.gene.pathways.identifier asc">
-    <constraint path="GenomeWideAssociation.efoTerms" editable="true" op="LOOKUP" value="Parkinson's disease"/>
-  </query>
-</template>
-<template name="Enzyme_Gene_Ontology" title="Enzyme --&gt; Gene Ontology" comment="">
-  <query name="Enzyme_Gene_Ontology" model="genomic" view="Enzyme.ecNumber Enzyme.description Enzyme.proteins.primaryAccession Enzyme.proteins.name Enzyme.proteins.goAnnotation.ontologyTerm.identifier Enzyme.proteins.goAnnotation.ontologyTerm.name Enzyme.proteins.goAnnotation.ontologyTerm.namespace" longDescription="For given enzymes, show the Gene Ontology (GO) terms of a specific name space." sortOrder="Enzyme.ecNumber asc" constraintLogic="A and B">
-    <join path="Enzyme.proteins" style="OUTER"/>
-    <join path="Enzyme.proteins.goAnnotation" style="OUTER"/>
-    <constraint path="Enzyme" code="A" editable="true" description="" op="LOOKUP" value="1.1.1.1"/>
-    <constraint path="Enzyme.proteins.goAnnotation.ontologyTerm.namespace" code="B" editable="true" description="" op="=" value="molecular_function"/>
-  </query>
-</template>
-<template name="Enzyme_PDB" title="Enzyme(s) --&gt; PDB entries" comment="">
-  <query name="Enzyme_PDB" model="genomic" view="Enzyme.ecNumber Enzyme.description Enzyme.proteins.primaryAccession Enzyme.proteins.proteinStructureRegions.chain.pdbId Enzyme.proteins.proteinStructureRegions.chain.chain Enzyme.proteins.proteinStructureRegions.chain.structure.resolution Enzyme.proteins.proteinStructureRegions.chain.structure.experimentType" longDescription="Retrieve PDB entries for an enzyme or a list of enzymes." sortOrder="Enzyme.ecNumber asc">
-    <pathDescription pathString="Enzyme.proteins.proteinStructureRegions.chain.structure" description="Structure"/>
-    <pathDescription pathString="Enzyme.proteins" description="Protein"/>
-    <pathDescription pathString="Enzyme.proteins.proteinStructureRegions.chain" description="Structure"/>
-    <constraint path="Enzyme" editable="true" description="" op="LOOKUP" value="1.1.1.1"/>
-  </query>
-</template>
-<template name="GOtermidentifier_name" title="GO term identifier --&gt; GO term name." comment="">
-  <query name="GOtermidentifier_name" model="genomic" view="GOTerm.identifier GOTerm.name GOTerm.description" longDescription="Give the GO term name for a particular GO term identifier. (Data Source: GO)" sortOrder="GOTerm.identifier asc">
-    <constraint path="GOTerm.identifier" editable="true" description="" op="=" value="GO:0007350"/>
-  </query>
-</template>
-<template name="GOname_GOidentifier" title="GO term name --&gt; GO term identifier." comment="">
-  <query name="GOname_GOidentifier" model="genomic" view="GOTerm.name GOTerm.identifier GOTerm.description" longDescription="Find the GO identifier for a specific term." sortOrder="GOTerm.name asc">
-    <constraint path="GOTerm.name" editable="true" description="" op="LIKE" value="*blastoderm*"/>
-  </query>
-</template>
-<template name="Gene_particularGoannotation" title="Gene + GO term name --&gt; Gene with the GO term name." comment="">
-  <query name="Gene_particularGoannotation" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.goAnnotation.ontologyTerm.identifier Gene.goAnnotation.ontologyTerm.name" longDescription="Show if the following gene has the following GO term." sortOrder="Gene.primaryIdentifier asc" constraintLogic="A and B">
-    <pathDescription pathString="Gene.goAnnotation.ontologyTerm" description="GO annotation &gt; Term"/>
-    <constraint path="Gene" code="A" editable="true" description="For the gene(s):" op="LOOKUP" value="ENSG00000148680"/>
-    <constraint path="Gene.goAnnotation.ontologyTerm.name" code="B" editable="true" description="GO Term" op="=" value="*signal*"/>
-  </query>
-</template>
-<template name="Gene_info" title="Gene --&gt; General information" comment="">
-  <query name="Gene_info" model="genomic" view="Gene.primaryIdentifier Gene.symbol Gene.name Gene.organism.shortName" longDescription="Display general information for a gene." sortOrder="Gene.primaryIdentifier asc">
-    <constraint path="Gene" editable="true" op="LOOKUP" value="3633"/>
-  </query>
-</template>
-<template name="ProbeSet_Ortholog" title="Probe(s) --&gt; Orthologus probe(s)" comment="">
-  <query name="ProbeSet_Ortholog" model="genomic" view="ProbeSet.probeSetId ProbeSet.genes.primaryIdentifier ProbeSet.genes.symbol ProbeSet.genes.organism.name ProbeSet.genes.proteins.orthologProteins.genes.primaryIdentifier ProbeSet.genes.proteins.orthologProteins.genes.symbol ProbeSet.genes.proteins.orthologProteins.genes.organism.name ProbeSet.genes.proteins.orthologProteins.genes.probeSets.probeSetId" longDescription="Given a probe set ID (Affymetrix ) or a list of probe set IDs, convert to the orthologus probes of the specific species. The query probe is converted to gene then orthologus gene then to the probe(s)." sortOrder="ProbeSet.probeSetId asc" constraintLogic="B and C">
-    <constraint path="ProbeSet" code="C" editable="true" op="LOOKUP" value="1415670_at"/>
-    <constraint path="ProbeSet.genes.proteins.orthologProteins.organism.shortName" code="B" editable="true" op="=" value="H. sapiens"/>
-  </query>
-</template>
-<template name="Protein_GOterms" title="Protein --&gt; GO terms." comment="">
-  <query name="Protein_GOterms" model="genomic" view="Protein.primaryAccession Protein.goAnnotation.ontologyTerm.namespace Protein.goAnnotation.ontologyTerm.identifier Protein.goAnnotation.ontologyTerm.name" longDescription="Search for GO annotations for a particular protein." sortOrder="Protein.primaryAccession asc">
-    <pathDescription pathString="Protein.goAnnotation" description="GOAnnotation"/>
-    <constraint path="Protein" editable="true" description="" op="LOOKUP" value="P45954"/>
-  </query>
-</template>
-<template name="Protein_ProteinDomain" title="Protein --&gt; Protein Domains in the specified database" comment="">
-  <query name="Protein_ProteinDomain" model="genomic" view="Protein.primaryAccession Protein.name Protein.proteinDomainRegions.originalDb Protein.proteinDomainRegions.originalId Protein.proteinDomainRegions.start Protein.proteinDomainRegions.end Protein.proteinDomainRegions.proteinDomain.primaryIdentifier Protein.proteinDomainRegions.proteinDomain.name" longDescription="For given protein(s), list all domains in the specified database." sortOrder="Protein.primaryAccession asc" constraintLogic="D and A">
-    <pathDescription pathString="Protein.proteinDomainRegions" description="Domain"/>
-    <pathDescription pathString="Protein.proteinDomainRegions.proteinDomain" description="InterPro"/>
-    <constraint path="Protein" code="A" editable="true" description="" op="LOOKUP" value="P01031"/>
-    <constraint path="Protein.proteinDomainRegions.originalDb" code="D" editable="true" description="" op="=" value="Pfam"/>
-  </query>
-</template>
-<template name="Protein_DNA_ProteinStructure" title="Protein --&gt; Protein structures co-crystalized with DNA" comment="">
-  <query name="Protein_DNA_ProteinStructure" model="genomic" view="Protein.primaryAccession Protein.name Protein.organism.name Protein.proteinStructureRegions.chain.structure.pdbId" longDescription="Given a protein or a list of proteins, give me all the protein structures that have been co-crystalized with DNA." sortOrder="Protein.primaryAccession asc" constraintLogic="A and B">
-    <constraint path="Protein.proteinStructureRegions.chain.structure.chains.moleculeType" code="A" editable="false" description="" op="=" value="DNA"/>
-    <constraint path="Protein" code="B" editable="true" op="LOOKUP" value="P29372"/>
-  </query>
-</template>
-<template name="ProteinDomain_Protein" title="Protein Domain --&gt; Proteins" comment="">
-  <query name="ProteinDomain_Protein" model="genomic" view="Protein.proteinDomainRegions.proteinDomain.primaryIdentifier Protein.proteinDomainRegions.proteinDomain.name Protein.primaryAccession Protein.name Protein.organism.shortName" longDescription="For given protein domain, list all proteins which contain this domain." sortOrder="Protein.primaryAccession asc" constraintLogic="A and B">
-    <pathDescription pathString="Protein.proteinDomainRegions.proteinDomain" description="Protein Domain"/>
-    <pathDescription pathString="Protein.organism" description="Organism"/>
-    <constraint path="Protein.proteinDomainRegions.proteinDomain" code="A" editable="true" description="" op="LOOKUP" value="IPR000904"/>
-    <constraint path="Protein.organism" code="B" editable="true" description="" op="LOOKUP" value="Homo sapiens"/>
-  </query>
-</template>
-<template name="ProteinRegion_UniprotFeature" title="Protein region --&gt; UniProt features" comment="">
-  <query name="ProteinRegion_UniprotFeature" model="genomic" view="Protein.features.start Protein.features.end Protein.features.type Protein.features.description" longDescription="Given a protein and a region of the protein, list all known features in this region." sortOrder="Protein.features.type asc" constraintLogic="A and B and C">
-    <constraint path="Protein" code="A" editable="true" op="LOOKUP" value="STAT3_HUMAN"/>
-    <constraint path="Protein.features.end" code="B" editable="true" description="FROM" op="&gt;=" value="700"/>
-    <constraint path="Protein.features.start" code="C" editable="true" description="TO" op="&lt;=" value="750"/>
-  </query>
-</template>
-<template name="Protein_Gene3D" title="Protein(s) --&gt; Gene3D CATH classification annotations" comment="">
-  <query name="Protein_Gene3D" model="genomic" view="Protein.primaryAccession Protein.name Protein.structuralDomains.start Protein.structuralDomains.end Protein.structuralDomains.cathClassification.cathCode Protein.structuralDomains.cathClassification.description" longDescription="Given a protein or a list of proteins, list all structural domains (CATH) assigned by Gene3D. &lt;br/&gt; &lt;b&gt;NOTE:&lt;/b&gt; You can run this template followed by the &lt;a href=&quot;/targetmine/template.do?name=CATH_Druggability&quot;&gt;CATH Homologous Superfamily --&gt; Druggability&lt;/a&gt; template to check the druggabilities of those domains." sortOrder="Protein.primaryAccession asc">
-    <pathDescription pathString="Protein.structuralDomains.cathClassification" description="Classification"/>
-    <pathDescription pathString="Protein.structuralDomains" description="Region"/>
-    <constraint path="Protein" editable="true" op="LOOKUP" value="A0AR27"/>
+<template name="Protein_To_Gene_Type_Converter" title="Protein to gene type converter" comment="">
+  <query name="Protein_To_Gene_Type_Converter" model="genomic" view="Protein.id Protein.genes.id" longDescription="" sortOrder="Protein.id asc">
+    <constraint path="Protein.id" editable="true" description="Protein.id" op="=" value="0"/>
   </query>
 </template>
 </template-queries>
 <tags>
+  <tag name="im:public" objectIdentifier="Gene_Pathway" type="template">
+  </tag>
+  <tag name="im:public" objectIdentifier="Protein_Pathway" type="template">
+  </tag>
   <tag name="im:public" objectIdentifier="Gene_Protein" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Organism_Protein" type="template">
+  <tag name="im:public" objectIdentifier="Gene_Enzyme" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="All_Proteins_In_Organism_To_Publications" type="template">
+  <tag name="im:public" objectIdentifier="ProbeSet_Gene" type="template">
   </tag>
-    <tag name="im:frontpage" objectIdentifier="Gene_Protein" type="template">
+  <tag name="im:public" objectIdentifier="Protein_Gene" type="template">
   </tag>
-  <tag name="im:frontpage" objectIdentifier="Organism_Protein" type="template">
+  <tag name="im:public" objectIdentifier="Gene_Orthologues" type="template">
   </tag>
-  <tag name="im:frontpage" objectIdentifier="All_Proteins_In_Organism_To_Publications" type="template">
+  <tag name="im:frontpage" objectIdentifier="Gene_Pathway" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="GOtermidentifier_name" type="template">
+  <tag name="im:frontpage" objectIdentifier="Protein_Pathway" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Gene_GO" type="template">
+  <tag name="im:frontpage" objectIdentifier="Gene_Protein" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Gene_Identifiers" type="template">
+  <tag name="im:frontpage" objectIdentifier="Gene_Enzyme" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Gene_allGOTerms" type="template">
+  <tag name="im:frontpage" objectIdentifier="ProbeSet_Gene" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Gene_particularGoannotation" type="template">
+  <tag name="im:frontpage" objectIdentifier="Protein_Gene" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Organism_GoTerm_Gene" type="template">
+  <tag name="im:frontpage" objectIdentifier="Gene_Orthologues" type="template">
   </tag>
-  <tag name="im:public" objectIdentifier="Organism_GoTerm_GeneWithannotation" type="template">
-  </tag>
-  <tag name="im:public" objectIdentifier="Protein_GOterms" type="template">
-  </tag>
-  <tag name="im:public" objectIdentifier="Protein_GOtermsSpecificOntology" type="template">
-  </tag>
-  <tag name="im:frontpage" objectIdentifier="Protein_GOterms" type="template">
-  </tag>
-  <tag name="im:frontpage" objectIdentifier="Gene_allGOTerms" type="template">
-  </tag>
-  <tag name="im:frontpage" objectIdentifier="Organism_GoTerm_GeneWithannotation" type="template">
-  </tag>
-  <tag name="im:frontpage" objectIdentifier="Gene_GO" type="template">
+  <tag name="im:aspect:Genes" objectIdentifier="Gene_Pathway" type="template">
   </tag>
   <tag name="im:aspect:Genes" objectIdentifier="Gene_Protein" type="template">
   </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="GO_name_Gene" type="template">
+  <tag name="im:aspect:Genes" objectIdentifier="Gene_Enzyme" type="template">
   </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Organism_GoTerm_Gene" type="template">
+  <tag name="im:aspect:Proteins" objectIdentifier="Protein_Pathway" type="template">
   </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Gene_particularGoannotation" type="template">
+  <tag name="im:aspect:Proteins" objectIdentifier="Protein_Gene" type="template">
   </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Gene_allGOTerms" type="template">
+  <tag name="im:aspect:Genes" objectIdentifier="Protein_Gene" type="template">
   </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Gene_GO" type="template">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="LocatedSequenceFeature.overlappingFeatures" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Chromosome.genes" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="LocatedSequenceFeature.chromosome" type="reference">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.Transcript" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Gene.transcripts" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Gene.UTRs" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="LocatedSequenceFeature.chromosomeLocation" type="reference">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Chromosome.transcripts" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.GOTerm" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.Gene" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.NcRNA" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="LocatedSequenceFeature.sequence" type="reference">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="CDS.MRNA" type="reference">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.UTR" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Transcript.gene" type="reference">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.ChromosomeBand" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Protein.genes" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.Chromosome" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="MRNA.UTRs" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.SnoRNA" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.MRNA" type="class">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Transcript.introns" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="Chromosome.features" type="collection">
-  </tag>
-  <tag name="im:aspect:Genes" objectIdentifier="org.intermine.model.bio.TFBindingSite" type="class">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Gene_Protein" type="template">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Protein_GOtermsSpecificOntology" type="template">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="org.intermine.model.bio.Protein" type="class">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Gene.proteins" type="collection">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Protein.sequence" type="reference">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="org.intermine.model.bio.ProteinDomain" type="class">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="CDS.polypeptides" type="collection">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="org.intermine.model.bio.ProteinInteraction" type="class">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="CDS.protein" type="reference">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="ProteinInteraction.protein" type="reference">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Protein.proteinDomains" type="collection">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Protein.features" type="collection">
-  </tag>
-  <tag name="im:aspect:Proteins" objectIdentifier="Protein.keywords" type="collection">
-  </tag>
-  <tag name="im:converter" objectIdentifier="Protein_To_Gene_Type_Converter" type="template">
-  </tag>
-  <tag name="im:converter" objectIdentifier="Gene_To_Protein_Type_Converter" type="template">
-  </tag>
-  <tag name="im:hidden" objectIdentifier="BioEntity.objects" type="collection">
-  </tag>
-  <tag name="im:hidden" objectIdentifier="BioEntity.subjects" type="collection">
-  </tag>
-  <tag name="im:hidden" objectIdentifier="BioEntity.relations" type="collection">
-  </tag>
-  <tag name="im:hidden" objectIdentifier="Evidence.relations" type="collection">
+  <tag name="im:aspect:Genes" objectIdentifier="Gene_Orthologues" type="template">
   </tag>
   <tag name="im:preferredBagType" objectIdentifier="org.intermine.model.bio.Gene" type="class">
   </tag>
   <tag name="im:preferredBagType" objectIdentifier="org.intermine.model.bio.Protein" type="class">
   </tag>
-  <tag name="im:summary" objectIdentifier="Protein.comments" type="collection">
+  <tag name="im:converter" objectIdentifier="Protein_To_Gene_Type_Converter" type="template">
   </tag>
-  <tag name="im:summary" objectIdentifier="RegulatoryRegion.gene" type="reference">
+  <tag name="im:converter" objectIdentifier="Protein_To_Enzyme_Type_Converter" type="template">
   </tag>
-  <tag name="im:summary" objectIdentifier="BioEntity.synonyms" type="collection">
+  <tag name="im:converter" objectIdentifier="ProbeSet_Gene_Conv" type="template">
   </tag>
-  <tag name="im:summary" objectIdentifier="Gene.proteins" type="collection">
+  <tag name="im:converter" objectIdentifier="Gene_To_Protein_Type_Converter" type="template">
   </tag>
-  <tag name="im:summary" objectIdentifier="MicroarrayOligo.transcript" type="reference">
-  </tag>
-  <tag name="im:summary" objectIdentifier="BioEntity.organism" type="reference">
-  </tag>
-  <tag name="im:summary" objectIdentifier="Protein.genes" type="collection">
-  </tag>
-  <tag name="im:summary" objectIdentifier="BindingSite.factor" type="reference">
-  </tag>
-  <tag name="im:summary" objectIdentifier="Gene.publications" type="collection">
-  </tag>
-  <tag name="im:summary" objectIdentifier="Protein.publications" type="collection">
+  <tag name="im:converter" objectIdentifier="DrugCompound_To_CompoundGroup_Type_Converter" type="template">
   </tag>
 </tags>
 </userprofile>

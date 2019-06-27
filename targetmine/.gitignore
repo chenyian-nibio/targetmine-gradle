@@ -19,3 +19,8 @@ productionLog
 .classpath
 .project
 
+publications.xml
+organisms.xml
+genes.txt
+*.json.txt
+
