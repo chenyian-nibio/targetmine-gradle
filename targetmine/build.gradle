@@ -58,17 +58,15 @@ subprojects {
 }
 
 task clean(type: Delete) {
-    println "cleaning"
-    delete "idresolver.cache"
-    println "deleting idresolver cache"
-    delete "datasources.xml"
-    println "deleting datasources.xml"
+    println "cleaning..."
     delete "organisms.xml"
-    println "deleting organisms.xml"
+    println "delete organisms.xml"
     delete "publications.xml"
-    println "deleting publications.xml"
+    println "delete publications.xml"
+    delete "genes.xml"
+    println "delete genes.xml"
     delete fileTree('.') {
         include '*.log'
     }
-    println "deleted log files"
+    println "delete log files"
 }

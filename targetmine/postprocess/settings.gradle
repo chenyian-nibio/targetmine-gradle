@@ -6,7 +6,9 @@ include ':bio-postprocess-associate-gene-to-cluster',
         ':bio-postprocess-integrated-pathway-clustering',
         ':bio-postprocess-network-analysis',
         ':bio-postprocess-transcribe-drugbank',
-        ':bio-postprocess-transcribe-ncbiGeneId'
+        ':bio-postprocess-transcribe-ncbiGeneId',
+        ':bio-postprocess-remove-casreg'
+        
 
 project(':bio-postprocess-associate-gene-to-cluster').projectDir = new File(settingsDir, './associate-gene-to-cluster')
 project(':bio-postprocess-calculate-biotheme-background').projectDir = new File(settingsDir, './calculate-biotheme-background')
@@ -15,3 +17,4 @@ project(':bio-postprocess-integrated-pathway-clustering').projectDir = new File(
 project(':bio-postprocess-network-analysis').projectDir = new File(settingsDir, './network-analysis')
 project(':bio-postprocess-transcribe-drugbank').projectDir = new File(settingsDir, './transcribe-drugbank')
 project(':bio-postprocess-transcribe-ncbiGeneId').projectDir = new File(settingsDir, './transcribe-ncbiGeneId')
+project(':bio-postprocess-remove-casreg').projectDir = new File(settingsDir, './remove-casreg')

@@ -25,11 +25,8 @@ import org.intermine.postprocess.PostProcessor;
 public class TranscribeNcbiGeneId extends PostProcessor {
 	private static final Logger LOG = Logger.getLogger(TranscribeNcbiGeneId.class);
 	
-	protected ObjectStoreWriter osw;
-
 	public TranscribeNcbiGeneId(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 	}
 	
 	public void transcribeIdentifeir() {
@@ -50,11 +47,9 @@ public class TranscribeNcbiGeneId extends PostProcessor {
 				osw.store(gene);
 			}
 			
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (ObjectStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

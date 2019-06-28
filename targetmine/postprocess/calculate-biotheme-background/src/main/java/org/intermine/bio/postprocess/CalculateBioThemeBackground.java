@@ -42,8 +42,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 	private static final List<String> PROCESS_TAXONIDS = Arrays.asList("9606", "10090", "10116");
 
-	protected ObjectStoreWriter osw;
-
 	protected Connection connection;
 
 	private Model model;
@@ -52,7 +50,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 	public CalculateBioThemeBackground(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 		model = Model.getInstanceByName("genomic");
 
 		getOrganism(PROCESS_TAXONIDS);
@@ -93,8 +90,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 			ResultsRow<?> result = (ResultsRow<?>) iterator.next();
 			Organism organism = (Organism) result.get(0);
 			organismMap.put(organism.getTaxonId(), organism);
-			// System.out.println(String.format("%s (%d) ID: %d", organism.getShortName(),
-			// organism.getTaxonId(), organism.getId()));
 		}
 
 	}
@@ -202,7 +197,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 			statement.close();
 
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (SQLException e) {
@@ -299,8 +293,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 					resultN.next();
 					int count = resultN.getInt("count");
 					osw.store(createStatisticsItem("Pathway N", "Gene", dataSetName, count, taxonId));
-					// System.out.println(String.format("(%d) %s - %s: %d", taxonId,
-					// "Pathway class", dataSetName, count));
 				}
 
 				ResultSet resultN = statement
@@ -407,7 +399,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 			
 			statement.close();
 			
-//			 osw.abortTransaction();
 			osw.commitTransaction();
 			
 		} catch (SQLException e) {
@@ -557,7 +548,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 			statement.close();
 
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (SQLException e) {
@@ -682,7 +672,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 			statement.close();
 
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (SQLException e) {
@@ -826,7 +815,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 			statement.close();
 
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (SQLException e) {
@@ -931,7 +919,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 			
 			statement.close();
 			
-			// osw.abortTransaction();
 			osw.commitTransaction();
 			
 		} catch (SQLException e) {
@@ -1075,7 +1062,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 			statement.close();
 
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (SQLException e) {
@@ -1227,7 +1213,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 			statement.close();
 
-			// osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (SQLException e) {
@@ -1239,7 +1224,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	}
 
 	private String getSqlQueryForGOSlimClassOfProtein(String taxonId, boolean withIEA) {
-		// TODO
 		String sql = " select count(distinct(pr.id)), gost.namespace " + " from gene as g "
 				+ " join genesproteins as gpr on gpr.genes = g.id "
 				+ " join protein as pr on pr.id = gpr.proteins "
@@ -1259,7 +1243,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	}
 
 	private String getSqlQueryForGOSlimTermOfProtein(String taxonId, String namespace, boolean withIEA) {
-		// TODO
 		String sqlQuery = " select pgost.identifier, count(distinct(pr.id)) " + " from gene as g "
 				+ " join genesproteins as gpr on gpr.genes = g.id "
 				+ " join protein as pr on pr.id = gpr.proteins "
@@ -1383,7 +1366,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 			
 			statement.close();
 			
-			// osw.abortTransaction();
 			osw.commitTransaction();
 			
 		} catch (SQLException e) {
@@ -1395,7 +1377,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	}
 	
 	private String getSqlQueryForGOSlimClassOfProbeSet(String taxonId, boolean withIEA) {
-		// TODO
 		String sql = " select count(distinct(ps.id)), gost.namespace " + " from gene as g "
 				+ " join genesprobesets as gps on gps.genes = g.id " 
 				+ " join probeset as ps on ps.id = gps.probesets"
@@ -1415,7 +1396,6 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	}
 	
 	private String getSqlQueryForGOSlimTermOfProbeSet(String taxonId, String namespace, boolean withIEA) {
-		// TODO
 		String sqlQuery = " select pgost.identifier, count(distinct(ps.id)) " + " from gene as g "
 				+ " join genesprobesets as gps on gps.genes = g.id " 
 				+ " join probeset as ps on ps.id = gps.probesets"

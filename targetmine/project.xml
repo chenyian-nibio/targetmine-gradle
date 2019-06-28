@@ -448,7 +448,7 @@
     </source>
 
     <source name="fill-missing-genes" type="fill-missing-genes">
-      <property name="src.data.file" location="genes.txt"/>
+      <property name="src.data.file" location="genes.xml"/>
     </source>
 
     <!--  do nothing but add the necessary data model for the post-processing -->

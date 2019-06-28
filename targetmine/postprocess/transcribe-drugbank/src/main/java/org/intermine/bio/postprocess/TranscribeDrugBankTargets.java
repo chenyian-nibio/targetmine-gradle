@@ -29,13 +29,10 @@ public class TranscribeDrugBankTargets extends PostProcessor {
 
 	private static final Logger LOG = Logger.getLogger(TranscribeDrugBankTargets.class);
 	
-	protected ObjectStoreWriter osw;
-
 	private Model model;
 
 	public TranscribeDrugBankTargets(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 		model = Model.getInstanceByName("genomic");
 	}
 	
@@ -85,9 +82,6 @@ public class TranscribeDrugBankTargets extends PostProcessor {
 				
 			}
 			
-//			System.out.println("toBeProcessed.size(): " + keggDrugItems.size());
-//			System.out.println("drugBankItems.size(): " + drugBankItems.size());
-			
 			int count = 0;
 			for (InterMineObject kdi : keggDrugItems) {
 				String dbid = (String) kdi.getFieldValue("drugBankId");
@@ -109,7 +103,6 @@ public class TranscribeDrugBankTargets extends PostProcessor {
 			}
 			System.out.println("processed number: " + count);
 			
-//			osw.abortTransaction();
 			osw.commitTransaction();
 
 		} catch (ObjectStoreException e) {

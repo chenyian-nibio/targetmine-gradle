@@ -50,13 +50,10 @@ import com.google.common.primitives.Ints;
 public class IntegratedPathwayClustering extends PostProcessor {
 	private static final Logger LOG = Logger.getLogger(IntegratedPathwayClustering.class);
 
-	protected ObjectStoreWriter osw;
-
 	private Model model;
 
 	public IntegratedPathwayClustering(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 		model = Model.getInstanceByName("genomic");
 	}
 
@@ -112,7 +109,6 @@ public class IntegratedPathwayClustering extends PostProcessor {
 					pathwayMap.put(pathwayIdentifier, pathway);
 				}
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -277,24 +273,17 @@ public class IntegratedPathwayClustering extends PostProcessor {
 			}
 
 			osw.commitTransaction();
-			// osw.abortTransaction();
 
 		} catch (ObjectStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
-			// FileWriter writer = new FileWriter("lt600.hie.co70." + speciesCode);
-			// writer.write(sb.toString());
-			// writer.close();
 			FileWriter writer = new FileWriter(speciesCode + ".json.txt");
 			writer.write(json.exportString());
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

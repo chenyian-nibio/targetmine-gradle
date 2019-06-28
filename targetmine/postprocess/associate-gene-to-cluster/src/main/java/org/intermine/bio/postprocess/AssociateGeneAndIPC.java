@@ -37,13 +37,10 @@ public class AssociateGeneAndIPC extends PostProcessor {
 
 	private static final Logger LOG = Logger.getLogger(AssociateGeneAndIPC.class);
 
-	protected ObjectStoreWriter osw;
-
 	private Model model;
 
 	public AssociateGeneAndIPC(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 		model = Model.getInstanceByName("genomic");
 	}
 

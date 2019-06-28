@@ -38,15 +38,12 @@ public class CoExpressionInteraction extends PostProcessor {
 	
 	private static final Logger LOG = Logger.getLogger(CoExpressionInteraction.class);
 	
-	protected ObjectStoreWriter osw;
-
 	private Model model;
 	
 	private static final String COEXP_FILE_NAME = "/data/bio/db/Targetmine/coexp/coexp-genes-all-ranks.id.txt";
 
 	public CoExpressionInteraction(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 		model = Model.getInstanceByName("genomic");
 	}
 	

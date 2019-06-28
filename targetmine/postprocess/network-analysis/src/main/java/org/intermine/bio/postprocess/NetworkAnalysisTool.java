@@ -64,13 +64,10 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 	private static final int CUT_OFF_PERCENTAGE = 10; // top 10 percent as bottle and hub
 
-	protected ObjectStoreWriter osw;
-
 	private Model model;
 
 	public NetworkAnalysisTool(ObjectStoreWriter osw) {
 		super(osw);
-		this.osw = osw;
 		model = Model.getInstanceByName("genomic");
 	}
 
@@ -79,13 +76,11 @@ public class NetworkAnalysisTool extends PostProcessor {
 		InterMineObject dataSource = (InterMineObject) DynamicUtil.simpleCreateObject(model
 				.getClassDescriptorByName("DataSource").getType());
 		dataSource.setFieldValue("name", "TargetMine");
-		// dataSource.setFieldValue("url","http://targetmine.mizuguchilab.org");
 		InterMineObject dataSet = (InterMineObject) DynamicUtil.simpleCreateObject(model
 				.getClassDescriptorByName("DataSet").getType());
 		dataSet.setFieldValue("name", "TargetMine");
 		dataSet.setFieldValue("dataSource", dataSource);
 		dataSet.setFieldValue("description", "TargetMine interactome analysis");
-		// dataSet.setFieldValue("url","http://targetmine.mizuguchilab.org");
 		try {
 			osw.store(dataSource);
 			osw.store(dataSet);
@@ -351,9 +346,8 @@ public class NetworkAnalysisTool extends PostProcessor {
 								+ "' and o2.taxonid = '"
 								+ taxonId
 								+ "' and ( intd.type = 'physical' or intd.type = 'unspecified')");
-				// int count = 0;
+				
 				while (resultSet.next()) {
-					// System.out.println(resultSet.getString("symbol"));
 					String geneA = resultSet.getString(1);
 					String geneB = resultSet.getString(2);
 					String type = resultSet.getString(3);
@@ -377,9 +371,7 @@ public class NetworkAnalysisTool extends PostProcessor {
 					if (directMiTerms.contains(type)) {
 						intData.setDirectInt();
 					}
-					// count++;
 				}
-				// System.out.println(count + " lines has been processed.");
 
 				statement.close();
 				connection.close();
