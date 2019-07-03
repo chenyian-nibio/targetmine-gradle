@@ -11,6 +11,7 @@ package org.intermine.bio.dataconversion;
  */
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -21,7 +22,7 @@ import org.intermine.xml.full.Item;
 
 
 /**
- * 
+ *
  * @author
  */
 public class UmlsConverter extends BioFileConverter
@@ -44,7 +45,7 @@ public class UmlsConverter extends BioFileConverter
     }
 
     /**
-     * 
+     *
      *
      * {@inheritDoc}
      */
@@ -68,19 +69,45 @@ public class UmlsConverter extends BioFileConverter
 
         try(BufferedReader reader1 = new BufferedReader(reader)){
             String line = null;
-            HashSet<String> idSet = new HashSet<>();
+            HashSet<String> keySet = new HashSet<>();
+            HashMap<String, Item> meshMap = new HashMap<>();
+            HashMap<String, Item> umlsMap = new HashMap<>();
             while((line = reader1.readLine())!=null){
                 String[] split = line.split("\\|");
-                Item umlsDisease = createItem("UMLSDisease");
                 String identifer = split[0];
-                if(idSet.contains(identifer) || !cuiSet.contains(identifer)) {
+                if(!cuiSet.contains(identifer)) {
                     continue;
                 }
-                umlsDisease.setAttribute("identifier",identifer);
-                String name = split[14];
-                idSet.add(identifer);
-                umlsDisease.setAttribute("name",name);
-                store(umlsDisease);
+                Item umlsDisease = umlsMap.get(identifer);
+                if(umlsDisease==null){
+                    umlsDisease = createItem("UMLSDisease");
+                    umlsDisease.setAttribute("identifier",identifer);
+                    String name = split[14];
+                    umlsDisease.setAttribute("name",name);
+                    store(umlsDisease);
+                    umlsMap.put(identifer,umlsDisease);
+                }
+
+                String dbType = split[11];
+                if("MSH".equals(dbType)){
+                    String meshId = split[13];
+                    String key = identifer+":"+meshId;
+                    if(keySet.contains(key)) {
+                        continue;
+                    }
+                    Item mesh = meshMap.get(meshId);
+                    if(mesh==null){
+                        mesh = createItem("MeSH");
+                        mesh.setAttribute("identifier",meshId);
+                        store(mesh);
+                        meshMap.put(meshId,mesh);
+                    }
+                    Item meSHUMLS = createItem("MeSHUMLSDisease");
+                    meSHUMLS.setReference("umls",umlsDisease);
+                    meSHUMLS.setReference("mesh",mesh);
+                    store(meSHUMLS);
+                    keySet.add(key);
+                }
             }
         }
     }
