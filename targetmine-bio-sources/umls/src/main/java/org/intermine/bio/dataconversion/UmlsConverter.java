@@ -10,12 +10,13 @@ package org.intermine.bio.dataconversion;
  *
  */
 
-import java.io.BufferedReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
+import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 
 
@@ -28,6 +29,10 @@ public class UmlsConverter extends BioFileConverter
     //
     private static final String DATASET_TITLE = "2018AB";
     private static final String DATA_SOURCE_NAME = "UMLS";
+
+    private static final String DATA_TYPE_DISEASE_OR_SYNDROME = "B2.2.1.2.1";
+
+    private File mrStyFile;
 
     /**
      * Constructor
@@ -44,6 +49,23 @@ public class UmlsConverter extends BioFileConverter
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
+        /**
+         * Processing MRSTY.RRF file to collect UMLS's source
+         */
+        Iterator<String[]> mrStyIterator = getMrStyIterator();
+        mrStyIterator.next(); // Skip header
+        HashSet<String> cuiSet = new HashSet<>();
+        while( mrStyIterator.hasNext() ) {
+
+            String[] mrStyRow = mrStyIterator.next();
+            String cui = mrStyRow[0];
+            String str = mrStyRow[2];
+            if(! str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
+                continue;
+            }
+            cuiSet.add(cui);
+        }
+
         try(BufferedReader reader1 = new BufferedReader(reader)){
             String line = null;
             HashSet<String> idSet = new HashSet<>();
@@ -51,7 +73,7 @@ public class UmlsConverter extends BioFileConverter
                 String[] split = line.split("\\|");
                 Item umlsDisease = createItem("UMLSDisease");
                 String identifer = split[0];
-                if(idSet.contains(identifer)) {
+                if(idSet.contains(identifer) || cuiSet.contains(identifer)) {
                     continue;
                 }
                 umlsDisease.setAttribute("identifier",identifer);
@@ -61,5 +83,14 @@ public class UmlsConverter extends BioFileConverter
                 store(umlsDisease);
             }
         }
+    }
+
+    private Iterator<String[]> getMrStyIterator() throws IOException {
+        // delimiter '|'
+        return FormattedTextParser.parseDelimitedReader( new FileReader( this.mrStyFile ), '|' );
+    }
+
+    public void setMrStyFile( File mrStyFile ) {
+        this.mrStyFile = mrStyFile;
     }
 }
