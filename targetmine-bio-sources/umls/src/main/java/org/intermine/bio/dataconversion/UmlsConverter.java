@@ -60,7 +60,7 @@ public class UmlsConverter extends BioFileConverter
             String[] mrStyRow = mrStyIterator.next();
             String cui = mrStyRow[0];
             String str = mrStyRow[2];
-            if(! str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
+            if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
                 continue;
             }
             cuiSet.add(cui);
@@ -73,7 +73,7 @@ public class UmlsConverter extends BioFileConverter
                 String[] split = line.split("\\|");
                 Item umlsDisease = createItem("UMLSDisease");
                 String identifer = split[0];
-                if(idSet.contains(identifer) || cuiSet.contains(identifer)) {
+                if(idSet.contains(identifer) || !cuiSet.contains(identifer)) {
                     continue;
                 }
                 umlsDisease.setAttribute("identifier",identifer);
