@@ -56,6 +56,7 @@ public class UmlsConverter extends BioFileConverter
                 }
                 umlsDisease.setAttribute("identifier",identifer);
                 String name = split[14];
+                idSet.add(identifer);
                 umlsDisease.setAttribute("name",name);
                 store(umlsDisease);
             }
