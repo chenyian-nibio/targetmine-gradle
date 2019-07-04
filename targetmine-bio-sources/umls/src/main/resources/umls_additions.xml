@@ -3,7 +3,7 @@
 
 <classes>
     <class name="MeshTerm" extends="OntologyTerm" is-interface="true">
-        <collection name="umlses"  referenced-type="MeSHUMLSDisease" reverse-reference="meshes"/>
+        <collection name="umlses"  referenced-type="MeSHUMLSDisease" reverse-reference="mesh"/>
     </class>
 
     <class name="MeSHUMLSDisease" is-interface="true">
@@ -13,6 +13,6 @@
     <class name="UMLSDisease" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
         <attribute name="name" type="java.lang.String"/>
-        <collection name="meshes"  referenced-type="MeSHUMLSDisease" reverse-reference="umlses"/>
+        <collection name="meshes"  referenced-type="MeSHUMLSDisease" reverse-reference="umls"/>
     </class>
 </classes>
