@@ -97,7 +97,7 @@ public class UmlsConverter extends BioFileConverter
                     }
                     Item mesh = meshMap.get(meshId);
                     if(mesh==null){
-                        mesh = createItem("MeSH");
+                        mesh = createItem("MeshTerm");
                         mesh.setAttribute("identifier",meshId);
                         store(mesh);
                         meshMap.put(meshId,mesh);
