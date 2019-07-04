@@ -21,6 +21,7 @@ productionLog
 
 publications.xml
 organisms.xml
-genes.txt
+genes.xml
 *.json.txt
+cytos.*.tar.gz
 
