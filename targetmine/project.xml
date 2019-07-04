@@ -256,7 +256,6 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
       <property name="src.data.dir.includes" value="efo.modi.obo" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>  
     <source name="mesh-term" type="mesh-term">
       <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
