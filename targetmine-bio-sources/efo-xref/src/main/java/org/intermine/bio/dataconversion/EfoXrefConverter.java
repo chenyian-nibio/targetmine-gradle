@@ -33,6 +33,10 @@ public class EfoXrefConverter extends BioFileConverter
 	public void setMrConsoFile( File mrConsoFile ) {
 		this.mrConsoFile = mrConsoFile;
 	}
+	private File mrStyFile;
+	public void setMrStyFile(File mrStyFile) {
+		this.mrStyFile = mrStyFile;
+	}
 	/**
 	 * Constructor
 	 * @param writer the ItemWriter used to handle the resultant items
@@ -60,7 +64,7 @@ public class EfoXrefConverter extends BioFileConverter
 		boolean isTerm = false;
 		String identifier = null;
 		boolean isObsolete = false;
-		UMLSResolver resolver = new UMLSResolver(mrConsoFile);
+		UMLSResolver resolver = new UMLSResolver(mrConsoFile,mrStyFile);
 		Set<String> meshIdSet = new HashSet<String>();
 		Set<String> doIdSet = new HashSet<String>();
 		String cui = null;
