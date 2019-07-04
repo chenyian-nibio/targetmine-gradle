@@ -28,10 +28,10 @@ public class EfoXrefConverter extends BioFileConverter
 	//
 	//    private static final String DATASET_TITLE = "Add DataSet.title here";
 	//    private static final String DATA_SOURCE_NAME = "Add DataSource.name here";
-	private UMLSResolver resolver;
+	private File mrConsoFile;
 
-	public void setMrConsoFile(File file) {
-		this.resolver = new UMLSResolver(file);
+	public void setMrConsoFile( File mrConsoFile ) {
+		this.mrConsoFile = mrConsoFile;
 	}
 	/**
 	 * Constructor
@@ -60,6 +60,7 @@ public class EfoXrefConverter extends BioFileConverter
 		boolean isTerm = false;
 		String identifier = null;
 		boolean isObsolete = false;
+		UMLSResolver resolver = new UMLSResolver(mrConsoFile);
 		Set<String> meshIdSet = new HashSet<String>();
 		Set<String> doIdSet = new HashSet<String>();
 		String cui = null;
