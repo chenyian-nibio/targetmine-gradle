@@ -68,8 +68,8 @@ public class MedgenConverter extends BioFileConverter {
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
-		if (umlsDiseaseIdSet.isEmpty()) {
-			getUmlsDiseaseIds();
+		if (diseaseTermIdSet.isEmpty()) {
+			getDiseaseTermIds();
 		}
 		// if the property pubmedFile is not set, we will not read the pubmed mapping
 		// remove the pubmedFile property to skip loading the publication associations.
@@ -93,7 +93,7 @@ public class MedgenConverter extends BioFileConverter {
 				String cui = cols[0];
 				String name = cols[1];
 				
-				if (!umlsDiseaseIdSet.contains(cui)) {
+				if (!diseaseTermIdSet.contains(cui)) {
 					continue;
 				}
 				
@@ -206,25 +206,25 @@ public class MedgenConverter extends BioFileConverter {
 		this.osAlias = osAlias;
 	}
 
-    Set<String> umlsDiseaseIdSet = new HashSet<String>();
+    Set<String> diseaseTermIdSet = new HashSet<String>();
 
     @SuppressWarnings("unchecked")
-	private void getUmlsDiseaseIds() throws Exception {
+	private void getDiseaseTermIds() throws Exception {
 		ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
 
 		Query q = new Query();
-		QueryClass qcUmlsDisease = new QueryClass(os.getModel().getClassDescriptorByName("UmlsDisease").getType());
+		QueryClass qcDiseaseTerm = new QueryClass(os.getModel().getClassDescriptorByName("DiseaseTerm").getType());
 
-		QueryField qfIdentifier = new QueryField(qcUmlsDisease, "identifier");
+		QueryField qfIdentifier = new QueryField(qcDiseaseTerm, "identifier");
 
-		q.addFrom(qcUmlsDisease);
+		q.addFrom(qcDiseaseTerm);
 		q.addToSelect(qfIdentifier);
 
 		Results results = os.execute(q);
 		Iterator<Object> iterator = results.iterator();
 		while (iterator.hasNext()) {
 			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
-			umlsDiseaseIdSet.add(rr.get(0));
+			diseaseTermIdSet.add(rr.get(0));
 		}
 	}
 
