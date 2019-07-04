@@ -28,14 +28,10 @@ public class EfoXrefConverter extends BioFileConverter
 	//
 	//    private static final String DATASET_TITLE = "Add DataSet.title here";
 	//    private static final String DATA_SOURCE_NAME = "Add DataSource.name here";
-	private File mrConsoFile;
+	private UMLSResolver resolver;
 
-	public void setMrConsoFile( File mrConsoFile ) {
-		this.mrConsoFile = mrConsoFile;
-	}
-	private File mrStyFile;
-	public void setMrStyFile(File mrStyFile) {
-		this.mrStyFile = mrStyFile;
+	public void setMrConsoFile(File file) {
+		this.resolver = new UMLSResolver(file);
 	}
 	/**
 	 * Constructor
@@ -47,6 +43,12 @@ public class EfoXrefConverter extends BioFileConverter
 	}
 
 	private static Pattern synonymPattern = Pattern.compile("synonym: \\\"([^\\\"]+)\\\"");
+	public static void main(String[] args) {
+		Matcher matcher = synonymPattern.matcher("synonym: \"4',5,7-trihydroxyisoflavone\" EXACT []");
+		if(matcher.lookingAt()) {
+			System.out.println(matcher.group(1));
+		}
+	}
 	/**
 	 * 
 	 *
@@ -58,11 +60,8 @@ public class EfoXrefConverter extends BioFileConverter
 		boolean isTerm = false;
 		String identifier = null;
 		boolean isObsolete = false;
-		diseaseEfoSet.add("EFO:0000408");
-		UMLSResolver resolver = new UMLSResolver(mrConsoFile,mrStyFile);
 		Set<String> meshIdSet = new HashSet<String>();
 		Set<String> doIdSet = new HashSet<String>();
-		Set<String> cuiIdSet = new HashSet<String>();
 		String cui = null;
 		while ((line = in.readLine()) != null) {
 			if (line.equals("[Term]")) {
@@ -72,18 +71,15 @@ public class EfoXrefConverter extends BioFileConverter
 			} else if (line.startsWith("name: ")) {
 				String name = line.substring("name: ".length()).trim();
 				cui = resolver.getIdentifier(name);
-				if(cui!=null) {
-					cuiIdSet.add(cui);
-					System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
-				}
+				System.out.println(identifier + ": " +name + " is linked to "+cui);
 			} else if (line.startsWith("synonym: ")) {
 				Matcher matcher = synonymPattern.matcher(line);
-				if(cui == null && matcher.lookingAt()) {
+				if(matcher.lookingAt()) {
 					String name = matcher.group(1);
-					cui = resolver.getIdentifier(name);
-					if(cui!=null){
-						cuiIdSet.add(cui);
-						System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
+					String cui2 = resolver.getIdentifier(name);
+					if(cui2!=null) {
+						System.out.println(identifier + ": " +name + " is linked to "+cui);
+						cui = cui!=null ? cui : cui2;
 					}
 				}
 			} else if (line.startsWith("property_value: http://www.ebi.ac.uk/efo/MSH_definition_citation")) {
@@ -99,20 +95,13 @@ public class EfoXrefConverter extends BioFileConverter
 				}
 			} else if ("is_obsolete: true".equals(line.trim())) {
 				isObsolete = true;
-			} else if (line.startsWith("is_a:")){
-				String parentId = line.substring(6, line.indexOf('!')-1);
-				if (diseaseEfoSet.contains(parentId)){
-					diseaseEfoSet.add(identifier);
-				}
 			} else if ("".equals(line.trim())) {
-				if (isTerm && !isObsolete) {
+				if (isTerm && !isObsolete && !meshIdSet.isEmpty()) {
 					Item efoTerm = createItem("EFOTerm");
 					efoTerm.setAttribute("identifier", identifier);
 					efoTerm.setReference("ontology", getOntology("EFO"));
-					if(identifier.startsWith("EFO:")) {
-						for (String cuiId:cuiIdSet){
-							efoTerm.addToCollection("diseaseConcepts", getUMLSDisease(cuiId));
-						}
+					if(cui!=null) {
+						efoTerm.setReference("umls", getUMLSDisease(cui));
 					}
 					for (String meshIdentifier : meshIdSet) {
 						efoTerm.addToCollection("crossReferences", getMeshTerm(meshIdentifier));
@@ -127,18 +116,16 @@ public class EfoXrefConverter extends BioFileConverter
 				cui = null;
 				meshIdSet = new HashSet<String>();
 				doIdSet = new HashSet<String>();
-				cuiIdSet = new HashSet<String>();
 			}
 
 		}
 	}
-	private Set<String> diseaseEfoSet = new HashSet<String>();
 
 	private Map<String, Item> umlsMap = new HashMap<String, Item>();
 	private Item getUMLSDisease(String cui) throws ObjectStoreException {
 		Item item = umlsMap.get(cui);
 		if (item == null) {
-			item = createItem("DiseaseConcept");
+			item = createItem("UMLSDisease");
 			item.setAttribute("identifier", cui);
 			store(item);
 			umlsMap.put(cui, item);
