@@ -1055,6 +1055,11 @@
                      replacesFields="references" 
                      types="Indication, DrugMechanism"/>
 
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.BioActivityGraphDisplayer"
+                     jspName="model/bioActivityGraphDisplayer.jsp"
+                     replacesFields=""
+                     types="Compound"/>
+
   </reportdisplayers>
 
   
