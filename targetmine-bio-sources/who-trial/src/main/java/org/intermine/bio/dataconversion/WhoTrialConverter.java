@@ -51,40 +51,43 @@ public class WhoTrialConverter extends BioFileConverter {
     public WhoTrialConverter(ItemWriter writer, Model model) {
         super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
     }
-    private static Map<String,String> propertyNames = new HashMap<String,String>();
+
+    private static Map<String, String> propertyNames = new HashMap<String, String>();
     private static int STRING_LIMIT = 10000;
+
     static {
-        Map<String,String> p = new HashMap<>();
-        propertyNames.put("name","Main ID");
-        propertyNames.put("title","Public title");
-        propertyNames.put("scientificTitle","Scientific title");
-        propertyNames.put("studyType","Study type");
-        propertyNames.put("recruitmentStatus","Recruitment status");
-        propertyNames.put("register","Register");
-        propertyNames.put("primarySponsor","Primary sponsor");
-        propertyNames.put("phase","Phase");
-        propertyNames.put("firstEnrolmentDate","Date of first enrolment");
-        propertyNames.put("registrationDate","Date of registration");
-        propertyNames.put("lastRefreshed","Date of registration");
-        propertyNames.put("targetSampleSize","Target sample size");
-        propertyNames.put("originalUrl","URL");
-        propertyNames.put("url","url");
-        propertyNames.put("interventions","interventions");
-        propertyNames.put("countries","countries");
-        propertyNames.put("primaryOutcome","primary_outcome");
-        propertyNames.put("secondaryOutcome","secondary_outcome");
-        propertyNames.put("result","result");
+        Map<String, String> p = new HashMap<>();
+        propertyNames.put("name", "Main ID");
+        propertyNames.put("title", "Public title");
+        propertyNames.put("scientificTitle", "Scientific title");
+        propertyNames.put("studyType", "Study type");
+        propertyNames.put("recruitmentStatus", "Recruitment status");
+        propertyNames.put("register", "Register");
+        propertyNames.put("primarySponsor", "Primary sponsor");
+        propertyNames.put("phase", "Phase");
+        propertyNames.put("firstEnrolmentDate", "Date of first enrolment");
+        propertyNames.put("registrationDate", "Date of registration");
+        propertyNames.put("lastRefreshed", "Date of registration");
+        propertyNames.put("targetSampleSize", "Target sample size");
+        propertyNames.put("originalUrl", "URL");
+        propertyNames.put("url", "url");
+        propertyNames.put("interventions", "interventions");
+        propertyNames.put("countries", "countries");
+        propertyNames.put("primaryOutcome", "primary_outcome");
+        propertyNames.put("secondaryOutcome", "secondary_outcome");
+        propertyNames.put("result", "result");
     }
-    private static String toString(Object obj){
-        if(obj==null){
+
+    private static String toString(Object obj) {
+        if (obj == null) {
             return null;
-        }else if(obj instanceof String){
+        } else if (obj instanceof String) {
             return (String) obj;
-        }else if(obj instanceof JSONArray){
+        } else if (obj instanceof JSONArray) {
             JSONArray array = (JSONArray) obj;
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < array.length(); i++) {
-                if(i>0){
+                if (i > 0) {
                     sb.append(" ");
                 }
                 sb.append(array.get(i).toString());
@@ -94,53 +97,54 @@ public class WhoTrialConverter extends BioFileConverter {
         LOG.warn("unexpected type " + obj.getClass().getName());
         return null;
     }
+
     private void storeTrial(String line) {
         JSONObject jsonObject = new JSONObject(line);
         JSONObject main = jsonObject.getJSONObject("main");
         Item whoTrial = createItem("ClinicalTrial");
-        propertyNames.forEach((key,name)->{
-	    String obj = null;
-            if(main.has(name)){
-		obj = toString(main.get(name));
-            }else if(jsonObject.has(name)){
-	        obj = toString(jsonObject.get(name));
+        propertyNames.forEach((key, name) -> {
+            String obj = null;
+            if (main.has(name)) {
+                obj = toString(main.get(name));
+            } else if (jsonObject.has(name)) {
+                obj = toString(jsonObject.get(name));
             }
-	    if(obj!=null && !obj.isEmpty() ){
-		if(obj.length() > STRING_LIMIT){
-			LOG.warn("too large string at " +main.get("Main ID") +", "+name+"= "+obj);
-		}
-                whoTrial.setAttribute(key,obj);
-	    }
+            if (obj != null && !obj.isEmpty()) {
+                if (obj.length() > STRING_LIMIT) {
+                    LOG.warn("too large string at " + main.get("Main ID") + ", " + name + "= " + obj);
+                }
+                whoTrial.setAttribute(key, obj);
+            }
         });
         JSONArray diseaseNames = jsonObject.getJSONArray("disease");
-	if(diseaseNames != null && diseaseNames.length() > 0){
-	    for(int i=0;i<diseaseNames.length();i++){
-		String diseaseName = diseaseNames.getString(i);
+        if (diseaseNames != null && diseaseNames.length() > 0) {
+            for (int i = 0; i < diseaseNames.length(); i++) {
+                String diseaseName = diseaseNames.getString(i);
 //		Item trialTo = createItem("TrialToDisease");
-        Item trialTo = createItem("TrialToUmlsDisease");
-		diseaseName = diseaseName.trim();
-        	trialTo.setAttribute("diseaseName", diseaseName);
-		try {
+                Item trialTo = createItem("TrialToUmlsDisease");
+                diseaseName = diseaseName.trim();
+                trialTo.setAttribute("diseaseName", diseaseName);
+                try {
 //		    Item disease = getDiseaseTerm(diseaseName);
-            Item umlsDisease = getUmlsDisease(diseaseName);
+                    Item umlsDisease = getUmlsDisease(diseaseName);
 //		    if (null != disease) {
 //			trialTo.setReference("disease", disease);
-            if (null != umlsDisease) {
-                trialTo.setReference("umls", umlsDisease);
-			    trialTo.setReference("trial", whoTrial);
-		    }
-		    store(trialTo);
-		} catch (ObjectStoreException e) {
-		    LOG.warn("Cannot sore who trials", e);
-		}
-	    }
+                    if (null != umlsDisease) {
+                        trialTo.setReference("umls", umlsDisease);
+                        trialTo.setReference("trial", whoTrial);
+                    }
+                    store(trialTo);
+                } catch (ObjectStoreException e) {
+                    LOG.warn("Cannot sore who trials", e);
+                }
+            }
 
-	}
-	try {
-	    store(whoTrial);
-	} catch (ObjectStoreException e) {
-	    LOG.warn("Cannot sore who trials", e);
-	}
+        }
+        try {
+            store(whoTrial);
+        } catch (ObjectStoreException e) {
+            LOG.warn("Cannot sore who trials", e);
+        }
 
     }
 
@@ -165,7 +169,7 @@ public class WhoTrialConverter extends BioFileConverter {
 
     private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
         String cui = mrConsoMap.get(umlsDiseaseName.toLowerCase());
-        if(cui == null){
+        if (cui == null) {
             return null;
         }
         Item item = umlsDiseaseMap.get(cui);
