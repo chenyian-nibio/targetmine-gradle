@@ -48,6 +48,6 @@
 
         <attribute name="condition" type="java.lang.String"/>
 	    <!--<collection name="diseases" referenced-type="TrialToDisease" reverse-reference="trial"/>-->
-        <collection name="umlses" referenced-type="TrialToDisease" reverse-reference="trial"/>
+        <collection name="umlses" referenced-type="TrialToUmlsDisease" reverse-reference="trial"/>
     </class>
 </classes>
