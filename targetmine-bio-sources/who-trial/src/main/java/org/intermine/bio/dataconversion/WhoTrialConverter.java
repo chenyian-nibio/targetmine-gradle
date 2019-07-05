@@ -39,7 +39,8 @@ public class WhoTrialConverter extends BioFileConverter {
     // key is string of source vocabularies, value is CUI
     private Map<String, String> mrConsoMap = new HashMap<String, String>();
     // key is CUI, value is reference to DiseaseTerm item
-    private Map<String, Item> diseaseTermMap = new HashMap<String, Item>();
+//    private Map<String, Item> diseaseTermMap = new HashMap<String, Item>();
+    private Map<String, Item> umlsDiseaseMap = new HashMap<String, Item>();
 
     /**
      * Constructor
@@ -115,14 +116,18 @@ public class WhoTrialConverter extends BioFileConverter {
 	if(diseaseNames != null && diseaseNames.length() > 0){
 	    for(int i=0;i<diseaseNames.length();i++){
 		String diseaseName = diseaseNames.getString(i);
-		Item trialTo = createItem("TrialToDisease");
+//		Item trialTo = createItem("TrialToDisease");
+        Item trialTo = createItem("TrialToUmlsDisease");
 		diseaseName = diseaseName.trim();
         	trialTo.setAttribute("diseaseName", diseaseName);
 		try {
-		    Item disease = getDiseaseTerm(diseaseName);
-		    if (null != disease) {
-			trialTo.setReference("disease", disease);
-			trialTo.setReference("trial", whoTrial);
+//		    Item disease = getDiseaseTerm(diseaseName);
+            Item umlsDisease = getUmlsDisease(diseaseName);
+//		    if (null != disease) {
+//			trialTo.setReference("disease", disease);
+            if (null != umlsDisease) {
+                trialTo.setReference("umls", umlsDisease);
+			    trialTo.setReference("trial", whoTrial);
 		    }
 		    store(trialTo);
 		} catch (ObjectStoreException e) {
@@ -139,20 +144,38 @@ public class WhoTrialConverter extends BioFileConverter {
 
     }
 
-    private Item getDiseaseTerm(String diseaseName) throws ObjectStoreException {
-	String cui = mrConsoMap.get(diseaseName.toLowerCase());
-	if(cui == null){
-	    return null;
-	}
-        Item item = diseaseTermMap.get(cui);
+//    private Item getDiseaseTerm(String diseaseName) throws ObjectStoreException {
+//	String cui = mrConsoMap.get(diseaseName.toLowerCase());
+//	if(cui == null){
+//	    return null;
+//	}
+//        Item item = diseaseTermMap.get(cui);
+//        if (item == null) {
+//
+//            item = createItem("DiseaseTerm");
+//            item.setAttribute("identifier", cui);
+//            item.setAttribute("name", diseaseName);
+//            item.setAttribute("description", diseaseName);
+//            store(item);
+//            diseaseTermMap.put(cui, item);
+//        }
+//        return item;
+//
+//    }
+
+    private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
+        String cui = mrConsoMap.get(umlsDiseaseName.toLowerCase());
+        if(cui == null){
+            return null;
+        }
+        Item item = umlsDiseaseMap.get(cui);
         if (item == null) {
 
-            item = createItem("DiseaseTerm");
+            item = createItem("UmlsDisease");
             item.setAttribute("identifier", cui);
-            item.setAttribute("name", diseaseName);
-            item.setAttribute("description", diseaseName);
+            item.setAttribute("name", umlsDiseaseName);
             store(item);
-            diseaseTermMap.put(cui, item);
+            umlsDiseaseMap.put(cui, item);
         }
         return item;
 
