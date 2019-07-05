@@ -205,6 +205,7 @@ public class WhoTrialConverter extends BioFileConverter {
 
         try (BufferedReader br = new BufferedReader(reader)) {
             br.lines().forEach(line -> storeTrial(line));
+            LOG.warn("umlsDisease add total : " + umlsDiseaseMap.size());
         }
     }
 
