@@ -81,9 +81,6 @@ public class EfoXrefConverter extends BioFileConverter
 				if(matcher.lookingAt()) {
 					String name = matcher.group(1);
 					String cui2 = resolver.getIdentifier(name);
-					if(identifier.startsWith("CHEBI:")) {
-						System.out.println(identifier + ": " +name + " is linked to "+cui);
-					}
 					cui = cui!=null ? cui : cui2;
 				}
 			} else if (line.startsWith("property_value: http://www.ebi.ac.uk/efo/MSH_definition_citation")) {
@@ -100,7 +97,7 @@ public class EfoXrefConverter extends BioFileConverter
 			} else if ("is_obsolete: true".equals(line.trim())) {
 				isObsolete = true;
 			} else if ("".equals(line.trim())) {
-				if (isTerm && !isObsolete && !meshIdSet.isEmpty()) {
+				if (isTerm && !isObsolete) {
 					Item efoTerm = createItem("EFOTerm");
 					efoTerm.setAttribute("identifier", identifier);
 					efoTerm.setReference("ontology", getOntology("EFO"));
