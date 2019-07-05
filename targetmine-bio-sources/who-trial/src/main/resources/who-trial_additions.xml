@@ -3,16 +3,26 @@
 
 <classes>
 <!-- add any <class> elements here -->
-    <class name="DiseaseTerm" is-interface="true">
+    <!--<class name="DiseaseTerm" is-interface="true">-->
+        <!--<attribute name="identifier" type="java.lang.String"/>-->
+        <!--<attribute name="name" type="java.lang.String"/>-->
+        <!--<attribute name="description" type="java.lang.String"/>-->
+	<!--<collection name="trials" referenced-type="TrialToDisease" reverse-reference="disease"/>-->
+    <!--</class>-->
+    <class name="UmlsDisease" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
         <attribute name="name" type="java.lang.String"/>
-        <attribute name="description" type="java.lang.String"/>
-	<collection name="trials" referenced-type="TrialToDisease" reverse-reference="disease"/>
+        <collection name="trials" referenced-type="TrialToUmlsDisease" reverse-reference="umls"/>
     </class>
-    <class name="TrialToDisease" is-interface="true">
-      <attribute name="diseaseName" type="java.lang.String"/>
-      <reference name="disease" referenced-type="DiseaseTerm" reverse-reference="trials"/>
-      <reference name="trial" referenced-type="ClinicalTrial" reverse-reference="diseases"/>
+    <!--<class name="TrialToDisease" is-interface="true">-->
+      <!--<attribute name="diseaseName" type="java.lang.String"/>-->
+      <!--<reference name="disease" referenced-type="DiseaseTerm" reverse-reference="trials"/>-->
+      <!--<reference name="trial" referenced-type="ClinicalTrial" reverse-reference="diseases"/>-->
+    <!--</class>-->
+    <class name="TrialToUmlsDisease" is-interface="true">
+        <attribute name="diseaseName" type="java.lang.String"/>
+        <reference name="trial" referenced-type="ClinicalTrial" reverse-reference="umlses"/>
+        <reference name="umls" referenced-type="UmlsDisease" reverse-reference="trials"/>
     </class>
     <class name="ClinicalTrial" is-interface="true">
         <attribute name="name" type="java.lang.String"/>
@@ -37,6 +47,7 @@
         <attribute name="result" type="java.lang.String"/>
 
         <attribute name="condition" type="java.lang.String"/>
-	<collection name="diseases" referenced-type="TrialToDisease" reverse-reference="trial"/>
+	    <!--<collection name="diseases" referenced-type="TrialToDisease" reverse-reference="trial"/>-->
+        <collection name="umlses" referenced-type="TrialToDisease" reverse-reference="trial"/>
     </class>
 </classes>
