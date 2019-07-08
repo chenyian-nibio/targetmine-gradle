@@ -12,6 +12,7 @@ package org.intermine.bio.dataconversion;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -32,14 +33,19 @@ import org.json.JSONObject;
 public class WhoTrialConverter extends BioFileConverter {
     private static final Logger LOG = LogManager.getLogger(WhoTrialConverter.class);
     private File mrConsoFile;
+    private File mrStyFile;
 
     //
     private static final String DATASET_TITLE = "who-trial";
     private static final String DATA_SOURCE_NAME = "who-trial";
+
+    private static final String DATA_TYPE_DISEASE_OR_SYNDROME = "B2.2.1.2.1";
+
     // key is string of source vocabularies, value is CUI
     private Map<String, String> mrConsoMap = new HashMap<String, String>();
     // key is CUI, value is reference to DiseaseTerm item
 //    private Map<String, Item> diseaseTermMap = new HashMap<String, Item>();
+    // key is CUI, value is reference to UmlsDisease item
     private Map<String, Item> umlsDiseaseMap = new HashMap<String, Item>();
 
     /**
@@ -177,7 +183,6 @@ public class WhoTrialConverter extends BioFileConverter {
 
             item = createItem("UmlsDisease");
             item.setAttribute("identifier", cui);
-            item.setAttribute("name", umlsDiseaseName);
             store(item);
             umlsDiseaseMap.put(cui, item);
         }
@@ -189,6 +194,24 @@ public class WhoTrialConverter extends BioFileConverter {
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
+
+        /**
+         * Processing MRSTY.RRF file to collect UMLS's source
+         */
+        Iterator<String[]> mrStyIterator = getMrStyIterator();
+        mrStyIterator.next(); // Skip header
+        HashSet<String> cuiSet = new HashSet<>();
+        while( mrStyIterator.hasNext() ) {
+
+            String[] mrStyRow = mrStyIterator.next();
+            String cui = mrStyRow[0];
+            String str = mrStyRow[2];
+            if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
+                continue;
+            }
+            cuiSet.add(cui);
+        }
+
         /**
          * Processing MRCONSO.RRF file to collect UMLS's source vocabularies and CUIs
          */
@@ -198,6 +221,9 @@ public class WhoTrialConverter extends BioFileConverter {
 
             String[] mrConsoRow = mrConsoIterator.next();
             String cui = mrConsoRow[0];
+            if(!cuiSet.contains(cui)) {
+                continue;
+            }
             String str = mrConsoRow[14];
             mrConsoMap.put(str.toLowerCase(), cui);
 
@@ -215,6 +241,15 @@ public class WhoTrialConverter extends BioFileConverter {
 
     public void setMrConsoFile(File mrConsoFile) {
         this.mrConsoFile = mrConsoFile;
+    }
+
+    private Iterator<String[]> getMrStyIterator() throws IOException {
+        // delimiter '|'
+        return FormattedTextParser.parseDelimitedReader(new FileReader( this.mrStyFile ), '|' );
+    }
+
+    public void setMrStyFile( File mrStyFile ) {
+        this.mrStyFile = mrStyFile;
     }
 
 }
