@@ -11,7 +11,6 @@
     <!--</class>-->
     <class name="UmlsDisease" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
-        <attribute name="name" type="java.lang.String"/>
         <collection name="trials" referenced-type="TrialToUmlsDisease" reverse-reference="umls"/>
     </class>
     <!--<class name="TrialToDisease" is-interface="true">-->
