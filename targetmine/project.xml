@@ -48,6 +48,7 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
       <property name="src.data.dir.includes" value="data.jl" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
     <source name="gene-info" type="gene-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
