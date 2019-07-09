@@ -183,3 +183,5 @@ include ':bio-source-gene-medgen'
 project(':bio-source-gene-medgen').projectDir = new File(settingsDir, './gene-medgen')
 include ':bio-source-umls'
 project(':bio-source-umls').projectDir = new File(settingsDir, './umls')
+include ':bio-source-utils'
+project(':bio-source-utils').projectDir = new File(settingsDir, './utils')
