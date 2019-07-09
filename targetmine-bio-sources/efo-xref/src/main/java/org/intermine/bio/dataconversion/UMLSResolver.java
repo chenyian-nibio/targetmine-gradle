@@ -11,7 +11,12 @@ public class UMLSResolver {
 	private File consoFile;
 	private File styFile;
 	private HashMap<String, String> nameIdMap = new HashMap<String, String>();
-	private static final String DATA_TYPE_DISEASE_OR_SYNDROME = "B2.2.1.2.1";
+   private static final String[] DATA_TYPES = new String[]{
+        "B2.2.1.2",//Pathologic Function
+        "B2.3",//Injuery or Poisoning
+        "A2.2.2",//Sign or Symptom
+        "A1.2.2"//Anatomical Abnormality
+        };
 
 	public UMLSResolver(File consoFile,File styFile) {
 		this.consoFile = consoFile;
@@ -32,9 +37,12 @@ public class UMLSResolver {
 			String[] split = line.split("\\|");
 			String cui = split[0];
 			String str = split[2];
-			if(str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
-				cuiSet.add(cui);
-			}
+			for(String type :DATA_TYPES){
+             		   if(str.startsWith(type)) {
+                      		 cuiSet.add(cui);
+				break;
+                	    }
+                        }
 		});
 		return cuiSet;
 	}
