@@ -9,8 +9,8 @@ package org.intermine.bio.dataconversion;
  * information or http://www.gnu.org/copyleft/lesser.html.
  *
  */
-
-import java.io.*;
+import java.io.File;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,7 +27,6 @@ import org.intermine.objectstore.query.QueryClass;
 import org.intermine.objectstore.query.QueryField;
 import org.intermine.objectstore.query.Results;
 import org.intermine.objectstore.query.ResultsRow;
-import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 
 
@@ -39,122 +38,92 @@ public class UmlsConverter extends BioFileConverter
 {
 	private static final Logger LOG = Logger.getLogger(UmlsConverter.class);
 
-    //
-    private static final String DATASET_TITLE = "2018AB";
-    private static final String DATA_SOURCE_NAME = "UMLS";
+	//
+	private static final String DATASET_TITLE = "2018AB";
+	private static final String DATA_SOURCE_NAME = "UMLS";
 
-    private static final String[] DATA_TYPES = new String[]{
-	"B2.2.1.2",//Pathologic Function
-	"B2.3",//Injuery or Poisoning
-	"A2.2.2",//Sign or Symptom
-	"A1.2.2"//Anatomical Abnormality	
-	};
+	private File mrStyFile;
 
-    private File mrStyFile;
+	/**
+	 * Constructor
+	 * @param writer the ItemWriter used to handle the resultant items
+	 * @param model the Model
+	 */
+	public UmlsConverter(ItemWriter writer, Model model) {
+		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
+	}
 
-    /**
-     * Constructor
-     * @param writer the ItemWriter used to handle the resultant items
-     * @param model the Model
-     */
-    public UmlsConverter(ItemWriter writer, Model model) {
-        super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
-    }
-
-    /**
-     *
-     *
-     * {@inheritDoc}
-     */
-    public void process(Reader reader) throws Exception {
-    	getDiseaseTermIds();
-        /**
-         * Processing MRSTY.RRF file to collect UMLS's source
-         */
-        Iterator<String[]> mrStyIterator = getMrStyIterator();
-        mrStyIterator.next(); // Skip header
-        HashSet<String> cuiSet = new HashSet<>();
-        while( mrStyIterator.hasNext() ) {
-
-            String[] mrStyRow = mrStyIterator.next();
-            String cui = mrStyRow[0];
-            String str = mrStyRow[2];
-	    for(String type :DATA_TYPES){
-            	if(str.startsWith(type)) {
-            		cuiSet.add(cui);
-			break;
+	/**
+	 *
+	 *
+	 * {@inheritDoc}
+	 */
+	public void process(Reader reader) throws Exception {
+		getDiseaseTermIds();
+		try(UMLSParser parser = new UMLSParser(reader, mrStyFile)){
+			UMLS umls = null;
+			HashMap<String, Item> umlsMap = new HashMap<>();
+			HashSet<String> keySet = new HashSet<>();
+			while((umls = parser.getNext())!=null) {
+				String identifier = umls.getIdentifier();
+				Item umlsDisease = umlsMap.get(identifier);
+				if(umlsDisease==null){
+					umlsDisease = createItem("UMLSDisease");
+					umlsDisease.setAttribute("identifier",identifier);
+					String name = umls.getName();
+					umlsDisease.setAttribute("name",name);
+					if(diseaseTermIdSet.contains(identifier)) {
+						Item medgen = getOrCreateItem("DiseaseTerm", identifier);
+						umlsDisease.setReference("medgen", medgen);
+					}
+					store(umlsDisease);
+					umlsMap.put(identifier,umlsDisease);
+				}
+				if("MSH".equals(umls.getDbType())){
+					String meshId = umls.getDbId();
+					String key = identifier+":"+meshId;
+					if(keySet.contains(key)) {
+						continue;
+					}
+					Item mesh = getOrCreateItem("MeshTerm", meshId);
+					Item meSHUMLS = createItem("MeSHUMLSDisease");
+					meSHUMLS.setReference("umls",umlsDisease);
+					meSHUMLS.setReference("mesh",mesh);
+					store(meSHUMLS);
+					keySet.add(key);
+				}
+				
+			}
 		}
-            }
-        }
+	}
+	private HashMap<String,HashMap<String,Item>> itemSet = new HashMap<String, HashMap<String,Item>>();
 
-        try(BufferedReader reader1 = new BufferedReader(reader)){
-            String line = null;
-            HashSet<String> keySet = new HashSet<>();
-            HashMap<String, Item> umlsMap = new HashMap<>();
-            while((line = reader1.readLine())!=null){
-                String[] split = line.split("\\|");
-                String identifer = split[0];
-                if(!cuiSet.contains(identifer)) {
-                    continue;
-                }
-                Item umlsDisease = umlsMap.get(identifer);
-                if(umlsDisease==null){
-                    umlsDisease = createItem("UMLSDisease");
-                    umlsDisease.setAttribute("identifier",identifer);
-                    String name = split[14];
-                    umlsDisease.setAttribute("name",name);
-                    if(diseaseTermIdSet.contains(identifer)) {
-                        Item medgen = getOrCreateItem("DiseaseTerm", identifer);
-                        umlsDisease.setReference("medgen", medgen);
-                    }
-                    store(umlsDisease);
-                    umlsMap.put(identifer,umlsDisease);
-                }
-                String dbType = split[11];
-                if("MSH".equals(dbType)){
-                    String meshId = split[13];
-                    String key = identifer+":"+meshId;
-                    if(keySet.contains(key)) {
-                        continue;
-                    }
-                    Item mesh = getOrCreateItem("MeshTerm", meshId);
-                    Item meSHUMLS = createItem("MeSHUMLSDisease");
-                    meSHUMLS.setReference("umls",umlsDisease);
-                    meSHUMLS.setReference("mesh",mesh);
-                    store(meSHUMLS);
-                    keySet.add(key);
-                }
-            }
-        }
-    }
-    private HashMap<String,HashMap<String,Item>> itemSet = new HashMap<String, HashMap<String,Item>>();
-    
-    private Item getOrCreateItem(String dbName,String identifier) throws ObjectStoreException {
-    	HashMap<String, Item> hashMap = itemSet.get(dbName);
-    	if(hashMap==null) {
-    		hashMap = new HashMap<String, Item>();
-    		itemSet.put(dbName, hashMap);
-    	}
-    	Item item = hashMap.get(identifier);
-    	if(item==null) {
-    		item = createItem(dbName);
-    		item.setAttribute("identifier", identifier);
-    		store(item);
-    		hashMap.put(identifier, item);
-    	}
-    	return item;
-    }
+	private Item getOrCreateItem(String dbName,String identifier) throws ObjectStoreException {
+		HashMap<String, Item> hashMap = itemSet.get(dbName);
+		if(hashMap==null) {
+			hashMap = new HashMap<String, Item>();
+			itemSet.put(dbName, hashMap);
+		}
+		Item item = hashMap.get(identifier);
+		if(item==null) {
+			item = createItem(dbName);
+			item.setAttribute("identifier", identifier);
+			store(item);
+			hashMap.put(identifier, item);
+		}
+		return item;
+	}
 	private String osAlias = null;
 
 	public void setOsAlias(String osAlias) {
 		this.osAlias = osAlias;
 	}
 
-    Set<String> diseaseTermIdSet = new HashSet<String>();
+	Set<String> diseaseTermIdSet = new HashSet<String>();
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	private void getDiseaseTermIds() throws Exception {
-    	LOG.info("Start loading diseaseterm id");
+		LOG.info("Start loading diseaseterm id");
 		ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
 
 		Query q = new Query();
@@ -171,15 +140,10 @@ public class UmlsConverter extends BioFileConverter
 			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
 			diseaseTermIdSet.add(rr.get(0));
 		}
-    	LOG.info("loaded "+ diseaseTermIdSet.size()+" diseaseterm id " );
+		LOG.info("loaded "+ diseaseTermIdSet.size()+" diseaseterm id " );
 	}
 
-    private Iterator<String[]> getMrStyIterator() throws IOException {
-        // delimiter '|'
-        return FormattedTextParser.parseDelimitedReader( new FileReader( this.mrStyFile ), '|' );
-    }
-
-    public void setMrStyFile( File mrStyFile ) {
-        this.mrStyFile = mrStyFile;
-    }
+	public void setMrStyFile( File mrStyFile ) {
+		this.mrStyFile = mrStyFile;
+	}
 }

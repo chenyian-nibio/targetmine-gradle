@@ -47,12 +47,6 @@ public class EfoXrefConverter extends BioFileConverter
 	}
 
 	private static Pattern synonymPattern = Pattern.compile("synonym: \\\"([^\\\"]+)\\\"");
-	public static void main(String[] args) {
-		Matcher matcher = synonymPattern.matcher("synonym: \"4',5,7-trihydroxyisoflavone\" EXACT []");
-		if(matcher.lookingAt()) {
-			System.out.println(matcher.group(1));
-		}
-	}
 	/**
 	 * 
 	 *
