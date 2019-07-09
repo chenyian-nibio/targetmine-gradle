@@ -76,6 +76,9 @@ public class EfoXrefConverter extends BioFileConverter
 			} else if (line.startsWith("name: ")) {
 				String name = line.substring("name: ".length()).trim();
 				cui = resolver.getIdentifier(name);
+				if(cui!=null){
+					System.out.println(identifier+"\t"+name+"\t"+cui+"\t"+
+				}
 			} else if (line.startsWith("synonym: ")) {
 				Matcher matcher = synonymPattern.matcher(line);
 				if(matcher.lookingAt()) {
