@@ -43,7 +43,12 @@ public class UmlsConverter extends BioFileConverter
     private static final String DATASET_TITLE = "2018AB";
     private static final String DATA_SOURCE_NAME = "UMLS";
 
-    private static final String DATA_TYPE_DISEASE_OR_SYNDROME = "B2.2.1.2.1";
+    private static final String[] DATA_TYPES = new String[]{
+	"B2.2.1.2",//Pathologic Function
+	"B2.3",//Injuery or Poisoning
+	"A2.2.2",//Sign or Symptom
+	"A1.2.2"//Anatomical Abnormality	
+	};
 
     private File mrStyFile;
 
@@ -74,10 +79,12 @@ public class UmlsConverter extends BioFileConverter
             String[] mrStyRow = mrStyIterator.next();
             String cui = mrStyRow[0];
             String str = mrStyRow[2];
-            if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
-                continue;
+	    for(String type :DATA_TYPES){
+            	if(str.startsWith(type)) {
+            		cuiSet.add(cui);
+			break;
+		}
             }
-            cuiSet.add(cui);
         }
 
         try(BufferedReader reader1 = new BufferedReader(reader)){
