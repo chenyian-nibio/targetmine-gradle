@@ -2,7 +2,6 @@ package org.intermine.bio.dataconversion;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -17,23 +16,19 @@ public class UMLSParser implements AutoCloseable{
 			"A1.2.2"//Anatomical Abnormality
 	};
 	private String[] semanticTypes;
-	private File consoFile;
 	private File styFile;
 	private HashMap<String, String> semanticTypeMap;
-	public void setSemanticTypes(String[] semanticTypes) {
-		this.semanticTypes = semanticTypes;
-	}
 	
-	public UMLSParser(File consoFile, File styFile) throws FileNotFoundException {
-		reader = new BufferedReader(new FileReader(consoFile));
+	public UMLSParser(File consoFile, File styFile,String[] semanticTypes) throws IOException {
+		this.semanticTypes = semanticTypes;
+		this.reader = new BufferedReader(new FileReader(consoFile));
 		this.styFile = styFile;
+		loadStyFile();
 	}
-	public UMLSParser(Reader reader, File styFile) {
-		super();
-		reader = new BufferedReader(reader);
+	public UMLSParser(Reader reader, File styFile,String[] semanticTypes) throws IOException {
+		this.semanticTypes = semanticTypes;
+		this.reader = new BufferedReader(reader);
 		this.styFile = styFile;
-	}
-	public void init() throws IOException {
 		loadStyFile();
 	}
 

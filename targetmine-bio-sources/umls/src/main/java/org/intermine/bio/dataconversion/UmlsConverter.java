@@ -60,7 +60,7 @@ public class UmlsConverter extends BioFileConverter
 	 */
 	public void process(Reader reader) throws Exception {
 		getDiseaseTermIds();
-		try(UMLSParser parser = new UMLSParser(reader, mrStyFile)){
+		try(UMLSParser parser = new UMLSParser(reader, mrStyFile,UMLSParser.DATA_TYPES)){
 			UMLS umls = null;
 			HashMap<String, Item> umlsMap = new HashMap<>();
 			HashSet<String> keySet = new HashSet<>();
