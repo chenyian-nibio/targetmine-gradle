@@ -51,7 +51,7 @@
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
     <source name="who-trial2" type="who-trial2">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials2/" />
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials2" />
       <property name="src.data.dir.includes" value="*/*.xml" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
