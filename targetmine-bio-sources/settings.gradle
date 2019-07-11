@@ -187,4 +187,6 @@ include ':bio-source-utils'
 project(':bio-source-utils').projectDir = new File(settingsDir, './utils')
 include ':bio-source-who-trial'
 project(':bio-source-who-trial').projectDir = new File(settingsDir, './who-trial')
->>>>>>> WIP
+include ':bio-source-who-trial2'
+project(':bio-source-who-trial2').projectDir = new File(settingsDir, './who-trial2')
+>>>>>>> Bug fix, can not read xml.
