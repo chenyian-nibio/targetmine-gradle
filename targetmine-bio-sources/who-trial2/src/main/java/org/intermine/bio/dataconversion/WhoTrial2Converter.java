@@ -156,9 +156,7 @@ public class WhoTrial2Converter extends BioFileConverter {
     private HashSet<String> convertConditionToDiseaseNameSet(String condition) {
 
         for(ReplaceWord replaceWord : ReplaceWord.values()) {
-            LOG.warn("ReplaceWord toString: "+  replaceWord.toString());
-            LOG.warn("ReplaceWord word: " + replaceWord.word);
-            condition = condition.replaceAll(replaceWord.toString(), "\n");
+            condition = condition.replaceAll(replaceWord.word, "\n");
             LOG.warn("condition : " + condition);
         }
         String[] diseaseNames = condition.split("\n");
