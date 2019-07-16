@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import nu.xom.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
@@ -60,10 +59,7 @@ public class WhoTrialConverter extends BioFileConverter {
     }
 
     private static Map<String, String> propertyNames = new HashMap<String, String>();
-    private static Map<String, String> whoTrial2XmlPropertyNames = new HashMap<String, String>();
     private static int STRING_LIMIT = 10000;
-
-    private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 
     static {
         Map<String, String> p = new HashMap<>();
@@ -86,26 +82,6 @@ public class WhoTrialConverter extends BioFileConverter {
         propertyNames.put("primaryOutcome", "primary_outcome");
         propertyNames.put("secondaryOutcome", "secondary_outcome");
         propertyNames.put("result", "result");
-    }
-
-    static {
-        whoTrial2XmlPropertyNames.put("name", "TrialID");
-        whoTrial2XmlPropertyNames.put("title", "Public_title");
-        whoTrial2XmlPropertyNames.put("scientificTitle", "Scientific_title");
-        whoTrial2XmlPropertyNames.put("studyType", "Study_type");
-        whoTrial2XmlPropertyNames.put("recruitmentStatus", "Recruitment_Status");
-        whoTrial2XmlPropertyNames.put("register", "Source_Register");
-        whoTrial2XmlPropertyNames.put("primarySponsor", "Primary_sponsor");
-        whoTrial2XmlPropertyNames.put("phase", "Phase");
-        whoTrial2XmlPropertyNames.put("firstEnrolmentDate", "Date_enrollement");
-        whoTrial2XmlPropertyNames.put("registrationDate", "Date_registration");
-        whoTrial2XmlPropertyNames.put("lastRefreshed", "Last_Refreshed_on");
-        whoTrial2XmlPropertyNames.put("targetSampleSize", "Target_size");
-        whoTrial2XmlPropertyNames.put("originalUrl", "web_address");
-        whoTrial2XmlPropertyNames.put("interventions", "Intervention");
-        whoTrial2XmlPropertyNames.put("countries", "Countries");
-        whoTrial2XmlPropertyNames.put("primaryOutcome", "Primary_outcome");
-        whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
     }
 
     private static String toString(Object obj) {
@@ -218,65 +194,6 @@ public class WhoTrialConverter extends BioFileConverter {
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
-        LOG.warn("[test]whoTrial start!");
-        Document doc;
-        Element rootElement;
-        try {
-            Builder parser = new Builder();
-
-            doc = parser.build(reader);
-            rootElement = doc.getRootElement();
-            if(null == rootElement) {
-                LOG.warn("[test]rootElements is null.");
-                return;
-            }
-        } catch (ParsingException e) {
-            LOG.warn("[test]cannot parsing this file.");
-            return;
-        }
-
-
-        Elements trialElements = rootElement.getChildElements("Trial");
-        if(null == trialElements) {
-            LOG.warn("[test]trialElements is null.");
-            return;
-        }
-        for (int i = 0; i < trialElements.size(); i++) {
-            Item whoTrial = createItem("ClinicalTrial");
-            Element trial = trialElements.get(i);
-
-            whoTrial2XmlPropertyNames.forEach((key, name) -> {
-                Element child = trial.getFirstChildElement(name);
-                if(child == null) {
-                    LOG.warn("*****[test]Nothing Element : " + name);
-                    return;
-                }
-                String elementValue = child.getValue().trim();
-                if(elementValue != null && !elementValue.isEmpty()) {
-                    if(elementValue.length() > STRING_LIMIT) {
-                        LOG.warn("too large string at " + trial.getFirstChildElement("TrialID") + ", " + name + "= " + elementValue);
-                    }
-                    LOG.warn("[test]key : " + key + ", elementValue : " + elementValue);
-                    whoTrial.setAttribute(key, elementValue);
-
-                    if(name.equals("TrialID")) {
-                        String url = String.format(WHO_TRIAL2_URL,elementValue);
-                        whoTrial.setAttribute("url", url);
-                    }
-                }
-            });
-            Element conditionElement = trial.getFirstChildElement("Condition");
-            String condition = "";
-            if(conditionElement != null) {
-                condition = conditionElement.getValue();
-            }
-            LOG.warn("[test]condition = " + condition);
-            try {
-                store(whoTrial);
-            } catch (ObjectStoreException e) {
-                LOG.warn("Cannot sore who trials", e);
-            }
-        }
 
         /**
          * Processing MRSTY.RRF file to collect UMLS's source
