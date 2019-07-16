@@ -11,10 +11,7 @@ package org.intermine.bio.dataconversion;
  */
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import nu.xom.*;
 import org.apache.logging.log4j.Logger;
@@ -80,6 +77,16 @@ public class WhoTrial2Converter extends BioFileConverter {
         whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
     }
 
+    private enum ReplaceWord {
+        REPLACE_BR("<BR>"),
+        REPLACE_COLON(";");
+
+        private String word;
+        ReplaceWord(String word) {
+            this.word = word;
+        }
+    }
+
     private void storeTrialElements(Elements trialElements) {
         if(null == trialElements) {
             LOG.warn("Trial elements is null. read next file.");
@@ -98,7 +105,7 @@ public class WhoTrial2Converter extends BioFileConverter {
                 String elementValue = child.getValue().trim();
                 if(elementValue != null && !elementValue.isEmpty()) {
                     if(elementValue.length() > STRING_LIMIT) {
-                        LOG.warn("too large string at " + trial.getFirstChildElement("TrialID") + ", " + name + "= " + elementValue);
+                        LOG.warn("too large string at " + trial.getFirstChildElement("TrialID").getValue() + ", " + name + "= " + elementValue);
                     }
                     LOG.warn("[test]key : " + key + ", elementValue : " + elementValue);
                     whoTrial.setAttribute(key, elementValue);
@@ -112,32 +119,58 @@ public class WhoTrial2Converter extends BioFileConverter {
 
             // add disease.
             Element conditionElement = trial.getFirstChildElement("Condition");
-            String diseaseName = "";
+            String condition = "";
             if(conditionElement != null) {
-                diseaseName = conditionElement.getValue();
+                condition = conditionElement.getValue();
             }
-            LOG.warn("[test]condition = " + diseaseName);
-            if (diseaseName != null && diseaseName.length() > 0) {
-                Item trialTo = createItem("TrialToUmlsDisease");
-                diseaseName = diseaseName.trim();
-                trialTo.setAttribute("diseaseName", diseaseName);
-                try {
-                    Item umlsDisease = getUmlsDisease(diseaseName);
-                    if (null != umlsDisease) {
-                        trialTo.setReference("umls", umlsDisease);
-                        trialTo.setReference("trial", whoTrial);
+
+            HashSet<String> diseaseNameSet = convertConditionToDiseaseNameSet(condition);
+            for(String diseaseName : diseaseNameSet){
+                LOG.warn("[test]condition = " + diseaseName);
+                if (diseaseName != null && diseaseName.length() > 0) {
+                    Item trialTo = createItem("TrialToUmlsDisease");
+                    trialTo.setAttribute("diseaseName", diseaseName);
+                    try {
+                        Item umlsDisease = getUmlsDisease(diseaseName);
+                        if (null != umlsDisease) {
+                            trialTo.setReference("umls", umlsDisease);
+                            trialTo.setReference("trial", whoTrial);
+                        }
+                        store(trialTo);
+                    } catch (ObjectStoreException e) {
+                        LOG.warn("Cannot store who trials", e);
                     }
-                    store(trialTo);
-                } catch (ObjectStoreException e) {
-                    LOG.warn("Cannot store who trials", e);
                 }
             }
+
             try {
                 store(whoTrial);
             } catch (ObjectStoreException e) {
                 LOG.warn("Cannot store who trials", e);
             }
         }
+    }
+
+    private HashSet<String> convertConditionToDiseaseNameSet(String condition) {
+
+        for(ReplaceWord replaceWord : ReplaceWord.values()) {
+            LOG.warn("ReplaceWord toString: ", replaceWord.toString());
+            LOG.warn("ReplaceWord word: ", replaceWord.word);
+            condition = condition.replaceAll(replaceWord.toString(), "\n");
+            LOG.warn(condition, condition);
+        }
+        String[] diseaseNames = condition.split("\n");
+
+        HashSet<String> diseaseNameSet = new HashSet<>();
+
+        for(String diseaseName : diseaseNames) {
+            diseaseName = diseaseName.trim();
+            if(diseaseName != null && !diseaseName.isEmpty()) {
+                diseaseNameSet.add(diseaseName);
+                LOG.warn("Add disease :  ", diseaseName);
+            }
+        }
+        return diseaseNameSet;
     }
 
     private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
@@ -161,39 +194,40 @@ public class WhoTrial2Converter extends BioFileConverter {
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
+        // mrConsoMap input data only once.
+        // because, if project.xml( src.data.dir.includes) include multi files , the process method will be called multiple times.
+        if(mrConsoMap == null || mrConsoMap.size() == 0) {
+            /**
+             * Processing MRSTY.RRF file to collect UMLS's source
+             */
+            Iterator<String[]> mrStyIterator = getMrStyIterator();
+            mrStyIterator.next(); // Skip header
+            HashSet<String> cuiSet = new HashSet<>();
+            while( mrStyIterator.hasNext() ) {
 
-        /**
-         * Processing MRSTY.RRF file to collect UMLS's source
-         */
-        Iterator<String[]> mrStyIterator = getMrStyIterator();
-        mrStyIterator.next(); // Skip header
-        HashSet<String> cuiSet = new HashSet<>();
-        while( mrStyIterator.hasNext() ) {
-
-            String[] mrStyRow = mrStyIterator.next();
-            String cui = mrStyRow[0];
-            String str = mrStyRow[2];
-            if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
-                continue;
+                String[] mrStyRow = mrStyIterator.next();
+                String cui = mrStyRow[0];
+                String str = mrStyRow[2];
+                if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
+                    continue;
+                }
+                cuiSet.add(cui);
             }
-            cuiSet.add(cui);
-        }
 
-        /**
-         * Processing MRCONSO.RRF file to collect UMLS's source vocabularies and CUIs
-         */
-        Iterator<String[]> mrConsoIterator = getMrConsoIterator();
-        mrConsoIterator.next(); // Skip header
-        while (mrConsoIterator.hasNext()) {
-
-            String[] mrConsoRow = mrConsoIterator.next();
-            String cui = mrConsoRow[0];
-            if(!cuiSet.contains(cui)) {
-                continue;
+            /**
+             * Processing MRCONSO.RRF file to collect UMLS's source vocabularies and CUIs
+             */
+            Iterator<String[]> mrConsoIterator = getMrConsoIterator();
+            mrConsoIterator.next(); // Skip header
+            while (mrConsoIterator.hasNext()) {
+                String[] mrConsoRow = mrConsoIterator.next();
+                String cui = mrConsoRow[0];
+                if(!cuiSet.contains(cui)) {
+                    continue;
+                }
+                String str = mrConsoRow[14];
+                mrConsoMap.put(str.toLowerCase(), cui);
             }
-            String str = mrConsoRow[14];
-            mrConsoMap.put(str.toLowerCase(), cui);
-
         }
 
         LOG.warn("whoTrial2 start!");
