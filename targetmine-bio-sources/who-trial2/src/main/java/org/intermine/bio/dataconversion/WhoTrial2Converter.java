@@ -54,6 +54,7 @@ public class WhoTrial2Converter extends BioFileConverter {
     private static Map<String, String> propertyNames = new HashMap<String, String>();
     private static Map<String, String> whoTrial2XmlPropertyNames = new HashMap<String, String>();
     private static int STRING_LIMIT = 10000;
+    private static int PRIMARY_KEY_STRING_LIMIT = 1000;
 
     private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 
@@ -77,12 +78,13 @@ public class WhoTrial2Converter extends BioFileConverter {
         whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
     }
 
-    private enum ReplaceWord {
+    public enum ReplaceWord {
         REPLACE_BR("<BR>"),
         REPLACE_COLON(";");
 
         private String word;
-        ReplaceWord(String word) {
+
+        private ReplaceWord(String word) {
             this.word = word;
         }
     }
@@ -154,10 +156,10 @@ public class WhoTrial2Converter extends BioFileConverter {
     private HashSet<String> convertConditionToDiseaseNameSet(String condition) {
 
         for(ReplaceWord replaceWord : ReplaceWord.values()) {
-            LOG.warn("ReplaceWord toString: ", replaceWord.toString());
-            LOG.warn("ReplaceWord word: ", replaceWord.word);
+            LOG.warn("ReplaceWord toString: "+  replaceWord.toString());
+            LOG.warn("ReplaceWord word: " + replaceWord.word);
             condition = condition.replaceAll(replaceWord.toString(), "\n");
-            LOG.warn(condition, condition);
+            LOG.warn("condition : " + condition);
         }
         String[] diseaseNames = condition.split("\n");
 
@@ -166,6 +168,11 @@ public class WhoTrial2Converter extends BioFileConverter {
         for(String diseaseName : diseaseNames) {
             diseaseName = diseaseName.trim();
             if(diseaseName != null && !diseaseName.isEmpty()) {
+                if(diseaseName.length() > PRIMARY_KEY_STRING_LIMIT) {
+                    LOG.warn("diseaseName OVER LIMTT 1000, str = " + diseaseName);
+                    diseaseName = diseaseName.substring(0, PRIMARY_KEY_STRING_LIMIT);
+                }
+
                 diseaseNameSet.add(diseaseName);
                 LOG.warn("Add disease :  ", diseaseName);
             }
