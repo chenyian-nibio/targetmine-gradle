@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +50,7 @@ public class WhoTrial2Converter extends BioFileConverter {
 	public WhoTrial2Converter(ItemWriter writer, Model model) {
 		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
 	}
-
+	private static Set<String> idSet = new HashSet<>();
 	private static int STRING_LIMIT = 10000;
 	private static int PRIMARY_KEY_STRING_LIMIT = 1000;
 
@@ -56,6 +58,10 @@ public class WhoTrial2Converter extends BioFileConverter {
 
 
 	private void storeTrialElements(Map<String,String> trial) {
+		String name = trial.get("name");
+		if(idSet.contains(name)) {
+			return;
+		}
 		Item whoTrial = createItem("ClinicalTrial");
 		for (String key : TrialXMLParser.getkeys()) {
 			String child = trial.get(key);
@@ -71,13 +77,12 @@ public class WhoTrial2Converter extends BioFileConverter {
 				LOG.warn("[test]key : " + key + ", elementValue : " + elementValue);
 				whoTrial.setAttribute(key, elementValue);
 
-				if(key.equals("name")) {
-					String url = String.format(WHO_TRIAL2_URL,elementValue);
-					whoTrial.setAttribute("url", url);
-				}
 			}
-			
+
 		}
+		idSet.add(name);
+		String url = String.format(WHO_TRIAL2_URL,name);
+		whoTrial.setAttribute("url", url);
 
 		// add disease.
 		String condition = trial.get("condition");
@@ -182,15 +187,12 @@ public class WhoTrial2Converter extends BioFileConverter {
 		}
 
 		LOG.warn("whoTrial2 start!");
-		TrialParser parser = "XML".contentEquals(fileType)?new TrialXMLParser(reader):new TrialJSONParser(reader);
+		boolean isXML = getCurrentFile().getName().endsWith("xml");
+		TrialParser parser = isXML?new TrialXMLParser(reader):new TrialJSONParser(reader);
 		Map<String, String> trial = null;
 		while((trial = parser.parse())!=null) {
 			storeTrialElements(trial);
 		}
-	}
-	private String fileType = "XML";
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
 	}
 	public void setMrConsoFile(File mrConsoFile) {
 		this.mrConsoFile = mrConsoFile;
