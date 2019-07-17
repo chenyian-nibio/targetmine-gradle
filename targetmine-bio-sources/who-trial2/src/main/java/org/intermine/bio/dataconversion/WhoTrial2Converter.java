@@ -12,6 +12,8 @@ package org.intermine.bio.dataconversion;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nu.xom.*;
 import org.apache.logging.log4j.Logger;
@@ -118,7 +120,7 @@ public class WhoTrial2Converter extends BioFileConverter {
                 condition = conditionElement.getValue();
             }
 
-            HashSet<String> diseaseNameSet = convertConditionToDiseaseNameSet(condition);
+            String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
             for(String diseaseName : diseaseNameSet){
                 LOG.warn("[test]condition = " + diseaseName);
                 if (diseaseName != null && diseaseName.length() > 0) {
@@ -145,15 +147,10 @@ public class WhoTrial2Converter extends BioFileConverter {
         }
     }
 
-    private HashSet<String> convertConditionToDiseaseNameSet(String condition) {
-
-//        for(String replaceWord : replaceWords) {
-//            condition = condition.replaceAll(replaceWord, "\n");
-//            LOG.warn("condition : " + condition);
-//        }
+    private String[] convertConditionToDiseaseNameSet(String condition) {
         String[] diseaseNames = condition.split("<[Bb][Rr]>");//condition.split("\n");
 
-        HashSet<String> diseaseNameSet = new HashSet<>();
+        ArrayList<String> diseaseNameSet = new ArrayList<>();
 
         for(String diseaseName : diseaseNames) {
             diseaseName = diseaseName.trim();
@@ -167,10 +164,10 @@ public class WhoTrial2Converter extends BioFileConverter {
                 LOG.warn("Add disease :  ", diseaseName);
             }
         }
-        return diseaseNameSet;
+        return diseaseNameSet.toArray(new String[diseaseNameSet.size()]);
     }
     private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
-        String cui = mrConsoMap.get(umlsDiseaseName.toLowerCase());
+        String cui = getCUI(umlsDiseaseName);
         if (cui == null) {
             return null;
         }
@@ -184,6 +181,24 @@ public class WhoTrial2Converter extends BioFileConverter {
         }
         return item;
 
+    }
+    private static Pattern meddraPattern = Pattern.compile("Term:\\s+(.*)\\s*");
+    private String getCUI(String diseaseName) {
+        String cui = mrConsoMap.get(diseaseName.toLowerCase());
+        if (cui != null) {
+            return cui;
+        }
+        if(diseaseName.startsWith("MedDRA")) {
+        	String[] lines = diseaseName.split("\n");
+        	for (String line : lines) {
+				Matcher matcher = meddraPattern.matcher(line);
+				if(matcher.matches()) {
+					cui = mrConsoMap.get(matcher.group(1));
+					return cui;
+				}
+			}
+        }
+    	return null;
     }
 
     /**
