@@ -78,17 +78,7 @@ public class WhoTrial2Converter extends BioFileConverter {
         whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
     }
 
-    public enum ReplaceWord {
-        REPLACE_BR("<BR>"),
-        REPLACE_COLON(";");
-
-        private String word;
-
-        private ReplaceWord(String word) {
-            this.word = word;
-        }
-    }
-
+    private String[] replaceWords = new String[] {"<BR>","<br>",";"};
     private void storeTrialElements(Elements trialElements) {
         if(null == trialElements) {
             LOG.warn("Trial elements is null. read next file.");
@@ -155,8 +145,8 @@ public class WhoTrial2Converter extends BioFileConverter {
 
     private HashSet<String> convertConditionToDiseaseNameSet(String condition) {
 
-        for(ReplaceWord replaceWord : ReplaceWord.values()) {
-            condition = condition.replaceAll(replaceWord.word, "\n");
+        for(String replaceWord : replaceWords) {
+            condition = condition.replaceAll(replaceWord, "\n");
             LOG.warn("condition : " + condition);
         }
         String[] diseaseNames = condition.split("\n");
@@ -177,7 +167,6 @@ public class WhoTrial2Converter extends BioFileConverter {
         }
         return diseaseNameSet;
     }
-
     private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
         String cui = mrConsoMap.get(umlsDiseaseName.toLowerCase());
         if (cui == null) {
