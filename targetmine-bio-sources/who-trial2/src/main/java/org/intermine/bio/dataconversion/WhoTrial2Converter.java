@@ -78,7 +78,9 @@ public class WhoTrial2Converter extends BioFileConverter {
         whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
     }
 
-    private String[] replaceWords = new String[] {"<BR>","<br>",";"};
+    private String[] replaceWords = new String[] {"<BR>","<br>",
+//	";"
+	};
     private void storeTrialElements(Elements trialElements) {
         if(null == trialElements) {
             LOG.warn("Trial elements is null. read next file.");
@@ -124,9 +126,9 @@ public class WhoTrial2Converter extends BioFileConverter {
                     trialTo.setAttribute("diseaseName", diseaseName);
                     try {
                         Item umlsDisease = getUmlsDisease(diseaseName);
+                        trialTo.setReference("trial", whoTrial);
                         if (null != umlsDisease) {
                             trialTo.setReference("umls", umlsDisease);
-                            trialTo.setReference("trial", whoTrial);
                         }
                         store(trialTo);
                     } catch (ObjectStoreException e) {
@@ -145,11 +147,11 @@ public class WhoTrial2Converter extends BioFileConverter {
 
     private HashSet<String> convertConditionToDiseaseNameSet(String condition) {
 
-        for(String replaceWord : replaceWords) {
-            condition = condition.replaceAll(replaceWord, "\n");
-            LOG.warn("condition : " + condition);
-        }
-        String[] diseaseNames = condition.split("\n");
+//        for(String replaceWord : replaceWords) {
+//            condition = condition.replaceAll(replaceWord, "\n");
+//            LOG.warn("condition : " + condition);
+//        }
+        String[] diseaseNames = condition.split("<[Bb][Rr]>");//condition.split("\n");
 
         HashSet<String> diseaseNameSet = new HashSet<>();
 
