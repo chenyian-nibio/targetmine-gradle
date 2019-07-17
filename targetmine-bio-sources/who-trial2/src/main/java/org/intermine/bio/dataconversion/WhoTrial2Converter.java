@@ -36,10 +36,6 @@ public class WhoTrial2Converter extends BioFileConverter {
     private static final String DATASET_TITLE = "who-trial2";
     private static final String DATA_SOURCE_NAME = "who-trial2";
 
-    private static final String DATA_TYPE_DISEASE_OR_SYNDROME = "B2.2.1.2.1";
-
-    // key is string of source vocabularies, value is CUI
-    private Map<String, String> mrConsoMap = new HashMap<String, String>();
     // key is CUI, value is reference to UmlsDisease item
     private Map<String, Item> umlsDiseaseMap = new HashMap<String, Item>();
 
@@ -80,9 +76,6 @@ public class WhoTrial2Converter extends BioFileConverter {
         whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
     }
 
-    private String[] replaceWords = new String[] {"<BR>","<br>",
-//	";"
-	};
     private void storeTrialElements(Elements trialElements) {
         if(null == trialElements) {
             LOG.warn("Trial elements is null. read next file.");
@@ -184,7 +177,7 @@ public class WhoTrial2Converter extends BioFileConverter {
     }
     private static Pattern meddraPattern = Pattern.compile("Term:\\s+(.*)\\s*");
     private String getCUI(String diseaseName) {
-        String cui = mrConsoMap.get(diseaseName.trim().toLowerCase());
+        String cui = resolver.getIdentifier(diseaseName);
         if (cui != null) {
             return cui;
         }
@@ -193,7 +186,7 @@ public class WhoTrial2Converter extends BioFileConverter {
         	for (String line : lines) {
 				Matcher matcher = meddraPattern.matcher(line);
 				if(matcher.matches()) {
-					cui = mrConsoMap.get(matcher.group(1).trim().toLowerCase());
+					cui = resolver.getIdentifier(matcher.group(1));
 					return cui;
 				}
 			}
@@ -201,7 +194,7 @@ public class WhoTrial2Converter extends BioFileConverter {
         String[] split = diseaseName.split(";");
 		if(split.length>1) {
 			for (String string : split) {
-				cui = mrConsoMap.get(string.toLowerCase());
+				cui = resolver.getIdentifier(string);
 				if(cui!=null) {
 					return cui;
 				}
@@ -209,44 +202,15 @@ public class WhoTrial2Converter extends BioFileConverter {
         }
     	return null;
     }
+    private UMLSResolver resolver;
     /**
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
         // mrConsoMap input data only once.
         // because, if project.xml( src.data.dir.includes) include multi files , the process method will be called multiple times.
-        if(mrConsoMap == null || mrConsoMap.size() == 0) {
-            /**
-             * Processing MRSTY.RRF file to collect UMLS's source
-             */
-            Iterator<String[]> mrStyIterator = getMrStyIterator();
-            mrStyIterator.next(); // Skip header
-            HashSet<String> cuiSet = new HashSet<>();
-            while( mrStyIterator.hasNext() ) {
-
-                String[] mrStyRow = mrStyIterator.next();
-                String cui = mrStyRow[0];
-                String str = mrStyRow[2];
-                if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
-                    continue;
-                }
-                cuiSet.add(cui);
-            }
-
-            /**
-             * Processing MRCONSO.RRF file to collect UMLS's source vocabularies and CUIs
-             */
-            Iterator<String[]> mrConsoIterator = getMrConsoIterator();
-            mrConsoIterator.next(); // Skip header
-            while (mrConsoIterator.hasNext()) {
-                String[] mrConsoRow = mrConsoIterator.next();
-                String cui = mrConsoRow[0];
-                if(!cuiSet.contains(cui)) {
-                    continue;
-                }
-                String str = mrConsoRow[14];
-                mrConsoMap.put(str.toLowerCase(), cui);
-            }
+        if(resolver==null) {
+        	resolver = new UMLSResolver(mrConsoFile, mrStyFile);
         }
 
         LOG.warn("whoTrial2 start!");
@@ -269,17 +233,8 @@ public class WhoTrial2Converter extends BioFileConverter {
         storeTrialElements(trialElements);
     }
 
-    private Iterator<String[]> getMrConsoIterator() throws IOException {
-        return FormattedTextParser.parseDelimitedReader(new FileReader(this.mrConsoFile), '|');
-    }
-
     public void setMrConsoFile(File mrConsoFile) {
         this.mrConsoFile = mrConsoFile;
-    }
-
-    private Iterator<String[]> getMrStyIterator() throws IOException {
-        // delimiter '|'
-        return FormattedTextParser.parseDelimitedReader(new FileReader( this.mrStyFile ), '|' );
     }
 
     public void setMrStyFile( File mrStyFile ) {
