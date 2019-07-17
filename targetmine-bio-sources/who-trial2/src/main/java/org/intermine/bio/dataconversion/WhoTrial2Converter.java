@@ -57,7 +57,7 @@ public class WhoTrial2Converter extends BioFileConverter {
 	private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 
 
-	private void storeTrialElements(Map<String,String> trial) {
+	private void storeTrialElements(Map<String,String> trial) throws ObjectStoreException {
 		String name = trial.get("name");
 		if(idSet.contains(name)) {
 			return;
@@ -86,26 +86,22 @@ public class WhoTrial2Converter extends BioFileConverter {
 
 		// add disease.
 		String condition = trial.get("condition");
+		whoTrial.setAttribute("condition", condition);
 
 		String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
+		HashSet<String> umlses = new HashSet<String>();
 		for(String diseaseName : diseaseNameSet){
 			LOG.warn("[test]condition = " + diseaseName);
 			if (diseaseName != null && diseaseName.length() > 0) {
-				Item trialTo = createItem("TrialToUmlsDisease");
-				trialTo.setAttribute("diseaseName", diseaseName);
-				try {
-					Item umlsDisease = getUmlsDisease(diseaseName);
-					trialTo.setReference("trial", whoTrial);
-					if (null != umlsDisease) {
-						trialTo.setReference("umls", umlsDisease);
-					}
-					store(trialTo);
-				} catch (ObjectStoreException e) {
-					LOG.warn("Cannot store who trials", e);
+				Item umlsDisease = getUmlsDisease(diseaseName);
+				if(umlsDisease!=null) {
+					umlses.add(umlsDisease.getIdentifier());
 				}
 			}
 		}
-
+		if(!umlses.isEmpty()) {
+			whoTrial.setCollection("umlses", new ArrayList<String>(umlses));
+		}
 		try {
 			store(whoTrial);
 		} catch (ObjectStoreException e) {
