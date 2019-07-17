@@ -62,7 +62,7 @@ public class TrialXMLParser implements TrialParser {
 				LOG.warn("RootElements is null. read next file.");
 				return;
 			}
-		} catch (ParsingException e) {
+		} catch (Exception e) {
 			LOG.warn("Cannot XML parsing this file. read next file.");
 			return;
 		}
