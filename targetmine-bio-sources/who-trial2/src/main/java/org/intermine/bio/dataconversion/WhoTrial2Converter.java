@@ -80,7 +80,7 @@ public class WhoTrial2Converter extends BioFileConverter {
 		}
 
 		// add disease.
-		String condition = trial.get("Condition");
+		String condition = trial.get("condition");
 
 		String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
 		for(String diseaseName : diseaseNameSet){
