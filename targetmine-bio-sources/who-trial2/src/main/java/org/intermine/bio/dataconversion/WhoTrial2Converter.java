@@ -67,7 +67,7 @@ public class WhoTrial2Converter extends BioFileConverter {
 			String child = trial.get(key);
 			if(child == null) {
 				LOG.warn("*****[test]Nothing Element : " + key);
-				return;
+				continue;
 			}
 			String elementValue = child.trim();
 			if(elementValue != null && !elementValue.isEmpty()) {
