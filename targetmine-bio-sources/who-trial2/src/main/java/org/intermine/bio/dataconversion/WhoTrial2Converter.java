@@ -198,9 +198,17 @@ public class WhoTrial2Converter extends BioFileConverter {
 				}
 			}
         }
+        String[] split = diseaseName.split(";");
+		if(split.length>1) {
+			for (String string : split) {
+				cui = mrConsoMap.get(string.toLowerCase());
+				if(cui!=null) {
+					return cui;
+				}
+			}
+        }
     	return null;
     }
-
     /**
      * {@inheritDoc}
      */
