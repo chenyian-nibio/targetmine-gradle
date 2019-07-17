@@ -114,6 +114,9 @@ public class WhoTrial2Converter extends BioFileConverter {
 	}
 
 	private String[] convertConditionToDiseaseNameSet(String condition) {
+		if(condition==null){
+			return new String[0];
+		}
 		String[] diseaseNames = condition.split("<[Bb][Rr]>");//condition.split("\n");
 
 		ArrayList<String> diseaseNameSet = new ArrayList<>();
@@ -159,7 +162,16 @@ public class WhoTrial2Converter extends BioFileConverter {
 			for (String line : lines) {
 				Matcher matcher = meddraPattern.matcher(line);
 				if(matcher.matches()) {
+<<<<<<< HEAD
 					cui = resolver.getIdentifier(matcher.group(1));
+=======
+<<<<<<< HEAD
+					cui = mrConsoMap.get(matcher.group(1).trim().toLowerCase());
+<<<<<<< HEAD
+=======
+					cui = resolver.getIdentifier(matcher.group(1));
+>>>>>>> b1dcfc7... WIP
+>>>>>>> split WhoTrial2Converter to TrialParser
 					return cui;
 				}
 			}
@@ -169,6 +181,11 @@ public class WhoTrial2Converter extends BioFileConverter {
 			for (String string : split) {
 				cui = resolver.getIdentifier(string);
 				if(cui!=null) {
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> e03f098... WIP
+>>>>>>> split WhoTrial2Converter to TrialParser
 					return cui;
 				}
 			}
