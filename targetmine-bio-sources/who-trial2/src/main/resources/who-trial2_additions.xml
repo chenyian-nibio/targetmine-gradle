@@ -4,12 +4,7 @@
 <classes>
     <class name="UmlsDisease" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
-        <collection name="trials" referenced-type="TrialToUmlsDisease" reverse-reference="umls"/>
-    </class>
-    <class name="TrialToUmlsDisease" is-interface="true">
-        <attribute name="diseaseName" type="java.lang.String"/>
-        <reference name="trial" referenced-type="ClinicalTrial" reverse-reference="umlses"/>
-        <reference name="umls" referenced-type="UmlsDisease" reverse-reference="trials"/>
+        <collection name="trials" referenced-type="ClinicalTrial" reverse-reference="umlses"/>
     </class>
     <class name="ClinicalTrial" is-interface="true">
         <attribute name="name" type="java.lang.String"/>
@@ -34,6 +29,6 @@
         <attribute name="result" type="java.lang.String"/>
 
         <attribute name="condition" type="java.lang.String"/>
-        <collection name="umlses" referenced-type="TrialToUmlsDisease" reverse-reference="trial"/>
+        <collection name="umlses" referenced-type="UmlsDisease" reverse-reference="trials"/>
     </class>
 </classes>
