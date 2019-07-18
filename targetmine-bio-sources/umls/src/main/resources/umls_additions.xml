@@ -13,6 +13,6 @@
         <attribute name="identifier" type="java.lang.String"/>
         <attribute name="name" type="java.lang.String"/>
         <reference name="medgen" referenced-type="DiseaseTerm" reverse-reference="umls"/>
-        <collection name="meshes"  referenced-type="MeSHUMLSDisease" reverse-reference="umlses"/>
+        <collection name="meshes"  referenced-type="MeshTerm" reverse-reference="umlses"/>
     </class>
 </classes>

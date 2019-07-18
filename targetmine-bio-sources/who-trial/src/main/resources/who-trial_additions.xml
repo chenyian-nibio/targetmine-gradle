@@ -2,7 +2,7 @@
 <!-- This file details any extensions needed to the data model to store data from this source, everything else is automatically generated from the model description so this is all we need to do to add to the model. -->
 
 <classes>
-    <class name="UmlsDisease" is-interface="true">
+    <class name="UMLSDisease" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
         <collection name="trials" referenced-type="ClinicalTrial" reverse-reference="umlses"/>
     </class>
@@ -29,6 +29,6 @@
         <attribute name="result" type="java.lang.String"/>
 
         <attribute name="condition" type="java.lang.String"/>
-        <collection name="umlses" referenced-type="UmlsDisease" reverse-reference="trials"/>
+        <collection name="umlses" referenced-type="UMLSDisease" reverse-reference="trials"/>
     </class>
 </classes>
