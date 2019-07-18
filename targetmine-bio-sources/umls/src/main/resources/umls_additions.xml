@@ -7,12 +7,7 @@
 	</class>
 
     <class name="MeshTerm" extends="OntologyTerm" is-interface="true">
-        <collection name="umlses"  referenced-type="MeSHUMLSDisease" reverse-reference="mesh"/>
-    </class>
-
-    <class name="MeSHUMLSDisease" is-interface="true">
-        <reference name="mesh" referenced-type="MeshTerm" reverse-reference="umlses"/>
-        <reference name="umls" referenced-type="UMLSDisease" reverse-reference="meshes"/>
+        <collection name="umlses"  referenced-type="UMLSDisease" reverse-reference="meshes"/>
     </class>
     <class name="UMLSDisease" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
