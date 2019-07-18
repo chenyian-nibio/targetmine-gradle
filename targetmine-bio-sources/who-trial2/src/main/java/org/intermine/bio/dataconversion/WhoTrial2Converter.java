@@ -86,7 +86,9 @@ public class WhoTrial2Converter extends BioFileConverter {
 
 		// add disease.
 		String condition = trial.get("condition");
-		whoTrial.setAttribute("condition", condition);
+		if(condition != null && !condition.isEmpty()){
+			whoTrial.setAttribute("condition", condition);
+		}
 
 		String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
 		HashSet<String> umlses = new HashSet<String>();

@@ -44,7 +44,7 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
       <property name="src.data.dir.includes" value="HumanDO.obo" />
     </source>
-    <source name="who-trial" type="who-trial">
+    <source name="who-trial" type="who-trial2">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
       <property name="src.data.dir.includes" value="data.jl" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
