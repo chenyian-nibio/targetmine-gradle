@@ -64,12 +64,8 @@ public class UmlsConverter extends BioFileConverter
 			UMLS umls = null;
 			HashMap<String, Item> umlsMap = new HashMap<>();
 			HashSet<String> keySet = new HashSet<>();
-			Item prevUmls = null;
 			while((umls = parser.getNext())!=null) {
 				String identifier = umls.getIdentifier();
-				if(prevUmls!=null && prevUmls.getIdentifier().equals(identifier)) {
-					store(prevUmls);
-				}
 				Item umlsDisease = umlsMap.get(identifier);
 				if(umlsDisease==null){
 					umlsDisease = createItem("UMLSDisease");
@@ -92,10 +88,9 @@ public class UmlsConverter extends BioFileConverter
 					Item mesh = getOrCreateItem("MeshTerm", meshId);
 					umlsDisease.addToCollection("meshes", mesh);
 				}
-				prevUmls = umlsDisease;
 			}
-			if(prevUmls!=null) {
-				store(prevUmls);
+			for (Item item : umlsMap.values()) {
+				store(item);
 			}
 		}
 	}
