@@ -76,7 +76,6 @@ public class UmlsConverter extends BioFileConverter
 						Item medgen = getOrCreateItem("DiseaseTerm", identifier);
 						umlsDisease.setReference("medgen", medgen);
 					}
-					store(umlsDisease);
 					umlsMap.put(identifier,umlsDisease);
 				}
 				if("MSH".equals(umls.getDbType())){
