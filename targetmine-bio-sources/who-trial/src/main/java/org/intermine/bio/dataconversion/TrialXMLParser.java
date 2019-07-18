@@ -36,8 +36,6 @@ public class TrialXMLParser implements TrialParser {
 		whoTrial2XmlPropertyNames.put("countries", "Countries");
 		whoTrial2XmlPropertyNames.put("primaryOutcome", "Primary_outcome");
 		whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
-		whoTrial2XmlPropertyNames.put("criteria", "Inclusion_Criteria");
-		whoTrial2XmlPropertyNames.put("ecriteria", "Exclusion_Criteria");
 	}
 	private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 	public static String[] getkeys() {
@@ -112,16 +110,7 @@ public class TrialXMLParser implements TrialParser {
 		if(conditionElement != null) {
 			map.put("condition", conditionElement.getValue());
 		}
-		StringBuilder sb = new StringBuilder();
-		if(map.containsKey("criteria")){
-			sb.append(map.remove("criteria"));
-		}
-		if(map.containsKey("ecriteria")){
-			sb.append(map.remove("ecriteria"));
-		}
-		if(sb.length() > 0 ){
-			map.put("criteria",sb.toString());
-		}
+
 		return map;
 	}
 }

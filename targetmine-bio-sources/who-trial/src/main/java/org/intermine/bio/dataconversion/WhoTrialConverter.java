@@ -1,7 +1,7 @@
 package org.intermine.bio.dataconversion;
 
 /*
- * Copyright (C) 2002-2018 FlyMine
+ * Copyright (C) 2002-2019 FlyMine
  *
  * This code may be freely distributed and modified under the
  * terms of the GNU Lesser General Public Licence.  This should
@@ -9,247 +9,198 @@ package org.intermine.bio.dataconversion;
  * information or http://www.gnu.org/copyleft/lesser.html.
  *
  */
-
-import java.io.*;
+import java.io.File;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
-import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 
 /**
  * @author
  */
 public class WhoTrialConverter extends BioFileConverter {
-    private static final Logger LOG = LogManager.getLogger(WhoTrialConverter.class);
-    private File mrConsoFile;
-    private File mrStyFile;
+	private static final Logger LOG = LogManager.getLogger(WhoTrialConverter.class);
+	private File mrConsoFile;
+	private File mrStyFile;
 
-    //
-    private static final String DATASET_TITLE = "who-trial";
-    private static final String DATA_SOURCE_NAME = "who-trial";
+	//
+	private static final String DATASET_TITLE = "who-trial2";
+	private static final String DATA_SOURCE_NAME = "who-trial2";
 
-    private static final String DATA_TYPE_DISEASE_OR_SYNDROME = "B2.2.1.2.1";
+	// key is CUI, value is reference to UmlsDisease item
+	private Map<String, Item> umlsDiseaseMap = new HashMap<String, Item>();
 
-    // key is string of source vocabularies, value is CUI
-    private Map<String, String> mrConsoMap = new HashMap<String, String>();
-    // key is CUI, value is reference to DiseaseTerm item
-//    private Map<String, Item> diseaseTermMap = new HashMap<String, Item>();
-    // key is CUI, value is reference to UmlsDisease item
-    private Map<String, Item> umlsDiseaseMap = new HashMap<String, Item>();
+	/**
+	 * Constructor
+	 *
+	 * @param writer the ItemWriter used to handle the resultant items
+	 * @param model  the Model
+	 */
+	public WhoTrialConverter(ItemWriter writer, Model model) {
+		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
+	}
+	private static Set<String> idSet = new HashSet<>();
+	private static int STRING_LIMIT = 10000;
+	private static int PRIMARY_KEY_STRING_LIMIT = 1000;
 
-    /**
-     * Constructor
-     *
-     * @param writer the ItemWriter used to handle the resultant items
-     * @param model  the Model
-     */
-    public WhoTrialConverter(ItemWriter writer, Model model) {
-        super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
-    }
+	private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 
-    private static Map<String, String> propertyNames = new HashMap<String, String>();
-    private static int STRING_LIMIT = 10000;
 
-    static {
-        Map<String, String> p = new HashMap<>();
-        propertyNames.put("name", "Main ID");
-        propertyNames.put("title", "Public title");
-        propertyNames.put("scientificTitle", "Scientific title");
-        propertyNames.put("studyType", "Study type");
-        propertyNames.put("recruitmentStatus", "Recruitment status");
-        propertyNames.put("register", "Register");
-        propertyNames.put("primarySponsor", "Primary sponsor");
-        propertyNames.put("phase", "Phase");
-        propertyNames.put("firstEnrolmentDate", "Date of first enrolment");
-        propertyNames.put("registrationDate", "Date of registration");
-        propertyNames.put("lastRefreshed", "Date of registration");
-        propertyNames.put("targetSampleSize", "Target sample size");
-        propertyNames.put("originalUrl", "URL");
-        propertyNames.put("url", "url");
-        propertyNames.put("interventions", "interventions");
-        propertyNames.put("countries", "countries");
-        propertyNames.put("primaryOutcome", "primary_outcome");
-        propertyNames.put("secondaryOutcome", "secondary_outcome");
-        propertyNames.put("result", "result");
-    }
+	private void storeTrialElements(Map<String,String> trial) throws ObjectStoreException {
+		String name = trial.get("name");
+		if(idSet.contains(name)) {
+			return;
+		}
+		Item whoTrial = createItem("ClinicalTrial");
+		for (String key : TrialXMLParser.getkeys()) {
+			String child = trial.get(key);
+			if(child == null) {
+				LOG.warn("*****[test]Nothing Element : " + key);
+				continue;
+			}
+			String elementValue = child.trim();
+			if(elementValue != null && !elementValue.isEmpty()) {
+				if(elementValue.length() > STRING_LIMIT) {
+					LOG.warn("too large string at " + trial.get("Name") + ", " + key + "= " + elementValue);
+				}
+				LOG.warn("[test]key : " + key + ", elementValue : " + elementValue);
+				whoTrial.setAttribute(key, elementValue);
 
-    private static String toString(Object obj) {
-        if (obj == null) {
-            return null;
-        } else if (obj instanceof String) {
-            return (String) obj;
-        } else if (obj instanceof JSONArray) {
-            JSONArray array = (JSONArray) obj;
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < array.length(); i++) {
-                if (i > 0) {
-                    sb.append(" ");
-                }
-                sb.append(array.get(i).toString());
-            }
-            return sb.toString();
-        }
-        LOG.warn("unexpected type " + obj.getClass().getName());
-        return null;
-    }
+			}
 
-    private void storeTrial(String line) {
-        JSONObject jsonObject = new JSONObject(line);
-        JSONObject main = jsonObject.getJSONObject("main");
-        Item whoTrial = createItem("ClinicalTrial");
-        propertyNames.forEach((key, name) -> {
-            String obj = null;
-            if (main.has(name)) {
-                obj = toString(main.get(name));
-            } else if (jsonObject.has(name)) {
-                obj = toString(jsonObject.get(name));
-            }
-            if (obj != null && !obj.isEmpty()) {
-                if (obj.length() > STRING_LIMIT) {
-                    LOG.warn("too large string at " + main.get("Main ID") + ", " + name + "= " + obj);
-                }
-                whoTrial.setAttribute(key, obj);
-            }
-        });
-        JSONArray diseaseNames = jsonObject.getJSONArray("disease");
-        if (diseaseNames != null && diseaseNames.length() > 0) {
-            for (int i = 0; i < diseaseNames.length(); i++) {
-                String diseaseName = diseaseNames.getString(i);
-//		Item trialTo = createItem("TrialToDisease");
-                Item trialTo = createItem("TrialToUmlsDisease");
-                diseaseName = diseaseName.trim();
-                trialTo.setAttribute("diseaseName", diseaseName);
-                try {
-//		    Item disease = getDiseaseTerm(diseaseName);
-                    Item umlsDisease = getUmlsDisease(diseaseName);
-//		    if (null != disease) {
-//			trialTo.setReference("disease", disease);
-                    if (null != umlsDisease) {
-                        trialTo.setReference("umls", umlsDisease);
-                        trialTo.setReference("trial", whoTrial);
-                    }
-                    store(trialTo);
-                } catch (ObjectStoreException e) {
-                    LOG.warn("Cannot sore who trials", e);
-                }
-            }
+		}
+		idSet.add(name);
+		String url = String.format(WHO_TRIAL2_URL,name);
+		whoTrial.setAttribute("url", url);
 
-        }
-        try {
-            store(whoTrial);
-        } catch (ObjectStoreException e) {
-            LOG.warn("Cannot sore who trials", e);
-        }
+		// add disease.
+		String condition = trial.get("condition");
+		if(condition != null && !condition.isEmpty()){
+			whoTrial.setAttribute("condition", condition);
+		}
 
-    }
+		String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
+		HashSet<String> umlses = new HashSet<String>();
+		for(String diseaseName : diseaseNameSet){
+			LOG.warn("[test]condition = " + diseaseName);
+			if (diseaseName != null && diseaseName.length() > 0) {
+				Item umlsDisease = getUmlsDisease(diseaseName);
+				if(umlsDisease!=null) {
+					umlses.add(umlsDisease.getIdentifier());
+				}
+			}
+		}
+		if(!umlses.isEmpty()) {
+			whoTrial.setCollection("umlses", new ArrayList<String>(umlses));
+		}
+		try {
+			store(whoTrial);
+		} catch (ObjectStoreException e) {
+			LOG.warn("Cannot store who trials", e);
+		}
+	}
 
-//    private Item getDiseaseTerm(String diseaseName) throws ObjectStoreException {
-//	String cui = mrConsoMap.get(diseaseName.toLowerCase());
-//	if(cui == null){
-//	    return null;
-//	}
-//        Item item = diseaseTermMap.get(cui);
-//        if (item == null) {
-//
-//            item = createItem("DiseaseTerm");
-//            item.setAttribute("identifier", cui);
-//            item.setAttribute("name", diseaseName);
-//            item.setAttribute("description", diseaseName);
-//            store(item);
-//            diseaseTermMap.put(cui, item);
-//        }
-//        return item;
-//
-//    }
+	private String[] convertConditionToDiseaseNameSet(String condition) {
+		if(condition==null){
+			return new String[0];
+		}
+		String[] diseaseNames = condition.split("<[Bb][Rr]>");//condition.split("\n");
 
-    private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
-        String cui = mrConsoMap.get(umlsDiseaseName.toLowerCase());
-        if (cui == null) {
-            return null;
-        }
-        Item item = umlsDiseaseMap.get(cui);
-        if (item == null) {
+		ArrayList<String> diseaseNameSet = new ArrayList<>();
 
-            item = createItem("UmlsDisease");
-            item.setAttribute("identifier", cui);
-            store(item);
-            umlsDiseaseMap.put(cui, item);
-        }
-        return item;
+		for(String diseaseName : diseaseNames) {
+			diseaseName = diseaseName.trim();
+			if(diseaseName != null && !diseaseName.isEmpty()) {
+				if(diseaseName.length() > PRIMARY_KEY_STRING_LIMIT) {
+					LOG.warn("diseaseName OVER LIMTT 1000, str = " + diseaseName);
+					diseaseName = diseaseName.substring(0, PRIMARY_KEY_STRING_LIMIT);
+				}
 
-    }
+				diseaseNameSet.add(diseaseName);
+				LOG.warn("Add disease :  ", diseaseName);
+			}
+		}
+		return diseaseNameSet.toArray(new String[diseaseNameSet.size()]);
+	}
+	private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
+		String cui = getCUI(umlsDiseaseName);
+		if (cui == null) {
+			return null;
+		}
+		Item item = umlsDiseaseMap.get(cui);
+		if (item == null) {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void process(Reader reader) throws Exception {
+			item = createItem("UmlsDisease");
+			item.setAttribute("identifier", cui);
+			store(item);
+			umlsDiseaseMap.put(cui, item);
+		}
+		return item;
 
-        /**
-         * Processing MRSTY.RRF file to collect UMLS's source
-         */
-        Iterator<String[]> mrStyIterator = getMrStyIterator();
-        mrStyIterator.next(); // Skip header
-        HashSet<String> cuiSet = new HashSet<>();
-        while( mrStyIterator.hasNext() ) {
+	}
+	private static Pattern meddraPattern = Pattern.compile("Term:\\s+(.*)\\s*");
+	private String getCUI(String diseaseName) {
+		String cui = resolver.getIdentifier(diseaseName);
+		if (cui != null) {
+			return cui;
+		}
+		if(diseaseName.startsWith("MedDRA")) {
+			String[] lines = diseaseName.split("\n");
+			for (String line : lines) {
+				Matcher matcher = meddraPattern.matcher(line);
+				if(matcher.matches()) {
+					cui = resolver.getIdentifier(matcher.group(1));
+					return cui;
+				}
+			}
+		}
+		String[] split = diseaseName.split(";");
+		if(split.length>1) {
+			for (String string : split) {
+				cui = resolver.getIdentifier(string);
+				if(cui!=null) {
+					return cui;
+				}
+			}
+		}
+		return null;
+	}
+	private UMLSResolver resolver;
+	/**
+	 * {@inheritDoc}
+	 */
+	public void process(Reader reader) throws Exception {
+		// mrConsoMap input data only once.
+		// because, if project.xml( src.data.dir.includes) include multi files , the process method will be called multiple times.
+		if(resolver==null) {
+			resolver = new UMLSResolver(mrConsoFile, mrStyFile);
+		}
 
-            String[] mrStyRow = mrStyIterator.next();
-            String cui = mrStyRow[0];
-            String str = mrStyRow[2];
-            if(!str.startsWith(DATA_TYPE_DISEASE_OR_SYNDROME)) {
-                continue;
-            }
-            cuiSet.add(cui);
-        }
+		LOG.warn("whoTrial2 start!");
+		boolean isXML = getCurrentFile().getName().endsWith("xml");
+		TrialParser parser = isXML?new TrialXMLParser(reader):new TrialJSONParser(reader);
+		Map<String, String> trial = null;
+		while((trial = parser.parse())!=null) {
+			storeTrialElements(trial);
+		}
+	}
+	public void setMrConsoFile(File mrConsoFile) {
+		this.mrConsoFile = mrConsoFile;
+	}
 
-        /**
-         * Processing MRCONSO.RRF file to collect UMLS's source vocabularies and CUIs
-         */
-        Iterator<String[]> mrConsoIterator = getMrConsoIterator();
-        mrConsoIterator.next(); // Skip header
-        while (mrConsoIterator.hasNext()) {
-
-            String[] mrConsoRow = mrConsoIterator.next();
-            String cui = mrConsoRow[0];
-            if(!cuiSet.contains(cui)) {
-                continue;
-            }
-            String str = mrConsoRow[14];
-            mrConsoMap.put(str.toLowerCase(), cui);
-
-        }
-
-        try (BufferedReader br = new BufferedReader(reader)) {
-            br.lines().forEach(line -> storeTrial(line));
-            LOG.warn("umlsDisease add total : " + umlsDiseaseMap.size());
-        }
-    }
-
-    private Iterator<String[]> getMrConsoIterator() throws IOException {
-        return FormattedTextParser.parseDelimitedReader(new FileReader(this.mrConsoFile), '|');
-    }
-
-    public void setMrConsoFile(File mrConsoFile) {
-        this.mrConsoFile = mrConsoFile;
-    }
-
-    private Iterator<String[]> getMrStyIterator() throws IOException {
-        // delimiter '|'
-        return FormattedTextParser.parseDelimitedReader(new FileReader( this.mrStyFile ), '|' );
-    }
-
-    public void setMrStyFile( File mrStyFile ) {
-        this.mrStyFile = mrStyFile;
-    }
+	public void setMrStyFile( File mrStyFile ) {
+		this.mrStyFile = mrStyFile;
+	}
 
 }
