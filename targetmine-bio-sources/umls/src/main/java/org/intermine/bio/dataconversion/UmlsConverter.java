@@ -86,11 +86,7 @@ public class UmlsConverter extends BioFileConverter
 						continue;
 					}
 					Item mesh = getOrCreateItem("MeshTerm", meshId);
-					Item meSHUMLS = createItem("MeSHUMLSDisease");
-					meSHUMLS.setReference("umls",umlsDisease);
-					meSHUMLS.setReference("mesh",mesh);
-					store(meSHUMLS);
-					keySet.add(key);
+					umlsDisease.addToCollection("meshes", mesh);
 				}
 				
 			}
