@@ -70,12 +70,17 @@ public class EfoXrefConverter extends BioFileConverter
 			} else if (line.startsWith("name: ")) {
 				String name = line.substring("name: ".length()).trim();
 				cui = resolver.getIdentifier(name);
+				if(cui!=null) {
+					System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
+				}
 			} else if (line.startsWith("synonym: ")) {
 				Matcher matcher = synonymPattern.matcher(line);
-				if(matcher.lookingAt()) {
+				if(cui == null && matcher.lookingAt()) {
 					String name = matcher.group(1);
-					String cui2 = resolver.getIdentifier(name);
-					cui = cui!=null ? cui : cui2;
+					cui = resolver.getIdentifier(name);
+					if(cui!=null){
+						System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
+					}
 				}
 			} else if (line.startsWith("property_value: http://www.ebi.ac.uk/efo/MSH_definition_citation")) {
 				String meshIdentifier = line.substring(line.indexOf("MSH:") + 4, line.indexOf("MSH:") + 11);
