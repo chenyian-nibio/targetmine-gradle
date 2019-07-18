@@ -46,7 +46,7 @@ public class TrialJSONParser implements TrialParser{
 	@Override
 	public Map<String, String> parse() throws IOException {
 		String line = null;
-		if(reader == null || (line = reader.readLine())!=null) {
+		if(reader == null || (line = reader.readLine())==null) {
 			return null;
 		}
         JSONObject jsonObject = new JSONObject(line);
