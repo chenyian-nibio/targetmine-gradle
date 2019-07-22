@@ -14,9 +14,9 @@
       <property name="src.data.file" location="/data/bio/db/Targetmine/goslim/goslim_generic.obo"/>
     </source>
     <source name="uniprot" type="tm-uniprot">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/split"/>
+      <property name="src.data.dir" location="/home/topeins/ohila-data/bio/db/Targetmine/uniprot/split"/>
       <property name="src.data.dir.includes" value="*.xml"/>
-      <property name="ptmlistFile" value="/data/bio/db/Targetmine/uniprot/docs/ptmlist.txt"/>
+      <property name="ptmlistFile" value="/home/topeins/ohila-data/bio/db/Targetmine/uniprot/docs/ptmlist.txt"/>
     </source>
     <source name="uniprot-keywords" type="keyword-xml">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/keyword"/>
@@ -133,13 +133,13 @@
       <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchi"/>
       <property name="osAlias" value="os.production"/>
     </source>
-  	
+
     <source name="kegg-jscc" type="kegg-jtc">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/br"/>
       <property name="src.data.dir.includes" value="br0830*.keg"/>
       <property name="osAlias" value="os.production"/>
     </source>
-	
+
     <source name="kegg-pathway" type="tm-kegg-pathway">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp"/>
       <property name="src.data.dir.includes" value="*/*_gene_map.tab"/>
@@ -177,14 +177,14 @@
     </source>
     <source name="efo" type="efo">
       <property name="src.data.file" location="/data/bio/db/Targetmine/efo/efo.modi.obo"/>
-    </source>  
+    </source>
 <!-- chenyian: for internal only | start -->
     <source name="omim" type="omim-gene">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/omim"/>
       <property name="src.data.dir.includes" value="mim2gene_medgen"/>
       <property name="titleFile" value="/data/bio/db/Targetmine/omim/omim_phenotype_title" />
     </source>
-<!-- 
+<!--
 	chenyian: (2019.6.19) This part is unchecked. I cannot guarantee this part will work fine. USE FOR YOUR OWN RISK.
     <source name="gostar" type="gostar">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gostar"/>
@@ -215,15 +215,15 @@
       <property name="humanGeneInfoFile" value="/data/bio/db/Targetmine/gene_info/Homo_sapiens.gene_info" />
       <property name="ordoOwlFile" value="/data/bio/db/Targetmine/orphanet/ORDO_en_2.7.owl" />
     </source>
-  	
+
     <source name="efo-xref" type="efo-xref">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
       <property name="src.data.dir.includes" value="efo.modi.obo" />
-    </source>  
+    </source>
     <source name="mesh-term" type="mesh-term">
       <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
       <property name="src.data.dir.includes" value="*.bin" />
-    </source>  
+    </source>
     <source name="gwas" type="gwas">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gwas/nhgri-ebi" />
       <property name="src.data.dir.includes" value="gwas-catalog-associations_ontology-annotated.tsv" />
@@ -351,7 +351,7 @@
     <source name="chembl-mec" type="chembl-mechanism">
       <property name="source.db.name" value="chembl-psql"/>
     </source>
-    
+
     <source name="irefindex" type="irefindex">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>
       <property name="src.data.dir.includes" value="*.mitab.*.txt"/>
@@ -428,7 +428,7 @@
     </source>
 
     <source name="disease-summary" type="disease-summary"/>
-    
+
     <source name="dataset-info" type="dataset-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine" />
       <property name="src.data.dir.includes" value="*/*current_ver*.txt" />
@@ -442,7 +442,7 @@
 
     <!--  following parts should be run after other resources-->
     <source name="fill-proteins-xml" type="fill-proteins-xml">
-      <property name="src.data.dir" location="/data/bio/db/uniprot"/>
+      <property name="src.data.dir" location="data/bio/db/uniprot"/>
       <property name="src.data.dir.includes" value="uniprot_*.xml" />
       <property name="osAlias" value="os.production"/>
     </source>
