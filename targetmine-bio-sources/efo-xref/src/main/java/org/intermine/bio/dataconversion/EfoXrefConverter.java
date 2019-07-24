@@ -58,6 +58,7 @@ public class EfoXrefConverter extends BioFileConverter
 		boolean isTerm = false;
 		String identifier = null;
 		boolean isObsolete = false;
+		diseaseEfoSet.add("EFO:0000408");
 		UMLSResolver resolver = new UMLSResolver(mrConsoFile,mrStyFile);
 		Set<String> meshIdSet = new HashSet<String>();
 		Set<String> doIdSet = new HashSet<String>();
@@ -95,12 +96,17 @@ public class EfoXrefConverter extends BioFileConverter
 				}
 			} else if ("is_obsolete: true".equals(line.trim())) {
 				isObsolete = true;
+			} else if (line.startsWith("is_a:")){
+				String parentId = line.substring(6, line.indexOf('!')-1);
+				if (diseaseEfoSet.contains(parentId)){
+					diseaseEfoSet.add(parentId);
+				}
 			} else if ("".equals(line.trim())) {
 				if (isTerm && !isObsolete) {
 					Item efoTerm = createItem("EFOTerm");
 					efoTerm.setAttribute("identifier", identifier);
 					efoTerm.setReference("ontology", getOntology("EFO"));
-					if(cui!=null) {
+					if(cui!=null && diseaseEfoSet.contains(identifier)) {
 						efoTerm.setReference("umls", getUMLSDisease(cui));
 					}
 					for (String meshIdentifier : meshIdSet) {
@@ -120,6 +126,7 @@ public class EfoXrefConverter extends BioFileConverter
 
 		}
 	}
+	private Set<String> diseaseEfoSet = new HashSet<String>();
 
 	private Map<String, Item> umlsMap = new HashMap<String, Item>();
 	private Item getUMLSDisease(String cui) throws ObjectStoreException {
