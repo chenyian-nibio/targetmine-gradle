@@ -99,7 +99,7 @@ public class EfoXrefConverter extends BioFileConverter
 			} else if (line.startsWith("is_a:")){
 				String parentId = line.substring(6, line.indexOf('!')-1);
 				if (diseaseEfoSet.contains(parentId)){
-					diseaseEfoSet.add(parentId);
+					diseaseEfoSet.add(identifier);
 				}
 			} else if ("".equals(line.trim())) {
 				if (isTerm && !isObsolete) {
