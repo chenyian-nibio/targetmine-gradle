@@ -141,7 +141,7 @@ public class WhoTrialConverter extends BioFileConverter {
 		Item item = umlsDiseaseMap.get(cui);
 		if (item == null) {
 
-			item = createItem("UmlsDisease");
+			item = createItem("UMLSDisease");
 			item.setAttribute("identifier", cui);
 			store(item);
 			umlsDiseaseMap.put(cui, item);
