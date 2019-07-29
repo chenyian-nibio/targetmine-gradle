@@ -2,17 +2,15 @@
 <!-- This file details any extensions needed to the data model to store data from this source, everything else is automatically generated from the model description so this is all we need to do to add to the model. -->
 
 <classes>
-	<class name="DiseaseTerm" extends="OntologyTerm" is-interface="true">
-		<collection name="umls" referenced-type="UMLSDisease"/>
+	<class name="OntologyTerm" is-interface="true">
+		<collection name="diseaseConcepts" referenced-type="DiseaseConcept" reverse-reference="terms"/>
 	</class>
 
-    <class name="MeshTerm" extends="OntologyTerm" is-interface="true">
-        <collection name="umlses"  referenced-type="UMLSDisease" reverse-reference="meshes"/>
+    <class name="UMLSTerm" extends="OntologyTerm" is-interface="true">
     </class>
-    <class name="UMLSDisease" is-interface="true">
+    <class name="DiseaseConcept" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
         <attribute name="name" type="java.lang.String"/>
-        <reference name="medgen" referenced-type="DiseaseTerm" reverse-reference="umls"/>
-        <collection name="meshes"  referenced-type="MeshTerm" reverse-reference="umlses"/>
+        <collection name="terms" referenced-type="OntologyTerm" reverse-reference="diseaseConcepts"/>
     </class>
 </classes>
