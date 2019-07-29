@@ -14,6 +14,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -62,21 +63,31 @@ public class UmlsConverter extends BioFileConverter
 		getDiseaseTermIds();
 		try(UMLSParser parser = new UMLSParser(reader, mrStyFile,UMLSParser.DATA_TYPES)){
 			UMLS umls = null;
-			HashMap<String, Item> umlsMap = new HashMap<>();
 			HashSet<String> keySet = new HashSet<>();
+			Item diseaseConcept = null;
+			String prevIdentifier = null;
 			while((umls = parser.getNext())!=null) {
 				String identifier = umls.getIdentifier();
-				Item umlsDisease = umlsMap.get(identifier);
-				if(umlsDisease==null){
-					umlsDisease = createItem("UMLSDisease");
-					umlsDisease.setAttribute("identifier",identifier);
-					String name = umls.getName();
-					umlsDisease.setAttribute("name",name);
-					if(diseaseTermIdSet.contains(identifier)) {
-						Item medgen = getOrCreateItem("DiseaseTerm", identifier);
-						umlsDisease.setReference("medgen", medgen);
+				if(diseaseConcept == null || !identifier.equals(prevIdentifier)) {
+					if(diseaseConcept!=null) {
+						store(diseaseConcept);
 					}
-					umlsMap.put(identifier,umlsDisease);
+					diseaseConcept = createItem("DiseaseConcept");
+					diseaseConcept.setAttribute("identifier",identifier);
+					String name = umls.getName();
+					diseaseConcept.setAttribute("name",name);
+					
+					Item umlsTerm = createItem("UMLSTerm");
+					umlsTerm.setAttribute("identifier",identifier);
+					umlsTerm.setAttribute("name",name);
+					umlsTerm.setReference("ontology", getOntology("UMLS"));
+
+					diseaseConcept.addToCollection("terms", umlsTerm);
+					store(umlsTerm);
+					if(diseaseTermIdSet.contains(identifier)) {
+						String medgenIdentifier = getOrCreateItem("DiseaseTerm", identifier);
+						diseaseConcept.addToCollection("terms", medgenIdentifier);
+					}
 				}
 				if("MSH".equals(umls.getDbType())){
 					String meshId = umls.getDbId();
@@ -84,31 +95,33 @@ public class UmlsConverter extends BioFileConverter
 					if(keySet.contains(key)) {
 						continue;
 					}
-					Item mesh = getOrCreateItem("MeshTerm", meshId);
-					umlsDisease.addToCollection("meshes", mesh);
+					String meshIdentifier = getOrCreateItem("MeshTerm", meshId);
+					diseaseConcept.addToCollection("terms", meshIdentifier);
 				}
+				prevIdentifier = identifier;
 			}
-			for (Item item : umlsMap.values()) {
-				store(item);
+			if(diseaseConcept!=null) {
+				store(diseaseConcept);
 			}
 		}
 	}
-	private HashMap<String,HashMap<String,Item>> itemSet = new HashMap<String, HashMap<String,Item>>();
+	private HashMap<String,HashMap<String,String>> itemSet = new HashMap<String, HashMap<String,String>>();
 
-	private Item getOrCreateItem(String dbName,String identifier) throws ObjectStoreException {
-		HashMap<String, Item> hashMap = itemSet.get(dbName);
+	private String getOrCreateItem(String dbName,String identifier) throws ObjectStoreException {
+		HashMap<String, String> hashMap = itemSet.get(dbName);
 		if(hashMap==null) {
-			hashMap = new HashMap<String, Item>();
+			hashMap = new HashMap<String, String>();
 			itemSet.put(dbName, hashMap);
 		}
-		Item item = hashMap.get(identifier);
-		if(item==null) {
-			item = createItem(dbName);
+		String termIdentifier = hashMap.get(identifier);
+		if(termIdentifier==null) {
+			Item item = createItem(dbName);
 			item.setAttribute("identifier", identifier);
 			store(item);
-			hashMap.put(identifier, item);
+			termIdentifier = item.getIdentifier();
+			hashMap.put(identifier, termIdentifier);
 		}
-		return item;
+		return termIdentifier;
 	}
 	private String osAlias = null;
 
@@ -143,4 +156,17 @@ public class UmlsConverter extends BioFileConverter
 	public void setMrStyFile( File mrStyFile ) {
 		this.mrStyFile = mrStyFile;
 	}
+	private Map<String, String> ontologyMap = new HashMap<String, String>();
+	private String getOntology(String name) throws ObjectStoreException {
+		String ret = ontologyMap.get(name);
+		if (ret == null) {
+			Item item = createItem("Ontology");
+			item.setAttribute("name", name);
+			store(item);
+			ret = item.getIdentifier();
+			ontologyMap.put(name, ret);
+		}
+		return ret;
+	}
+
 }
