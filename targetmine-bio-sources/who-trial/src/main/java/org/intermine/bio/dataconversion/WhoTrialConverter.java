@@ -39,7 +39,7 @@ public class WhoTrialConverter extends BioFileConverter {
 	private static final String DATA_SOURCE_NAME = "who-trial2";
 
 	// key is CUI, value is reference to UmlsDisease item
-	private Map<String, Item> umlsDiseaseMap = new HashMap<String, Item>();
+	private Map<String, Item> umlsTermMap = new HashMap<String, Item>();
 
 	/**
 	 * Constructor
@@ -138,13 +138,13 @@ public class WhoTrialConverter extends BioFileConverter {
 		if (cui == null) {
 			return null;
 		}
-		Item item = umlsDiseaseMap.get(cui);
+		Item item = umlsTermMap.get(cui);
 		if (item == null) {
 
-			item = createItem("UMLSDisease");
+			item = createItem("UMLSTerm");
 			item.setAttribute("identifier", cui);
 			store(item);
-			umlsDiseaseMap.put(cui, item);
+			umlsTermMap.put(cui, item);
 		}
 		return item;
 
