@@ -583,13 +583,6 @@
     </fields>
   </class>
 
-  <class className="org.intermine.model.bio.GeneRIF">
-    <fields>
-      <fieldconfig fieldExpr="phrase"/>
-      <fieldconfig fieldExpr="sentence"/>
-    </fields>
-  </class>
-
   <class className="org.intermine.model.bio.InteractionDetail">
     <fields>
       <fieldconfig fieldExpr="name"/>
@@ -906,7 +899,7 @@
     </fields>
   </class>
 
-<!-- Start: Added by Ishikawa.Motokazu -->
+<!-- Start: Added by Ishikawa.Motokazu 
   <class className="org.intermine.model.bio.Biomarker">
     <fields>
       <fieldconfig fieldExpr="name"/>
@@ -914,6 +907,7 @@
       <fieldconfig fieldExpr="chemicalNature"/>
     </fields>
   </class>
+-->
 
 <!-- End: Added by Ishikawa.Motokazu -->
 
@@ -1411,7 +1405,7 @@
                                  typeClass="DrugCompound"
                                  views="identifier, name, jsccCodes.allParents.jsccCode, jsccCodes.allParents.name"
                                  externalLink="/targetmine/portal.do?class=JscClassification&amp;externalids="/>
-                                 
+
       <enrichmentwidgetdisplayer id="probe_tissue_enrichment"
                                  title="Tissue Enrichment"
                                  description="Tissues enriched for probes in this list"

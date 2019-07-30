@@ -61,6 +61,7 @@ public class AffyProbeAnnotConverter extends BioFileConverter {
 			}
 			
 			Item item = createItem("ProbeSet");
+			item.setAttribute("primaryIdentifier", probeSetId);
 			item.setAttribute("probeSetId", probeSetId);
 			String taxonId = taxonIdMap.get(speciesName);
 			if (taxonId != null) {
