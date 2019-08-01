@@ -938,8 +938,8 @@
                      placement="Interactions"
                      types="Protein"/>
 
-    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GeneOntologyDisplayer"
-                     jspName="model/geneOntologyDisplayer.jsp"
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.TmGeneOntologyDisplayer"
+                     jspName="model/tmGeneOntologyDisplayer.jsp"
                      replacesFields="goAnnotation"
                      placement="Gene Ontology"
                      types="Gene,Protein"/>
