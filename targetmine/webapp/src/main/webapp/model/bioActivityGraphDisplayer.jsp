@@ -23,23 +23,49 @@
         <!-- Choose the property used to display color, and to make (in)visible
         data points associated to specific colors in the scale -->
         <div id='color-div' style='flex-direction: column;'>
-          <label for='color-select'>Color based on:</label>
+          <label for='color-table'>Color Scale:</label>
           <br />
-          <select id='color-select'>
-            <option value=undefined>Select...</option>
-          </select>
           <table id='color-table'><tbody></tbody></table>
+          <%-- <select id='color-select'> --%>
+          <%-- <ul id='color-select'> --%>
+            <%-- <option value=undefined>Select...</option> --%>
+          <%-- </ul> --%>
+          <%-- </select> --%>
+
+          <button id='color-add'>Add</button>
         </div>
         <!-- Choose the property used to map display shape, and to make (in)visible
         data points associated to specific shapes in the scale -->
         <div id='shape-div' style='flex-direction: column;'>
           <label for='shape-select'>Shape based on:</label>
           <br />
-          <select id='shape-select'>
+          <%-- <select id='shape-select'>
             <option value=undefined>Select...</option>
-          </select>
-          <div class='flex-table' id='shape-table'></div>
+          </select> --%>
+          <table id='shape-table'><tbody></tbody></table>
+          <button id='shape-add'>Add</button>
+
         </div>
+      </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="modal" class="modal">
+      <!-- Modal content -->
+      <div id='modal-content' class="modal-content">
+        <span class="close">&times;</span>
+        <select id='column-select'>
+          <option value=undefined>Select...</option>
+        </select>
+        <select id='value-select'>
+          <option value=undefined>Select...</option>
+        </select>
+        <br />
+        <div id="modal-input">
+        </div>
+        <br />
+        <button id='modal-ok'>OK</button>
+        <button id='modal-cancel'>Cancel</button>
       </div>
     </div>
 

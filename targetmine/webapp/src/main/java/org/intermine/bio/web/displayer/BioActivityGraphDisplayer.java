@@ -53,7 +53,10 @@ public class BioActivityGraphDisplayer extends ReportDisplayer {
 
         if( isCanonical!=null && isCanonical.booleanValue() ){
           String primaryAccession = (String) protein.getFieldValue("primaryAccession");
-          String dbIdentifier = (String) protein.getFieldValue("primaryIdentifier");
+          /* changed to symbol
+           * String dbIdentifier = (String) protein.getFieldValue("primaryIdentifier");
+           */
+          String geneSymbol = (String) protein.getFieldValue("symbol");
           InterMineObject organism = (InterMineObject) protein.getFieldValue("organism");
           String organismName = (String) organism.getFieldValue("name");
 
@@ -63,7 +66,8 @@ public class BioActivityGraphDisplayer extends ReportDisplayer {
             String type = (String) activity.getFieldValue("type");
             float concentration = (Float) activity.getFieldValue("conc");
             /* create a row with all the relevant information */
-            data.add(primaryAccession+"\t"+dbIdentifier+"\t"+organismName+"\t"+type+"\t"+concentration);
+            //data.add(primaryAccession+"\t"+dbIdentifier+"\t"+organismName+"\t"+type+"\t"+concentration);
+            data.add(primaryAccession+"\t"+geneSymbol+"\t"+organismName+"\t"+type+"\t"+concentration);
           } // for activity
         }// if
       } // for interaction
