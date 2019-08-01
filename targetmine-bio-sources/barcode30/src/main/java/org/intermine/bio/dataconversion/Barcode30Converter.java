@@ -79,7 +79,7 @@ public class Barcode30Converter extends BioFileConverter {
 			for (int i = 1; i < cols.length; i++) {
 				if (Float.valueOf(cols[i]) > 0) {
 					// new Expression
-					Item item = createItem("Expression");
+					Item item = createItem("BarcodeExpression");
 					item.setAttribute("value", cols[i]);
 					item.setAttribute("isExpressed", (Float.valueOf(cols[i]) >= 0.5 ?"true":"false"));
 					String tissueName = headers[i];
@@ -103,7 +103,7 @@ public class Barcode30Converter extends BioFileConverter {
 		String ret = probeSetMap.get(probeSetId);
 		if (ret == null) {
 			Item item = createItem("ProbeSet");
-			item.setAttribute("probeSetId", probeSetId);
+			item.setAttribute("primaryIdentifier", probeSetId);
 			store(item);
 			ret = item.getIdentifier();
 			probeSetMap.put(probeSetId, ret);
@@ -114,7 +114,7 @@ public class Barcode30Converter extends BioFileConverter {
 	private String getTissue(String identifier) throws ObjectStoreException {
 		String ret = tissueMap.get(identifier);
 		if (ret == null) {
-			Item item = createItem("Tissue");
+			Item item = createItem("BarcodeTissue");
 			item.setAttribute("identifier", identifier);
 			item.setAttribute("name", identifier.replaceAll("_", " "));
 			store(item);

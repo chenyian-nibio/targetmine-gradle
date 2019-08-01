@@ -177,3 +177,5 @@ include ':bio-source-chembl-indication'
 project(':bio-source-chembl-indication').projectDir = new File(settingsDir, './chembl-indication')
 include ':bio-source-chembl-mechanism'
 project(':bio-source-chembl-mechanism').projectDir = new File(settingsDir, './chembl-mechanism')
+include ':bio-source-human-body-index'
+project(':bio-source-human-body-index').projectDir = new File(settingsDir, './human-body-index')

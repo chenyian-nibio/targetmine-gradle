@@ -818,7 +818,10 @@
 
   <class className="org.intermine.model.bio.Expression">
     <fields>
+      <fieldconfig fieldExpr="probeSet.primaryIdentifier"/>
+      <fieldconfig fieldExpr="tissue.name"/>
       <fieldconfig fieldExpr="value"/>
+      <fieldconfig fieldExpr="dataSet.name" />
     </fields>
   </class>
 

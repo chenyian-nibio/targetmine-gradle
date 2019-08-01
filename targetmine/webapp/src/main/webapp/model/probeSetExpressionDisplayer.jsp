@@ -11,7 +11,7 @@
 		<h3>No Expressions</h3>
 	</c:when>
 	<c:otherwise>
-		<h3>Expressions</h3>
+		<h3>Barcode Expressions</h3>
 		<table>
 		<c:forEach var="platform" items="${platformSet}">
 		<thead>

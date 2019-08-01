@@ -14,11 +14,16 @@ import org.intermine.web.displayer.ReportDisplayer;
 import org.intermine.web.logic.config.ReportDisplayerConfig;
 import org.intermine.web.logic.results.ReportObject;
 
+/**
+ * Displayer for Barcode data 
+ * 
+ * @author chenyian
+ *
+ */
 public class ProbeSetExpressionDisplayer extends ReportDisplayer {
 	
 	public ProbeSetExpressionDisplayer(ReportDisplayerConfig config, InterMineAPI im) {
 		super(config, im);
-		// TODO Auto-generated constructor stub
 	}
 
 	@SuppressWarnings("unchecked")
@@ -30,10 +35,10 @@ public class ProbeSetExpressionDisplayer extends ReportDisplayer {
 			Set<InterMineObject> expressions = (Set<InterMineObject>) imo.getFieldValue("expressions");
 			Map<InterMineObject, List<InterMineObject>> expressionMap = new HashMap<InterMineObject, List<InterMineObject>>();
 			for (InterMineObject exp : expressions) {
-				Float value= (Float) exp.getFieldValue("value");
-				if (value > 0.5f) {
+//				Float value= (Float) exp.getFieldValue("value");
+				Boolean isExpressed= (Boolean) exp.getFieldValue("isExpressed");
+				if (isExpressed != null && isExpressed.booleanValue()) {
 					InterMineObject platform = (InterMineObject) exp.getFieldValue("platform");
-//					InterMineObject tissue = (InterMineObject) exp.getFieldValue("tissue");
 					if (expressionMap.get(platform) == null) {
 						expressionMap.put(platform, new ArrayList<InterMineObject>());
 					}
@@ -45,7 +50,6 @@ public class ProbeSetExpressionDisplayer extends ReportDisplayer {
 			request.setAttribute("platformSet", expressionMap.keySet());
 			
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

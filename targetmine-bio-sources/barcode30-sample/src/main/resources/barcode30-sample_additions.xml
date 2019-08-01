@@ -3,7 +3,9 @@
 <classes>
 	<class name="Tissue" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
-		<collection name="samples" referenced-type="MicroarraySample" reverse-reference="tissue"/>
+		<collection name="samples" referenced-type="MicroarraySample" reverse-reference="tissues"/>
+	</class>
+	<class name="BarcodeTissue" extends="Tissue" is-interface="true">
 	</class>
 	<class name="MicroarrayPlatform" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
@@ -11,9 +13,9 @@
 	</class>
 	<class name="MicroarraySample" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
-		<reference name="tissue" referenced-type="Tissue" reverse-reference="samples"/>
 		<reference name="platform" referenced-type="MicroarrayPlatform" reverse-reference="samples"/>
-		<reference name="series" referenced-type="MicroarraySeries" reverse-reference="samples"/>
+		<collection name="tissues" referenced-type="Tissue" reverse-reference="samples"/>
+		<collection name="series" referenced-type="MicroarraySeries" reverse-reference="samples"/>
 	</class>
 	<class name="MicroarraySeries" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>

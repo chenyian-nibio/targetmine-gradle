@@ -58,23 +58,31 @@ public class Barcode30SampleConverter extends BioFileConverter
 		// start to parse the file
 		Iterator<String[]> iterator = FormattedTextParser.parseCsvDelimitedReader(reader);
 		String[] header = iterator.next(); 
-//		int i = 0;
+		Map<String, Item> sampleItemMap = new HashMap<String, Item>();
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
-			Item item = createItem("MicroarraySample");
-			item.setAttribute("identifier", cols[2]);
-			item.setReference("series", getSeries(cols[3]));
+			String sampleId = cols[2];
+			
+			Item item = sampleItemMap.get(sampleId);
+			if (item == null) {
+				item = createItem("MicroarraySample");
+				item.setAttribute("identifier", sampleId);
+				item.setReference("platform", platform);
+				
+				sampleItemMap.put(sampleId, item);
+			}
+			
+			for (String seriesId : cols[3].split(";")) {
+				item.addToCollection("series", getSeries(seriesId));
+			}
+			
 			String tissueName = cols[4];
 			if (header[5].equals("celltype") && !cols[5].equals("NA") && !cols[5].equals("cell_line") && !cols[5].equals(tissueName)) {
 				tissueName = tissueName + ":" + cols[5];
 			}
-//			LOG.info(String.format("%s : %s : %s : %s -> %s", platformId, cols[0],cols[2], cols[4], tissueName));
-			item.setReference("tissue", getTissue(tissueName));
-			item.setReference("platform", platform);
-			store(item);
-//			i++;
+			item.addToCollection("tissues", getTissue(tissueName));
 		}
-//		System.out.println(i + " lines processed.");
+		store(sampleItemMap.values());
     }
 
 	private String getPlatform(String platformId) throws ObjectStoreException {
@@ -92,7 +100,7 @@ public class Barcode30SampleConverter extends BioFileConverter
 	private String getTissue(String tissueName) throws ObjectStoreException {
 		String ret = tissueMap.get(tissueName);
 		if (ret == null) {
-			Item item = createItem("Tissue");
+			Item item = createItem("BarcodeTissue");
 			item.setAttribute("identifier", tissueName);
 			store(item);
 			ret = item.getIdentifier();
