@@ -370,6 +370,14 @@ class BioActivityGraph{
       .attr('transform', 'translate(0,'+(height-margin.bottom)+')')
       .call(this._xAxis)
     ;
+
+    d3.selectAll('svg#canvas > text#bottom-axis-label').remove();
+    let label = canvas.append('text')
+      .attr('id', 'bottom-axis-label')
+      .attr('transform', 'translate('+width/2+','+(height-margin.bottom/3)+')')
+      .style('text-anchor', 'middle')
+      .text('Activity Type')
+    ;
   }
 
   /**
@@ -406,6 +414,16 @@ class BioActivityGraph{
       .attr('transform', 'translate('+margin.left+',0)')
       .call(this._yAxis)
     ;
+
+    d3.selectAll('svg#canvas > text#left-axis-label').remove();
+    let label = canvas.append('text')
+      .attr('id', 'left-axis-label')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -margin.left/3)
+      .attr('x', -height/2)
+      .attr('dy', '1em')
+      .style('text-anchor', 'middle')
+      .text('Concentration (nM)')
   }
 
   /**
