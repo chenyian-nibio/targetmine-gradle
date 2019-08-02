@@ -507,7 +507,7 @@ class BioActivityGraph{
         })
     ;
     let tooltip = point.append('svg:title')
-      .text(function(d){ return 'Organism: '+d.organism+'\nGene: '+d.symbol+'\nConcentation: '+d.label; })
+      .text(function(d){ return 'Organism: '+d.organism+'\nGene: '+d.symbol+'\nConcentation: '+d.label+'nM'; })
     ;
   }
 }
