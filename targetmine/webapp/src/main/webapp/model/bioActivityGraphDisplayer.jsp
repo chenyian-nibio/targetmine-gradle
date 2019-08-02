@@ -53,6 +53,7 @@
     <div id="modal" class="modal">
       <!-- Modal content -->
       <div id='modal-content' class="modal-content">
+        <h3 id='modal-title'></h3>
         <span class="close">&times;</span>
         <select id='column-select'>
           <option value=undefined>Select...</option>

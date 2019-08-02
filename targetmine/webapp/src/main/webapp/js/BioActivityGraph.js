@@ -52,21 +52,6 @@ class BioActivityGraph{
     let graph = d3.select('svg#canvas').append('g')
       .attr('id', 'graph')
     ;
-
-    /* only to make visible the different areas within the graph
-    * TO BE REMOVED */
-    // graph.append('rect')
-    //   .style('fill', 'lightblue')
-    //   .style('width', width)
-    //   .style('height', height)
-    // ;
-    // graph.append('rect')
-    //   .attr('id', 'points-area')
-    //   .attr('transform', 'translate('+margin.left+','+margin.top+')')
-    //   .style('fill', 'lightgreen')
-    //   .style('width', width-margin.left-margin.top)
-    //   .style('height', height-margin.top-margin.bottom)
-    // ;
   }
 
   /**
@@ -122,11 +107,19 @@ class BioActivityGraph{
       self._updateSelectOptions('#value-select', values);
     });
 
+    /* Set default value selection */
+    let val = d3.select('#value-select')
+      .property('value', 'undefined')
+
     /* Define the type of input: color input for color scale, or radio buttons
      * for shape selection */
     let inp = d3.selectAll('#modal-input > *').remove();
 
     if( type === 'color' ){
+      let title = d3.select('#modal-title')
+        .text('Select color to apply:')
+      ;
+
       inp = d3.select('#modal-input')
         .append('input')
           .property('type', 'color')
@@ -134,6 +127,10 @@ class BioActivityGraph{
       ;
     }
     else{
+      let title = d3.select('#modal-title')
+        .text('Select shape to apply:')
+      ;
+
       let opts = d3.select('#modal-input').selectAll('label')
         .data(['Circle','Cross','Diamond','Square','Star','Triangle','Wye'])
       ;
@@ -201,74 +198,6 @@ class BioActivityGraph{
   }
 
   /**
-   * Update the color scale used in the display of data.
-   * Since the data to be visualized is multi-dimensional in nature, any of the
-   * fields that are present can be used to define a categorical color scale.
-   * Currently, a fixed amount of 10 base colours are sequentially assigned to
-   * each individual value found for the chosen category in the dataset. If more
-   * than 10 values are found, colors are re-used.
-   *
-   * @param {string} id
-   * @param {string} column
-   * @param {string} value
-   */
-  _updateColorScale(id, column, value){
-  //   let self = this;
-  //   /* retrieve the option based on which to define the color scale */
-  //   let key = jQuery(id).val();
-  //
-  //   /* define the set of individual values that the current key takes, so that
-  //    * we can assign an specific color to each of them */
-  //   let values = this._individualValues(key);
-  //   this._colors = {};
-  //   values.forEach(function(k, i){
-  //     this._colors[k] = 'black'; //d3.schemeCategory10[i%10];
-  //   }, this );
-  //
-  //   /* Modify the color field according to the new list of values for each data
-  //    * point */
-  //   this._data.forEach(function (item){
-  //     item['color'] = this._colors[item[key]];
-  //   },this);
-  //
-  //   /* create the actual table of values  */
-  //   this._updateTable('color');
-  //
-  //   /* Add a listener to show/hide elements based in color */
-  //   // jQuery(document).on('click', '.color-checkbox', function(evt){
-  //   //   self.plot(self._xPlot, self._yPlot);
-  //   // });
-  }
-
-  // _updateShapeScale(id, column, value){
-  //   let self = this;
-  //   /* retrieve the option based on which to define the color scale */
-  //   let key = jQuery(id).val();
-  //
-  //   /* define the set of individual values that the current key takes, so that
-  //    * we can assign an specific color to each of them */
-  //   let values = this._individualValues(key);
-  //   this._shapes = {};
-  //   values.forEach(function(k, i){
-  //     this._shapes[k] = d3.symbols[i%7];
-  //   }, this );
-  //
-  //   /* Modify the color field according to the new list of values for each data
-  //    * point */
-  //   this._data.forEach(function (item){
-  //     item['shape'] = this._shapes[item[key]];
-  //   },this);
-  //
-  //   /* update the table */
-  //   this._updateTable('shape');
-  //
-  //   /* Add a listener to show/hide elements based in color */
-  //   jQuery(document).on('click', '.shape-checkbox', function(evt){
-  //     self.plot(self._xPlot, self._yPlot);
-  //   });
-  // }
-
-  /**
    * Update the options available for a given Select DOM element.
    * Given the id of a select element, it updates the options available based on
    * the list of values provided
@@ -294,15 +223,15 @@ class BioActivityGraph{
     /* add a first 'Select...' option */
     d3.select(id).append('option')
       .lower()
-      .attr('value', undefined)
+      .attr('value', 'undefined')
       .text('Select...')
       .property('selected', true)
     ;
   }
 
   /**
-  *
-  */
+   *
+   */
   _updateTable(type){
     /* Generate an array of data elements that we can use to generate a 'table'
      * of elements using D3 */
@@ -366,10 +295,11 @@ class BioActivityGraph{
       .attr('class', 'flex-cell small-close')
       .attr('data-type', type)
       .attr('data-key', function(d){ return d.key; })
+      .attr('data-value', function(d){ return d.value; })
       .html('&times;')
       .on('click', function() {
         if (this.dataset.key === 'Default') return;
-        self._removeHighlight(this.dataset.type, this.dataset.key);
+        self._removeHighlight(this.dataset.type, this.dataset.key, this.dataset.value);
         self._updateTable(this.dataset.type);
       })
     ;
@@ -377,14 +307,23 @@ class BioActivityGraph{
 
   /**
    *
+   * @param {string} type The type of highlight (color or shape) we are trying
+   * to remove
+   * @param {string} key A combination of column and value for the points in the
+   * dataset, whose highlight we are trying to remove
+   * @param {string} value The value associated to the key that we are trying to
+   * remove
    */
-  _removeHighlight(type, key){
+  _removeHighlight(type, key, value){
     let col = key.split('-')[0];
     let val = key.split('-')[1];
-    let upd = type === 'color' ? '#000000' : 'Circle';
-    // console.log(this);
+    /* return the property (color or shape) to its default values */
+    let upd = type === 'color' ? '#C0C0C0' : 'Circle';
     this._data.forEach(function(d){
-      if( d[col] === val )
+      /* we only remove the hightlight of the points that match both the column/
+       * value combination, and that have been highlighted with the color or
+       * shape we are removing */
+      if( d[col] === val && d[type] === value )
         d[type] = upd;
     });
     /* remove from table */
@@ -431,6 +370,14 @@ class BioActivityGraph{
       .attr('transform', 'translate(0,'+(height-margin.bottom)+')')
       .call(this._xAxis)
     ;
+
+    d3.selectAll('svg#canvas > text#bottom-axis-label').remove();
+    let label = canvas.append('text')
+      .attr('id', 'bottom-axis-label')
+      .attr('transform', 'translate('+width/2+','+(height-margin.bottom/3)+')')
+      .style('text-anchor', 'middle')
+      .text('Activity Type')
+    ;
   }
 
   /**
@@ -467,6 +414,16 @@ class BioActivityGraph{
       .attr('transform', 'translate('+margin.left+',0)')
       .call(this._yAxis)
     ;
+
+    d3.selectAll('svg#canvas > text#left-axis-label').remove();
+    let label = canvas.append('text')
+      .attr('id', 'left-axis-label')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -margin.left/3)
+      .attr('x', -height/2)
+      .attr('dy', '1em')
+      .style('text-anchor', 'middle')
+      .text('Concentration (nM)')
   }
 
   /**
@@ -489,7 +446,7 @@ class BioActivityGraph{
     this._data = d3.tsvParse(data, d3.autoType);
     /* add a new field to data points to store color information */
     this._data.forEach(function(item){
-      item.color = '#000000';
+      item.color = '#C0C0C0';
       item.shape = 'Circle';
     });
     /* init an array of columns */
@@ -527,17 +484,17 @@ class BioActivityGraph{
 
     let points = this._data.reduce(function(prev, current){
       /* filter out the points that are hidden from the visualization */
-      // if( cb.includes(current[colorMap]) && cb.includes(current[shapeMap]) ){
-        prev.push(
-          {
-            x: xscale(current[X]),
-            y: yscale(current[Y]),
-            'color': current['color'],
-            'shape': current['shape'],
-            'label': current[self._yPlot],
-          }
-        );
-      // }
+      prev.push(
+        {
+          x: xscale(current[X]),
+          y: yscale(current[Y]),
+          'color': current['color'],
+          'shape': current['shape'],
+          'organism': current['Organism name'],
+          'symbol': current['Gene Symbol'],
+          'label': current[self._yPlot],
+        }
+      );
       return prev;
     }, []);
 
@@ -566,8 +523,9 @@ class BioActivityGraph{
           ;
           return symbol();
         })
-      .append("svg:title")
-        .text(function(d){ return d.label; })
+    ;
+    let tooltip = point.append('svg:title')
+      .text(function(d){ return 'Organism: '+d.organism+'\nGene: '+d.symbol+'\nConcentation: '+d.label+'nM'; })
     ;
   }
 }
