@@ -466,17 +466,17 @@ class BioActivityGraph{
 
     let points = this._data.reduce(function(prev, current){
       /* filter out the points that are hidden from the visualization */
-      // if( cb.includes(current[colorMap]) && cb.includes(current[shapeMap]) ){
-        prev.push(
-          {
-            x: xscale(current[X]),
-            y: yscale(current[Y]),
-            'color': current['color'],
-            'shape': current['shape'],
-            'label': current[self._yPlot],
-          }
-        );
-      // }
+      prev.push(
+        {
+          x: xscale(current[X]),
+          y: yscale(current[Y]),
+          'color': current['color'],
+          'shape': current['shape'],
+          'organism': current['Organism name'],
+          'symbol': current['Gene Symbol'],
+          'label': current[self._yPlot],
+        }
+      );
       return prev;
     }, []);
 
@@ -505,8 +505,9 @@ class BioActivityGraph{
           ;
           return symbol();
         })
-      .append("svg:title")
-        .text(function(d){ return d.label; })
+    ;
+    let tooltip = point.append('svg:title')
+      .text(function(d){ return 'Organism: '+d.organism+'\nGene: '+d.symbol+'\nConcentation: '+d.label; })
     ;
   }
 }
