@@ -65,9 +65,13 @@ public class BioActivityGraphDisplayer extends ReportDisplayer {
           for( InterMineObject activity: activities){
             String type = (String) activity.getFieldValue("type");
             float concentration = (Float) activity.getFieldValue("conc");
+            String unit = (String) activity.getFieldValue("unit");
+            String relation = (String) activity.getFieldValue("relation");
             /* create a row with all the relevant information */
             //data.add(primaryAccession+"\t"+dbIdentifier+"\t"+organismName+"\t"+type+"\t"+concentration);
-            data.add(primaryAccession+"\t"+geneSymbol+"\t"+organismName+"\t"+type+"\t"+concentration);
+            if( unit.equals("nM") && relation.equals("=") ){
+              data.add(primaryAccession+"\t"+geneSymbol+"\t"+organismName+"\t"+type+"\t"+concentration);
+            }
           } // for activity
         }// if
       } // for interaction
