@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="Disease" is-interface="true" >
+		<reference name="diseaseTerm" referenced-type="DiseaseTerm"/>
+		<reference name="gene" referenced-type="Gene" reverse-reference="diseases"/>
+		<collection name="sources" referenced-type="DataSource"/>
+		<reference name="dataSet" referenced-type="DataSet"/>
+	</class>
+	<class name="DiseaseTerm" extends="OntologyTerm" is-interface="true" >
+		<collection name="genes" referenced-type="Disease" reverse-reference="diseaseTerm"/>
+	</class>
+	<class name="Gene" is-interface="true">
+		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<collection name="diseases" referenced-type="Disease" reverse-reference="gene"/>
+	</class>
+
+</classes>

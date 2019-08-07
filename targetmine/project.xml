@@ -169,6 +169,11 @@
       <property name="reactionNameFile" value="/data/bio/db/Targetmine/kegg-ftp/reaction/reaction_name.lst"/>
     </source>
 
+    <source name="gene-medgen" type="gene-medgen">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
+      <property name="src.data.dir.includes" value="mim2gene_medgen"/>
+    </source>
+    
     <source name="disgenet" type="disgenet">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/disgenet/5.0"/>
       <property name="src.data.dir.includes" value="curated_gene_disease_associations.tsv"/>
@@ -179,13 +184,8 @@
       <property name="src.data.file" location="/data/bio/db/Targetmine/efo/efo.modi.obo"/>
     </source>  
 <!-- chenyian: for internal only | start -->
-    <source name="omim" type="omim-gene">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/omim"/>
-      <property name="src.data.dir.includes" value="mim2gene_medgen"/>
-      <property name="titleFile" value="/data/bio/db/Targetmine/omim/omim_phenotype_title" />
-    </source>
 <!-- 
-	chenyian: (2019.6.19) This part is unchecked. I cannot guarantee this part will work fine. USE FOR YOUR OWN RISK.
+	chenyian: (2019.6.19) This part is unchecked. 
     <source name="gostar" type="gostar">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gostar"/>
       <property name="src.data.dir.includes" value="ACTIVITY_ASSAY.csv"/>
