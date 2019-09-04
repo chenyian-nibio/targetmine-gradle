@@ -15,9 +15,9 @@
   <c:otherwise>
     <h3>Bio-Activities Graph</h3>
     <!-- Visualization Container -->
-    <div class='BioActivityGraph'>
+    <div class='targetmineGraphDisplayer'>
       <!-- Left Column of the Visualization (main display) -->
-      <svg class='BioActivityGraphSVG' id='canvas' viewbox='0 0 400 400'></svg>
+      <svg class='targetmineGraphSVG' id='canvas' viewbox='0 0 400 400'></svg>
       <!-- Right Column, reserved for visualization controls -->
       <div class='rightColumn'>
         <!-- Choose the property used to display color, and to make (in)visible

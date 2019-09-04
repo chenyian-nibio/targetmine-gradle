@@ -1,14 +1,14 @@
-div.BioActivityGraph{
+div.targetmineGraphDisplayer{
   display: flex;
-  /* background-color: lightyellow; */
+  background-color: lightyellow;
   flex-direction: row;
   flex-grow: 1;
   width: 100%;
   height: 400px;
 }
 
-svg.BioActivityGraphSVG{
-  /* background-color: lightcyan; */
+svg.targetmineGraphSVG{
+  background-color: lightcyan;
   /* border: 1px solid #84c754; */
   flex-grow: 1;
   width: 100%;
@@ -16,14 +16,14 @@ svg.BioActivityGraphSVG{
 }
 
 svg.flex-cell{
-  /* background-color: lightcoral; */
+  background-color: lightcoral;
   width: 100%;
   height: 25px;
 }
 
 div.rightColumn{
   flex-direction: column;
-  /* background-color: lightsteelblue */
+  background-color: lightsteelblue
   width: 20%;
 }
 

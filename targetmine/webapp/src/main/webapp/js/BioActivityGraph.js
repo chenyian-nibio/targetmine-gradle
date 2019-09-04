@@ -1,6 +1,5 @@
 'use strict';
 
-//var jQuery = jQuery.noConflict();
 // margins from the border of the canvas that wont be used for drawing
 var margin = {top: 40, right: 40, bottom: 40, left: 40};
 // available drawing space for the canvas
@@ -10,8 +9,8 @@ var height = 400;// - margin.top - margin.bottom;
 /**
  * @class CompoundGraph
  * @classdesc
- * @author
- * @version
+ * @author Rodolfo Allendes
+ * @version 1.0
  *
  */
 class BioActivityGraph{

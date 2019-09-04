@@ -258,7 +258,7 @@
       <fieldconfig fieldExpr="inchiKey" showInSummary="false"/>
     </fields>
   </class>
-  
+
   <class className="org.intermine.model.bio.CompoundStructure">
     <fields>
       <fieldconfig fieldExpr="type"/>
@@ -266,7 +266,7 @@
       <fieldconfig fieldExpr="dataSet.name" />
     </fields>
   </class>
-  
+
   <class className="org.intermine.model.bio.CompoundSynonym">
     <fields>
       <fieldconfig fieldExpr="value"/>
@@ -592,7 +592,7 @@
       <table path="sources.sourceId" showLinksToObjects="true" />
     </inlinelist>
   </class>
-  
+
   <class className="org.intermine.model.bio.InteractionExperiment">
     <fields>
       <fieldconfig fieldExpr="publication.pubMedId"/>
@@ -743,7 +743,7 @@
       <fieldconfig fieldExpr="type"/>
     </fields>
   </class>
-  
+
   <class className="org.intermine.model.bio.Allele">
     <fields>
       <fieldconfig fieldExpr="identifier"/>
@@ -902,7 +902,7 @@
     </fields>
   </class>
 
-<!-- Start: Added by Ishikawa.Motokazu 
+<!-- Start: Added by Ishikawa.Motokazu
   <class className="org.intermine.model.bio.Biomarker">
     <fields>
       <fieldconfig fieldExpr="name"/>
@@ -978,7 +978,7 @@
                      replacesFields="proteinDomainRegions"
                      placement="Protein Domain"
                      types="Protein"/>
-                     
+
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.ProteinSequenceDisplayer"
                      jspName="model/proteinSequenceDisplayer.jsp"
                      replacesFields="sequence"
@@ -998,58 +998,58 @@
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
                      jspName="model/compoundAssayExtLinkDisplayer.jsp"
-                     replacesFields="originalId" 
+                     replacesFields="originalId"
                      types="CompoundProteinInteractionAssay"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.CompoundGroupDisplayer"
                      jspName="model/compoundGroupDisplayer.jsp"
-                     replacesFields="compounds" 
+                     replacesFields="compounds"
                      types="CompoundGroup"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.AtcClassificationDisplayer"
                      jspName="model/atcClassificationDisplayer.jsp"
-                     replacesFields="parent, allParents" 
+                     replacesFields="parent, allParents"
                      types="AtcClassification"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.AtcClassificationDisplayer"
                      jspName="model/jscClassificationDisplayer.jsp"
-                     replacesFields="parent, allParents" 
+                     replacesFields="parent, allParents"
                      types="JscClassification"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.ProbeSetExpressionDisplayer"
                      jspName="model/probeSetExpressionDisplayer.jsp"
-                     replacesFields="expressions" 
+                     replacesFields="expressions"
                      types="ProbeSet"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
                      jspName="model/proteinDomainHierDisplayer.jsp"
-                     replacesFields="parentFeatures,childFeatures,contains,foundIn" 
+                     replacesFields="parentFeatures,childFeatures,contains,foundIn"
                      types="ProteinDomain"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
                      jspName="model/compoundImageDisplayer.jsp"
-                     replacesFields="" 
+                     replacesFields=""
                      types="Compound"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.DrugCompoundInfoDisplayer"
                      jspName="model/drugCompoundInfoDisplayer.jsp"
-                     replacesFields="atcCodes,jsccCodes,uspClassifications,synonyms" 
+                     replacesFields="atcCodes,jsccCodes,uspClassifications,synonyms"
                      types="DrugCompound"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.ChemblAlternateFormDisplayer"
                      jspName="model/chemblAlternateFormDisplayer.jsp"
-                     replacesFields="parent, alternateForms" 
+                     replacesFields="parent, alternateForms"
                      types="ChemblCompound"/>
-                     
+
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.AltGeneDiseasePairDisplayer"
                      jspName="model/altGeneDiseasePairDisplayer.jsp"
-                     replacesFields="diseases, geneDiseasePairs" 
+                     replacesFields="diseases, geneDiseasePairs"
                      placement="Disease"
                      types="Gene"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.GenericReportDisplayer"
                      jspName="model/chemblReferenceDisplayer.jsp"
-                     replacesFields="references" 
+                     replacesFields="references"
                      types="Indication, DrugMechanism"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.BioActivityGraphDisplayer"
@@ -1057,9 +1057,14 @@
                      replacesFields=""
                      types="Compound"/>
 
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.GeneExpressionGraphDisplayer"
+                     jspName="model/geneExpressionGraphDisplayer.jsp"
+                     replacesFields=""
+                     types="Gene" />
+
   </reportdisplayers>
 
-  
+
 <!-- widgets -->
 <widgets>
 
@@ -1075,7 +1080,7 @@
                                  enrichIdentifier="pathways.identifier"
                                  constraints="pathways.dataSets.name=[DataSet],organism.taxonId=[list]"
                                  typeClass="Gene"
-                                 views="primaryIdentifier, symbol, organism.name, pathways.identifier, pathways.name, pathways.dataSets.name" 
+                                 views="primaryIdentifier, symbol, organism.name, pathways.identifier, pathways.name, pathways.dataSets.name"
                                  externalLink="/targetmine/portal.do?class=Pathway&amp;externalids="/>
 
       <enrichmentwidgetdisplayer id="gene_ipc_enrichment"
@@ -1088,7 +1093,7 @@
                                  enrichIdentifier="integratedPathwayClusters.identifier"
                                  constraints="organism.taxonId=[list]"
                                  typeClass="Gene"
-                                 views="primaryIdentifier, symbol, organism.name, integratedPathwayClusters.identifier, integratedPathwayClusters.name" 
+                                 views="primaryIdentifier, symbol, organism.name, integratedPathwayClusters.identifier, integratedPathwayClusters.name"
                                  externalLink="/targetmine/portal.do?class=IntegratedPathwayCluster&amp;externalids="/>
 
       <enrichmentwidgetdisplayer id="gene_go_enrichment"
@@ -1174,7 +1179,7 @@
                                  enrichIdentifier="genes.integratedPathwayClusters.identifier"
                                  constraints="organism.taxonId=[list]"
                                  typeClass="Protein"
-                                 views="primaryAccession, name, organism.name, genes.integratedPathwayClusters.identifier, genes.integratedPathwayClusters.name" 
+                                 views="primaryAccession, name, organism.name, genes.integratedPathwayClusters.identifier, genes.integratedPathwayClusters.name"
                                  externalLink="/targetmine/portal.do?class=IntegratedPathwayCluster&amp;externalids="/>
 
       <enrichmentwidgetdisplayer id="protein_go_enrichment"
@@ -1195,8 +1200,8 @@
                                               goAnnotation.ontologyTerm.parents.identifier != go:0005575"
                                  typeClass="Protein"
                                  views="primaryAccession, name, organism.name,
-                                       goAnnotation.ontologyTerm.parents.identifier,goAnnotation.ontologyTerm.parents.name" 
-                                 constraintsForView="goAnnotation.evidence.code.code != IEA" 
+                                       goAnnotation.ontologyTerm.parents.identifier,goAnnotation.ontologyTerm.parents.name"
+                                 constraintsForView="goAnnotation.evidence.code.code != IEA"
                                  externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
 
       <enrichmentwidgetdisplayer id="protein_goagos_enrichment"
@@ -1245,7 +1250,7 @@
                                  enrichIdentifier="proteinDomainRegions.proteinDomain.primaryIdentifier"
                                  constraints="organism.name=[list]"
                                  typeClass="Protein"
-                                 views="primaryAccession, name, organism.name, proteinDomainRegions.proteinDomain.primaryIdentifier, 
+                                 views="primaryAccession, name, organism.name, proteinDomainRegions.proteinDomain.primaryIdentifier,
                                         proteinDomainRegions.proteinDomain.name"
                                  externalLink="http://www.ebi.ac.uk/interpro/entry/"/>
 
@@ -1259,7 +1264,7 @@
                                  enrichIdentifier="structuralDomains.cathClassification.cathCode"
                                  constraints="organism.name=[list]"
                                  typeClass="Protein"
-                                 views="primaryAccession, name, organism.name, structuralDomains.cathClassification.cathCode, 
+                                 views="primaryAccession, name, organism.name, structuralDomains.cathClassification.cathCode,
                                         structuralDomains.cathClassification.description"
                                  externalLink="http://www.cathdb.info/cathnode/"/>
 
@@ -1288,7 +1293,7 @@
                                  enrichIdentifier="proteins.proteinDomainRegions.proteinDomain.primaryIdentifier"
                                  constraints="organism.name=[list]"
                                  typeClass="Gene"
-                                 views="primaryIdentifier, symbol, organism.name, proteins.proteinDomainRegions.proteinDomain.primaryIdentifier, 
+                                 views="primaryIdentifier, symbol, organism.name, proteins.proteinDomainRegions.proteinDomain.primaryIdentifier,
                                         proteins.proteinDomainRegions.proteinDomain.name"
                                  externalLink="http://www.ebi.ac.uk/interpro/entry/"/>
 
@@ -1302,7 +1307,7 @@
                                  enrichIdentifier="proteins.structuralDomains.cathClassification.cathCode"
                                  constraints="organism.name=[list]"
                                  typeClass="Gene"
-                                 views="primaryIdentifier, symbol, organism.name, proteins.structuralDomains.cathClassification.cathCode, 
+                                 views="primaryIdentifier, symbol, organism.name, proteins.structuralDomains.cathClassification.cathCode,
                                         proteins.structuralDomains.cathClassification.description"
                                  externalLink="http://www.cathdb.info/cathnode/"/>
 
@@ -1346,7 +1351,7 @@
                                  typeClass="Pathway"
                                  views="identifier, name, dataSets.name, genes.proteins.primaryIdentifier, genes.proteins.name, genes.proteins.organism.name"
                                  externalLink="/targetmine/portal.do?class=Protein&amp;externalids="/>
-<!-- 
+<!--
  -->
       <enrichmentwidgetdisplayer id="gene_tissue_enrichment"
                                  title="Tissue Enrichment"
@@ -1356,11 +1361,11 @@
                                  startClassDisplay="symbol"
                                  enrich="probeSets.expressions.tissue.name"
                                  enrichIdentifier="probeSets.expressions.tissue.identifier"
-                                 constraints="organism.name=[list], probeSets.expressions.isExpressed=true" 
-                                 typeClass="Gene" 
+                                 constraints="organism.name=[list], probeSets.expressions.isExpressed=true"
+                                 typeClass="Gene"
                                  views="primaryIdentifier, symbol, organism.name, probeSets.expressions.tissue.name"/>
 
-<!-- To be tested 
+<!-- To be tested
       <enrichmentwidgetdisplayer id="compound_protein_enrichment"
                                  title="Protein Enrichment"
                                  description="Protiens enriched for compounds in this list"
@@ -1417,8 +1422,8 @@
                                  startClassDisplay="probeSetId"
                                  enrich="expressions.tissue.name"
                                  enrichIdentifier="expressions.tissue.identifier"
-                                 constraints="organism.name=[list], expressions.isExpressed=true" 
-                                 typeClass="ProbeSet" 
+                                 constraints="organism.name=[list], expressions.isExpressed=true"
+                                 typeClass="ProbeSet"
                                  views="probeSetId, mappingType, organism.name, expressions.tissue.name"/>
 
       <enrichmentwidgetdisplayer id="probe_pathway_enrichment"
@@ -1448,30 +1453,30 @@
                                  views="primaryIdentifier, primaryAccession, organism.name,
                                        keywords.name, keywords.description"/>
 
-      <enrichmentwidgetdisplayer id="keggcompound_pathway_enrichment" 
-                                 title="Pathway Enrichment" 
-                                 description="Pathways enriched for compounds in this list" 
-                                 label="Pathways" 
-                                 startClass="KeggCompound" 
-                                 startClassDisplay="identifier" 
-                                 enrich="pathways.name" 
-                                 enrichIdentifier="pathways.identifier" 
-                                 typeClass="KeggCompound" 
-                                 views="identifier, name, pathways.identifier, pathways.name, pathways.label1, pathways.label2" 
+      <enrichmentwidgetdisplayer id="keggcompound_pathway_enrichment"
+                                 title="Pathway Enrichment"
+                                 description="Pathways enriched for compounds in this list"
+                                 label="Pathways"
+                                 startClass="KeggCompound"
+                                 startClassDisplay="identifier"
+                                 enrich="pathways.name"
+                                 enrichIdentifier="pathways.identifier"
+                                 typeClass="KeggCompound"
+                                 views="identifier, name, pathways.identifier, pathways.name, pathways.label1, pathways.label2"
                                  externalLink="/targetmine/portal.do?class=Pathway&amp;externalids=" />
 
-      <enrichmentwidgetdisplayer id="keggcompound_enzyme_enrichment" 
-                                 title="Enzyme Enrichment" 
-                                 description="Enzymes enriched for compounds in this list" 
-                                 label="Enzymes" 
-                                 startClass="KeggCompound" 
-                                 startClassDisplay="originalId" 
-                                 enrich="enzymes.description" 
-                                 enrichIdentifier="enzymes.ecNumber" 
-                                 typeClass="KeggCompound" 
-                                 views="originalId, name, enzymes.ecNumber, enzymes.description" 
+      <enrichmentwidgetdisplayer id="keggcompound_enzyme_enrichment"
+                                 title="Enzyme Enrichment"
+                                 description="Enzymes enriched for compounds in this list"
+                                 label="Enzymes"
+                                 startClass="KeggCompound"
+                                 startClassDisplay="originalId"
+                                 enrich="enzymes.description"
+                                 enrichIdentifier="enzymes.ecNumber"
+                                 typeClass="KeggCompound"
+                                 views="originalId, name, enzymes.ecNumber, enzymes.description"
                                  externalLink="/targetmine/portal.do?class=Enzyme&amp;externalids=" />
-<!-- 
+<!--
       <enrichmentwidgetdisplayer id="gene_mesh_enrichment"
                                  title="MeSH Term Enrichment"
                                  description="MeSH Terms enriched for genes in this list"
@@ -1482,7 +1487,7 @@
                                  enrichIdentifier="publications.meshTerms.identifier"
                                  constraints="organism.taxonId=[list]"
                                  typeClass="Gene"
-                                 views="primaryIdentifier, symbol, organism.name, publications.meshTerms.identifier, publications.meshTerms.name" 
+                                 views="primaryIdentifier, symbol, organism.name, publications.meshTerms.identifier, publications.meshTerms.name"
                                  externalLink="/targetmine/portal.do?class=MeshTerm&amp;externalids="/>
  -->
 
