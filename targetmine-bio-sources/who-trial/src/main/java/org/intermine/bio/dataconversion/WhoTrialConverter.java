@@ -142,7 +142,7 @@ public class WhoTrialConverter extends BioFileConverter {
 		if (item == null) {
 
 			item = createItem("UMLSTerm");
-			item.setAttribute("identifier", cui);
+			item.setAttribute("identifier", "UMLS:" + cui);
 			store(item);
 			umlsTermMap.put(cui, item);
 		}

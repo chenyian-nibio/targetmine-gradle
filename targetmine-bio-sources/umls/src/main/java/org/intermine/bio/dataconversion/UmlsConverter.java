@@ -78,16 +78,16 @@ public class UmlsConverter extends BioFileConverter
 					diseaseConcept.setAttribute("name",name);
 					
 					Item umlsTerm = createItem("UMLSTerm");
-					umlsTerm.setAttribute("identifier",identifier);
+					umlsTerm.setAttribute("identifier","UMLS:" + identifier);
 					umlsTerm.setAttribute("name",name);
 					umlsTerm.setReference("ontology", getOntology("UMLS"));
 
 					diseaseConcept.addToCollection("terms", umlsTerm);
 					store(umlsTerm);
-					if(diseaseTermIdSet.contains(identifier)) {
-						String medgenIdentifier = getOrCreateItem("DiseaseTerm", identifier);
-						diseaseConcept.addToCollection("terms", medgenIdentifier);
-					}
+			//		if(diseaseTermIdSet.contains(identifier)) {
+			//			String medgenIdentifier = getOrCreateItem("DiseaseTerm", identifier);
+			//			diseaseConcept.addToCollection("terms", medgenIdentifier);
+			//		}
 				}
 				if("MSH".equals(umls.getDbType())){
 					String meshId = umls.getDbId();
