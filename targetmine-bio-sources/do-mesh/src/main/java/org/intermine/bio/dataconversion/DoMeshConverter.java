@@ -44,6 +44,8 @@ public class DoMeshConverter extends BioFileConverter
     	String identifier = null;
     	boolean isObsolete = false;
     	Set<String> meshIdSet = new HashSet<String>();
+    	Set<String> cuiSet = new HashSet<String>();
+
     	while ((line = in.readLine()) != null) {
     		if (line.equals("[Term]")) {
     			isTerm = true;
@@ -54,6 +56,11 @@ public class DoMeshConverter extends BioFileConverter
     			if (!"".equals(meshIdentifier)) {
     				meshIdSet.add(meshIdentifier);
     			}
+    		} else if (line.startsWith("xref: UMLS_CUI:")) {
+    		    String cui = line.substring("xref: UMLS_CUI:".length());
+        			if (!"".equals(cui)) {
+        				cuiSet.add(cui);
+        			}
     		} else if ("is_obsolete: true".equals(line.trim())) {
     			isObsolete = true;
     		} else if ("".equals(line.trim())) {
@@ -64,6 +71,11 @@ public class DoMeshConverter extends BioFileConverter
     				for (String meshIdentifier : meshIdSet) {
     					efoTerm.addToCollection("crossReferences", getMeshTerm(meshIdentifier));
     				}
+    				for (String cui : cuiSet) {
+        				String refKey = getDiseaseConcept(cui);
+        				efoTerm.addToCollection("diseaseConcepts", refKey);
+    				}
+
     				store(efoTerm);
     			}
     			isTerm = false;
@@ -75,6 +87,19 @@ public class DoMeshConverter extends BioFileConverter
 
     }
     
+    private Map<String, String> diseaseConceptMap = new HashMap<String, String>();
+    private String getDiseaseConcept(String cui) throws ObjectStoreException {
+    	String ret = diseaseConceptMap.get(cui);
+    	if (ret == null) {
+    		Item item = createItem("DiseaseConcept");
+    		item.setAttribute("identifier", cui);
+    		store(item);
+    		ret = item.getIdentifier();
+    		diseaseConceptMap.put(cui, ret);
+    	}
+    	return ret;
+    }
+
     
     private Map<String, String> meshTermMap = new HashMap<String, String>();
     private String getMeshTerm(String meshIdentifier) throws ObjectStoreException {

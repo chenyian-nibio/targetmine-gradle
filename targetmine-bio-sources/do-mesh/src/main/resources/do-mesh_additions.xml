@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
 <classes>
+	<class name="OntologyTerm" is-interface="true">
+		<collection name="diseaseConcepts" referenced-type="DiseaseConcept" reverse-reference="terms"/>
+	</class>
+
+    <class name="DiseaseConcept" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <collection name="terms" referenced-type="OntologyTerm" reverse-reference="diseaseConcepts"/>
+    </class>
+
 	<class name="DOTerm" extends="OntologyTerm" is-interface="true"/>
 	<class name="MeshTerm" extends="OntologyTerm" is-interface="true"/>
 
