@@ -40,7 +40,7 @@
         graph.loadData('${data}');
         graph.initXLabels("category");
         graph.initXAxis();
-        // graph.initYAxis();
+        graph.initYAxis();
         graph.plot();
       </script>
 
