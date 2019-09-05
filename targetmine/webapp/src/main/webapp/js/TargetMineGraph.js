@@ -317,44 +317,64 @@ class GeneExpressionGraph extends TargetMineGraph{
     this.plotXAxis(45);
     this.plotYAxis();
 
-    // let self = this;
-    //
-    // /* Generate an array of data points positions and colors based on the scale
-    //  * defined for each axis */
-    // let xscale = this.xAxis.scale();
-    // let yscale = this.yAxis.scale();
-    //
-    // let points = [];
-    // this.xLabels.forEach(function(ele, i){
-    //   let col = self.labels[self.xLabelLevels[i]];
-    //   let current = self.data.reduce(function(prev, curr){
+    let self = this;
 
-    //     if( curr[ele] )
-    //     points.push(
-    //       {
-    //         x: xscale(ele),
-    //         y: yscale(current[ele]),
-    //       }
-    //     );
-    //     return prev;
-    //   }, []);
-    //   points = points.concat(cuurent);
-    //   /* filter out the points that are hidden from the visualization */
-    // };
+    /* Generate an array of data points positions and colors based on the scale
+     * defined for each axis */
+    let xscale = this.xAxis.scale();
+    let yscale = this.yAxis.scale();
+
+    let points = [];
+
+    // this.data.forEach(function(ele){
+    //   for (let key in self.levels ){
+    //     if ( self.xLabels.includes(ele[self.levels[key]]) ){
+    //       points.push(
+    //         {
+    //           x: xscale(ele[self.levels[key]]),
+    //           y: yscale(ele['value']),
+    //         }
+    //       )
+    //       break;
+    //     }
     //
-    // /* redraw the points, using the updated positions and colors */
-    // let canvas = d3.select('svg#canvas > g#graph');
-    // canvas.selectAll('#points').remove();
-    //
-    // canvas.append('g')
-    //   .attr('id', 'points')
-    // ;
-    //
-    // /* for each data point, generate a group where we can add multiple svg
-    //  * elements */
-    // let pts = d3.select('#points').selectAll('g')
-    //   .data(points)
-    // let point = pts.enter().append('g')
+    //   }
+    // });
+
+    this.xLabels.slice(1,this.xLabels.length-1).forEach(function(label, i){
+      let col = self.levels[self.xLabelLevels[i+1]];
+      let current = self.data.reduce( function(prev, curr){
+        if( curr[col] === label ){
+          prev.push(
+            {
+              x: xscale(label),
+              y: yscale(curr['value']),
+            }
+          );
+        }
+        return prev;
+      },[]);
+      points = points.concat(current);
+    });
+    console.log('points', points);
+
+    /* redraw the points, using the updated positions and colors */
+    let canvas = d3.select('svg#canvas > g#graph');
+    canvas.selectAll('#points').remove();
+
+    canvas.append('g')
+      .attr('id', 'points')
+    ;
+
+    /* for each data point, generate a group where we can add multiple svg
+     * elements */
+    let pts = d3.select('#points').selectAll('g')
+      .data(points)
+    let point = pts.enter().append('circle')
+      .attr('cx', function(d){ return d.x; })
+      .attr('cy', function(d){ return d.y; })
+      .attr('r', '4')
+    ;
     //   .attr('class', 'data-point')
     //   .append('path')
     //     .attr('transform', function(d){ return 'translate('+d.x+','+d.y+')'; })
