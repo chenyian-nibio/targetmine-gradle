@@ -75,6 +75,7 @@ public class DoMeshConverter extends BioFileConverter
         				String refKey = getDiseaseConcept(cui);
         				efoTerm.addToCollection("diseaseConcepts", refKey);
     				}
+
     				store(efoTerm);
     			}
     			isTerm = false;
