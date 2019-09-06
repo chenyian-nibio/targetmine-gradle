@@ -119,11 +119,11 @@ class GeneExpressionGraph extends TargetMineGraph{
     super(name, width, height);
 
     /* the different levels of specificity at which we can look gene expression */
-    this.levels = {
-      0: 'category',
-      1: 'organ',
-      2: 'name'
-    };
+    this.levels = [
+      'category',
+      'organ',
+      'name'
+    ];
     Object.freeze(this.levels);
     // to handle the expansion and collapsing of labels, we need to know to
     // which level each label belongs
@@ -158,6 +158,7 @@ class GeneExpressionGraph extends TargetMineGraph{
    * @return {boolean} whether the collapsing took place or not
    */
   collapseXLabels(key){
+    let self = this;
     /* recover the information on the value being expanded */
     let i = this.xLabels.indexOf(key); // its position
     let lvl = this.xLabelLevels[i]; // its level
@@ -171,18 +172,43 @@ class GeneExpressionGraph extends TargetMineGraph{
       /* I need to know the value of the parent category of the current key */
       let supkey = (this.data.find( ele => ele[cat] === key ))[supcat];
 
+      /* Search the list of all labels to see if its within the hierarchy rooted
+       * at the supkey element */
       let delLabels = this.data.reduce(function(prev, current){
-        if( current[supcat] === supkey && !prev.includes(current[cat]) )
-        prev.push(current[cat]);
+        if( current[supcat] === supkey ){
+          if( !prev.includes(current[cat]) )
+            prev.push(current[cat]);
+          for( let i=lvl+1; i<self.levels.length; ++i ){
+            let subcat = self.levels[i];
+            if( !prev.includes(current[subcat]) )
+              prev.push(current[subcat]);
+          }
+        }
         return prev;
       }, []);
 
-      let j = this.xLabels.indexOf(delLabels[0]);
-      /* update the text labels */
-      this.xLabels.splice(j, delLabels.length, supkey);
-      // this.xLabels = this.xLabels.flat();
-      /* and the level of the labels */
-      this.xLabelLevels.splice(j, delLabels.length, lvl-1);
+      /* add the supkey value at the position of the clicked element in the
+       * xLabels */
+      this.xLabels.splice(i, 0, supkey);
+      this.xLabelLevels.splice(i, 0, lvl-1);
+
+      /* and remove all the labels that scheduled for removal */
+      let newLabel = [];
+      let newLevel = [];
+      this.xLabels.forEach(function (ele, i){
+        if( !delLabels.includes(ele) ){
+          newLabel.push(ele);
+          newLevel.push(self.xLabelLevels[i]);
+        }
+      });
+      this.xLabels = newLabel;
+      this.xLabelLevels = newLevel;
+      // = this.xLabels.indexOf(delLabels[0]);
+      // /* update the text labels */
+      // this.xLabels.splice(j, delLabels.length, supkey);
+      // // this.xLabels = this.xLabels.flat();
+      // /* and the level of the labels */
+      // this.xLabelLevels.splice(j, delLabels.length, lvl-1);
       // this.xLabelLevels = this.xLabelLevels.flat();
       //
       super.initXAxis();
@@ -233,8 +259,6 @@ class GeneExpressionGraph extends TargetMineGraph{
       return false;
     }
   }
-
-
 
   /**
    * Dynamically generate the Y-Axis used in the graph
@@ -326,21 +350,6 @@ class GeneExpressionGraph extends TargetMineGraph{
 
     let points = [];
 
-    // this.data.forEach(function(ele){
-    //   for (let key in self.levels ){
-    //     if ( self.xLabels.includes(ele[self.levels[key]]) ){
-    //       points.push(
-    //         {
-    //           x: xscale(ele[self.levels[key]]),
-    //           y: yscale(ele['value']),
-    //         }
-    //       )
-    //       break;
-    //     }
-    //
-    //   }
-    // });
-
     this.xLabels.slice(1,this.xLabels.length-1).forEach(function(label, i){
       let col = self.levels[self.xLabelLevels[i+1]];
       let current = self.data.reduce( function(prev, curr){
@@ -375,20 +384,6 @@ class GeneExpressionGraph extends TargetMineGraph{
       .attr('cy', function(d){ return d.y; })
       .attr('r', '4')
     ;
-    //   .attr('class', 'data-point')
-    //   .append('path')
-    //     .attr('transform', function(d){ return 'translate('+d.x+','+d.y+')'; })
-    //     .attr('fill', function(d){return d.color;})
-    //     .attr('d', function(d){
-    //       let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
-    //       let symbol = d3.symbol()
-    //         .size(50)
-    //         .type(d3.symbols['Circle'])
-    //       ;
-    //       return symbol();
-    //     })
-    // ;
-    //
   }
 
 
