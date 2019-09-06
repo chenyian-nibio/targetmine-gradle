@@ -41,6 +41,7 @@
         graph.initXLabels("category");
         graph.initXAxis();
         graph.initYAxis();
+        graph.initDataColor();
         graph.plot();
       </script>
 

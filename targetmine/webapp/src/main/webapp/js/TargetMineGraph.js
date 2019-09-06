@@ -22,9 +22,9 @@ class TargetMineGraph{
    * @param {int} width The width of the viewbox in the svg element
    */
   constructor(name, width, height){
-    // the title of the graph
+    /* the title of the graph */
     this.name = name;
-    // data used for the generation of the graph
+    /* data used for the generation of the graph */
     this.data = undefined;
 
     // dimensions of the canvas
@@ -35,6 +35,12 @@ class TargetMineGraph{
     this.yAxis = undefined;
     // the labels used in the x axis of the graph
     this.xLabels = undefined;
+
+    /* Add a base component to the SVG element. The drawing of each element in
+     * the svg will be nested to this basic component */
+    let graph = d3.select('svg#canvas').append('g')
+      .attr('id', 'graph')
+    ;
   }
 
   /**
@@ -108,7 +114,6 @@ class TargetMineGraph{
  */
 class GeneExpressionGraph extends TargetMineGraph{
 
-
   /**
    * Initialize a new instance of GeneExpressionGraph
    *
@@ -117,7 +122,6 @@ class GeneExpressionGraph extends TargetMineGraph{
   constructor(name, width, height){
     /** initialize super-class attributes */
     super(name, width, height);
-
     /* the different levels of specificity at which we can look gene expression */
     this.levels = [
       'category',
@@ -125,15 +129,35 @@ class GeneExpressionGraph extends TargetMineGraph{
       'name'
     ];
     Object.freeze(this.levels);
-    // to handle the expansion and collapsing of labels, we need to know to
-    // which level each label belongs
+    /* keep a reference to the level of specificity of each label in the X Axis*/
     this.xLabelLevels = undefined;
+  }
 
-    /* Add a base component to the SVG element. The drawing of each element in
-     * the svg will be nested to this basic component */
-    let graph = d3.select('svg#canvas').append('g')
-      .attr('id', 'graph')
-    ;
+  /**
+   * Assing a color to each data label
+   * Based on the current labels for the X Axis, assing a color to each data
+   * point in the dataset
+   */
+  initDataColor(){
+    let self = this;
+    /* exclude the tips of the axis that do not represent any value */
+    let labels = this.xLabels.slice(1, this.xLabels.length-1);
+    let colors = labels.map((label,i) => d3.schemeCategory10[i%d3.schemeCategory10.length]);
+  //   /* map each label to a color */
+
+  //   let colors = this.xLabels.slice(1,this.xLabels.length-1).map(
+  //     label, i => label: d3.schemeCategory10[(i-1)%d3.schemeCategory10.length]
+  //   );
+  //   console.log(colors);
+  //   // super.loadData(data);
+  //   //
+  //   // /* add color to each data item */
+  //   // let currentLabel = this.data[0][this.levels[0]];
+  //   // let i = 0
+    this.data.forEach(function(item){
+      let i = labels.indexOf(item[self.levels[0]]);
+      item.color = colors[i];
+    });
   }
 
   /**
@@ -203,14 +227,7 @@ class GeneExpressionGraph extends TargetMineGraph{
       });
       this.xLabels = newLabel;
       this.xLabelLevels = newLevel;
-      // = this.xLabels.indexOf(delLabels[0]);
-      // /* update the text labels */
-      // this.xLabels.splice(j, delLabels.length, supkey);
-      // // this.xLabels = this.xLabels.flat();
-      // /* and the level of the labels */
-      // this.xLabelLevels.splice(j, delLabels.length, lvl-1);
-      // this.xLabelLevels = this.xLabelLevels.flat();
-      //
+
       super.initXAxis();
       this.plot();
 
@@ -264,16 +281,12 @@ class GeneExpressionGraph extends TargetMineGraph{
    * Dynamically generate the Y-Axis used in the graph
    * Different scales can be used for the display of the data. The left-side
    * axis in particular must correspond to a numerical value, and the scale
-   * generated is logarithmic.
-   *
-   * @param {string} key The key value, from the one availables in the dataset,
-   * used to construct the scale.
+   * generated is linear.
    */
   initYAxis(){
     /* we need to define min and maximum values for the scale */
     let max = this.data.reduce(function(p, c){ return Math.max(+c['value'], p); }, -Infinity);
-    // let min = this.data.reduce(function(p, c){ return Math.min(+c['value'], p); }, +Infinity);
-    /* define a logarithmic scale */
+    /* define a linear scale */
     let scale = d3.scaleLinear()
       .domain([0,  max])
       .range([height-margin.bottom,margin.top])
@@ -282,7 +295,6 @@ class GeneExpressionGraph extends TargetMineGraph{
     /* create the corresponding axis */
     this.yAxis = d3.axisLeft(scale);
     this.yAxis.ticks(10, '~g');
-
   }
 
   /**
@@ -358,6 +370,7 @@ class GeneExpressionGraph extends TargetMineGraph{
             {
               x: xscale(label),
               y: yscale(curr['value']),
+              color: curr['color'],
             }
           );
         }
@@ -383,6 +396,7 @@ class GeneExpressionGraph extends TargetMineGraph{
       .attr('cx', function(d){ return d.x; })
       .attr('cy', function(d){ return d.y; })
       .attr('r', '4')
+      .style('fill', function(d){ return d.color; })
     ;
   }
 
