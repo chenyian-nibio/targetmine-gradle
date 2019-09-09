@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!-- This file details any extensions needed to the data model to store data from this source, everything else is automatically generated from the model description so this is all we need to do to add to the model. -->
+
+<classes>
+<!-- add any <class> elements here -->
+    <class name="Hgmd" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <attribute name="description" type="java.lang.String"/>
+        <attribute name="variantClass" type="java.lang.String"/>
+        <collection name="sNP" referenced-type="Variant" reverse-reference="hgmd"/>
+        <collection name="umlses"  referenced-type="UMLSTerm" reverse-reference="hgmds"/>
+        <collection name="publications" referenced-type="Publication" reverse-reference="hgmd"/>
+    </class>
+    <class name="UMLSTerm" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <collection name="hgmds"  referenced-type="Hgmd" reverse-reference="umlses"/>
+    </class>
+
+    <class name="Gene" is-interface="true">
+        <attribute name="briefDescription" type="java.lang.String"/>
+        <attribute name="description" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.String"/>
+        <attribute name="ncbiGeneId" type="java.lang.String"/>
+        <collection name="snps" referenced-type="VariationAnnotation" reverse-reference="gene"/>
+    </class>
+
+    <class name="Variant" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <attribute name="description" type="java.lang.String"/>
+        <reference name="hgmd" referenced-type="Hgmd" reverse-reference="sNP"/>
+        <collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
+    </class>
+
+    <class name="SNP" extends="Variant" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <attribute name="refSnpAllele" type="java.lang.String"/>
+        <attribute name="orientation" type="java.lang.String"/>
+        <attribute name="chromosome" type="java.lang.String"/>
+        <attribute name="location" type="java.lang.String"/>
+        <!--<collection name="dataSets" referenced-type="DataSet"/>-->
+    </class>
+    <class name="Publication" is-interface="true">
+        <attribute name="pubMedId" type="java.lang.String"/>
+        <reference name="hgmd" referenced-type="Hgmd" reverse-reference="publications" />
+    </class>
+
+    <class name="VariationAnnotation" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <reference name="gene" referenced-type="Gene" reverse-reference="snps"/>
+        <reference name="snp" referenced-type="Variant" reverse-reference="relatedGenes"/>
+        <collection name="references" referenced-type="SNPReference" reverse-reference="annotation"/>
+        <reference name="function" referenced-type="SNPFunction"/>
+    </class>
+    <class name="SNPFunction" is-interface="true">
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="description" type="java.lang.String"/>
+    </class>
+    <class name="SNPReference" is-interface="true">
+        <attribute name="mrnaAccession" type="java.lang.String"/>
+        <attribute name="mrnaPosition" type="java.lang.String"/>
+        <attribute name="orientation" type="java.lang.String"/>
+        <attribute name="mrnaAllele" type="java.lang.String"/>
+        <attribute name="mrnaCodon" type="java.lang.String"/>
+        <attribute name="proteinAccession" type="java.lang.String"/>
+        <attribute name="proteinPosition" type="java.lang.Integer"/>
+        <attribute name="residue" type="java.lang.String"/>
+        <reference name="function" referenced-type="SNPFunction"/>
+        <reference name="annotation" referenced-type="VariationAnnotation" reverse-reference="references"/>
+    </class>
+
+</classes>
