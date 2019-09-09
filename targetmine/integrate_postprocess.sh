@@ -42,6 +42,7 @@ LOG_FILE=integrate_postprocess_`date "+%Y%m%d"`.log
 ./gradlew integrate -Psource=dbsnp-gene --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=dbsnp-transcript --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=snv-freq --stacktrace >> ${LOG_FILE} 2>&1
+./gradlew integrate -Psource=hgmd --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=wwpdb --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=ligand_expo --stacktrace >> ${LOG_FILE} 2>&1
 ./gradlew integrate -Psource=amadeus --stacktrace >> ${LOG_FILE} 2>&1
