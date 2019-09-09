@@ -368,6 +368,11 @@
     <source name="chembl-mec" type="chembl-mechanism">
       <property name="source.db.name" value="chembl-psql"/>
     </source>
+
+    <source name="hgmd" type="hgmd">
+      <property name="source.db.name" value="hgmd-db"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
     
     <source name="irefindex" type="irefindex">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>
