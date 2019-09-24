@@ -28,6 +28,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Integrate dbsnp in advance.
@@ -205,7 +207,16 @@ public class HgmdConverter extends BioDBConverter {
         }
         return ret;
     }
-
+    private static final Pattern hgvsPattern = Pattern.compile("\\d+(\\w+)>(\\w+)");
+    private static String convertHGVSTorefSnpAllele(String hgvs,String id) {
+    	Matcher matcher = hgvsPattern.matcher(hgvs);
+    	if(matcher.matches()) {
+    		return matcher.group(1)+"/"+matcher.group(2);
+    	}else {
+    		LOG.warn("Unexpected hgvs " + hgvs +" at "+id);
+    		return hgvs;
+    	}
+    }
     private String getSnp(ResultSet response, String identifier, String hgmdId) throws Exception {
         String ret = snpMap.get(identifier);
 
@@ -223,7 +234,7 @@ public class HgmdConverter extends BioDBConverter {
                 // TODO: データの作り方 要確認 : allmut.hgvsまたはallmut.deletionまたはallmut.insertion
                 String refSnpAllele = "";
                 if (!StringUtils.isEmpty(response.getString("hgvs"))) {
-                    refSnpAllele = response.getString("hgvs");
+                    refSnpAllele = convertHGVSTorefSnpAllele(response.getString("hgvs"), identifier);
                 } else if (!StringUtils.isEmpty(response.getString("deletion"))) {
                     refSnpAllele = response.getString("deletion");
                 } else if (!StringUtils.isEmpty(response.getString("insertion"))) {
