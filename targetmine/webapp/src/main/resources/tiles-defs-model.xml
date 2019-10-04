@@ -12,7 +12,3 @@
 <!-- Cytoscape plugin-->
 <definition name="cytoscapeNetworkDisplayer.tile" path="/model/cytoscapeNetworkDisplayer.jsp"
         controllerUrl="/initCytoscapeNetworkDisplayer.do"/>
-
-<!-- TargetMine -->
-<definition name="pathwayLinkDisplayer.tile" path="/model/tmPathwayLinkDisplayer.jsp" />
-<definition name="compoundLinkDisplayer.tile" path="/model/compoundLinkDisplayer.jsp" />
