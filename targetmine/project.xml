@@ -496,6 +496,7 @@
   <post-processing>
       <post-process name="do-sources"/>
       <post-process name="transcribe-ncbiGeneId"/>
+      <post-process name="remove-casreg"/>
       <post-process name="integrated-pathway-clustering"/>
       <post-process name="associate-gene-to-cluster"/>
       <post-process name="network-analysis"/>
