@@ -16,7 +16,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.metadata.StringUtil;
@@ -29,7 +30,7 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class GeneInfoConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(GeneInfoConverter.class);
+	private static final Logger LOG = LogManager.getLogger(GeneInfoConverter.class);
 	private static final String PROP_FILE = "gene-info_config.properties";
 	//
 	private static final String DATASET_TITLE = "Gene";

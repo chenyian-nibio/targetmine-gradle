@@ -15,7 +15,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
@@ -48,7 +49,7 @@ import com.google.common.primitives.Ints;
  * 
  */
 public class IntegratedPathwayClustering extends PostProcessor {
-	private static final Logger LOG = Logger.getLogger(IntegratedPathwayClustering.class);
+	private static final Logger LOG = LogManager.getLogger(IntegratedPathwayClustering.class);
 
 	private Model model;
 

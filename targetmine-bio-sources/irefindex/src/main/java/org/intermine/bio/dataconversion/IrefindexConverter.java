@@ -15,7 +15,8 @@ import java.util.Set;
 
 import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -35,7 +36,7 @@ public class IrefindexConverter extends BioFileConverter {
 	private static final String DATA_SOURCE_NAME = "iRefIndex";
 	private static final String TYPE_FILE = "interactiontype.txt";
 
-	private static final Logger LOG = Logger.getLogger(IrefindexConverter.class);
+	private static final Logger LOG = LogManager.getLogger(IrefindexConverter.class);
 
 	private Map<String, String> interactionTypeMap;
 

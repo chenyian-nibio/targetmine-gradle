@@ -6,7 +6,8 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bbop.io.ExtensionFilenameFilter;
 import org.intermine.dataconversion.DirectoryConverter;
 import org.intermine.dataconversion.ItemWriter;
@@ -23,7 +24,7 @@ public class MetazoanConverter extends DirectoryConverter {
 
 	private static final String INTERACTION_TYPE = "Transcriptional regulation";
 
-	private static final Logger LOG = Logger.getLogger(MetazoanConverter.class);
+	private static final Logger LOG = LogManager.getLogger(MetazoanConverter.class);
 
 	private Map<String, String> expMap;
 

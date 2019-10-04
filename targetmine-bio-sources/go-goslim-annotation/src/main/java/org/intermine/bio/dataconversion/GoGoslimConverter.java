@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.metadata.StringUtil;
@@ -61,7 +62,7 @@ public class GoGoslimConverter extends BioFileConverter {
 	private static final String ANNOTATION_TYPE = "Protein";
 	private static final String IDENTIFIER_FIELD = "primaryAccession";
 
-	private static final Logger LOG = Logger.getLogger(GoGoslimConverter.class);
+	private static final Logger LOG = LogManager.getLogger(GoGoslimConverter.class);
 
 	// chenyian
 	private static final String DATASET_TITLE = "UniProt-GOA";

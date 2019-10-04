@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -19,7 +20,7 @@ import org.intermine.xml.full.Item;
  */
 public class AffyProbeAnnotConverter extends BioFileConverter {
 	
-	private static final Logger LOG = Logger.getLogger(AffyProbeAnnotConverter.class);
+	private static final Logger LOG = LogManager.getLogger(AffyProbeAnnotConverter.class);
 	//
 	private static final String DATASET_TITLE = "NetAffx Annotation Files";
 	private static final String DATA_SOURCE_NAME = "Affymetrix";

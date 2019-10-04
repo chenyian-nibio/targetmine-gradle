@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
@@ -32,7 +33,7 @@ import org.intermine.xml.full.Item;
  * 
  */
 public class Gene3Dv14Converter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(Gene3Dv14Converter.class);
+	private static final Logger LOG = LogManager.getLogger(Gene3Dv14Converter.class);
 	//
 	private static final String DATASET_TITLE = "Gene3D";
 	private static final String DATA_SOURCE_NAME = "Gene3D";

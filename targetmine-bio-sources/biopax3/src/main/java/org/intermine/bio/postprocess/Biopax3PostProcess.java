@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.util.Constants;
 import org.intermine.bio.util.PostProcessUtil;
 import org.intermine.metadata.ClassDescriptor;
@@ -34,7 +35,7 @@ import org.intermine.sql.DatabaseUtil;
  * */
 public class Biopax3PostProcess extends PostProcessor {
 
-    private static final Logger LOG = Logger.getLogger(Biopax3PostProcess.class);
+    private static final Logger LOG = LogManager.getLogger(Biopax3PostProcess.class);
 //    private DataSet reactomeDataSet = null;
     private Model model;
 

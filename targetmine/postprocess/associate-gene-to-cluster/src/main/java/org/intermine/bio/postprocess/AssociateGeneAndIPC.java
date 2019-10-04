@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.util.Constants;
 import org.intermine.bio.util.PostProcessUtil;
 import org.intermine.metadata.ClassDescriptor;
@@ -35,7 +36,7 @@ import org.intermine.sql.DatabaseUtil;
  */
 public class AssociateGeneAndIPC extends PostProcessor {
 
-	private static final Logger LOG = Logger.getLogger(AssociateGeneAndIPC.class);
+	private static final Logger LOG = LogManager.getLogger(AssociateGeneAndIPC.class);
 
 	private Model model;
 

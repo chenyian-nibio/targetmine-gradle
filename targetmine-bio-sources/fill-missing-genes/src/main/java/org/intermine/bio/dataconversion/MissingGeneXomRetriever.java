@@ -16,7 +16,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.tools.ant.BuildException;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.StringUtil;
@@ -45,7 +46,7 @@ import nu.xom.Elements;
  *
  */
 public class MissingGeneXomRetriever {
-	private static final Logger LOG = Logger.getLogger(MissingGeneXomRetriever.class);
+	private static final Logger LOG = LogManager.getLogger(MissingGeneXomRetriever.class);
 	
     private static final String ESUMMARY_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&id=";
 

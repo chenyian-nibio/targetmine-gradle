@@ -13,13 +13,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Elements;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.tools.ant.BuildException;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.StringUtil;
@@ -38,13 +34,18 @@ import org.intermine.xml.full.ItemFactory;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+
 /**
  * 
  * @author chenyian
  *
  */
 public class MissingPublicationXomRetriever {
-	private static final Logger LOG = Logger.getLogger(MissingPublicationXomRetriever.class);
+	private static final Logger LOG = LogManager.getLogger(MissingPublicationXomRetriever.class);
 	// rettype=abstract or just leave it out
 	private static final String EFETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&rettype=abstract&retmode=xml&id=";
 

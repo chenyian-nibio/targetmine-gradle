@@ -12,7 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -27,7 +28,7 @@ public class CathNameConverter extends BioFileConverter {
 	private static final String SEGMENT_DELIMITER = ";";
 	private static final String REGION_DELIMITER = "==";
 
-	private static final Logger LOG = Logger.getLogger(CathNameConverter.class);
+	private static final Logger LOG = LogManager.getLogger(CathNameConverter.class);
 
 	private List<String> levelList = Arrays.asList("Class", "Architecture", "Topology",
 			"Homologous Superfamily");

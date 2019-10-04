@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.FileConverter;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
@@ -32,7 +33,7 @@ import org.intermine.xml.full.Item;
  */
 public class KeggJtcConverter extends FileConverter {
 	
-	protected static final Logger LOG = Logger.getLogger(KeggJtcConverter.class);
+	protected static final Logger LOG = LogManager.getLogger(KeggJtcConverter.class);
     //
 	Map<String, Integer> codeMap = new HashMap<String, Integer>();
 	

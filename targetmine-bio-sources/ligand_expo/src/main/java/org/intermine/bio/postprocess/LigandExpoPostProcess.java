@@ -3,7 +3,8 @@ package org.intermine.bio.postprocess;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.util.Constants;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
@@ -32,7 +33,7 @@ import org.intermine.util.DynamicUtil;
  */
 public class LigandExpoPostProcess extends PostProcessor {
 
-	private static final Logger LOG = Logger.getLogger(LigandExpoPostProcess.class);
+	private static final Logger LOG = LogManager.getLogger(LigandExpoPostProcess.class);
 	private DataSet dataSet = null;
 	private Model model;
 

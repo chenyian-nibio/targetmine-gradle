@@ -8,7 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.metadata.StringUtil;
@@ -21,7 +22,7 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class GeneOrthologsConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(GeneOrthologsConverter.class);
+	private static final Logger LOG = LogManager.getLogger(GeneOrthologsConverter.class);
 	//
 	private static final String DATASET_TITLE = "Gene";
 	private static final String DATA_SOURCE_NAME = "NCBI";

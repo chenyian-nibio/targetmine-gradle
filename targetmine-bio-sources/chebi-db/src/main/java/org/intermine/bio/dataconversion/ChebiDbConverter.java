@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -20,7 +21,7 @@ import org.intermine.xml.full.Item;
  * 
  */
 public class ChebiDbConverter extends BioDBConverter {
-	private static final Logger LOG = Logger.getLogger(ChebiDbConverter.class);
+	private static final Logger LOG = LogManager.getLogger(ChebiDbConverter.class);
 
 	//
 	private static final String DATASET_TITLE = "ChEBI";

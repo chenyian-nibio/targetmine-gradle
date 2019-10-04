@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
@@ -23,16 +24,14 @@ import org.intermine.objectstore.query.QueryClass;
 import org.intermine.objectstore.query.QueryCollectionReference;
 import org.intermine.objectstore.query.QueryField;
 import org.intermine.objectstore.query.QueryObjectReference;
-import org.intermine.objectstore.query.QueryValue;
 import org.intermine.objectstore.query.Results;
 import org.intermine.objectstore.query.ResultsRow;
-import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.postprocess.PostProcessor;
 import org.intermine.util.DynamicUtil;
 
 public class DiseaseSummaryPostprocess extends PostProcessor {
 
-	private static final Logger LOG = Logger.getLogger(DiseaseSummaryPostprocess.class);
+	private static final Logger LOG = LogManager.getLogger(DiseaseSummaryPostprocess.class);
 
 	// for clinvar disease title
 	private static final List<String> IGNORED_DISEASE_NAMES = Arrays.asList("not specified",

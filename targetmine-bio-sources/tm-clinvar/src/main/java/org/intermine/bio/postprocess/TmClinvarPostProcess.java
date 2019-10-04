@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.util.PostProcessUtil;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
@@ -29,7 +30,7 @@ import org.intermine.postprocess.PostProcessor;
  */
 public class TmClinvarPostProcess extends PostProcessor {
 
-	private static final Logger LOG = Logger.getLogger(TmClinvarPostProcess.class);
+	private static final Logger LOG = LogManager.getLogger(TmClinvarPostProcess.class);
 
 	private Model model;
 

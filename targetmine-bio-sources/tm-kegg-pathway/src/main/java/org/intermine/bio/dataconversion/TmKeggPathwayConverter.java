@@ -14,7 +14,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -28,7 +29,7 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class TmKeggPathwayConverter extends BioFileConverter {
-	protected static final Logger LOG = Logger.getLogger(TmKeggPathwayConverter.class);
+	protected static final Logger LOG = LogManager.getLogger(TmKeggPathwayConverter.class);
 	private static final String PROP_FILE = "kegg_config.properties";
 	//
 	private static final String DATASET_TITLE = "KEGG Pathway";

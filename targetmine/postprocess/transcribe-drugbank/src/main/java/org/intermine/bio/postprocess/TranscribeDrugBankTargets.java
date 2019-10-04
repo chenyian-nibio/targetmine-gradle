@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.util.PostProcessUtil;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
@@ -27,7 +28,7 @@ import org.intermine.postprocess.PostProcessor;
  */
 public class TranscribeDrugBankTargets extends PostProcessor {
 
-	private static final Logger LOG = Logger.getLogger(TranscribeDrugBankTargets.class);
+	private static final Logger LOG = LogManager.getLogger(TranscribeDrugBankTargets.class);
 	
 	private Model model;
 

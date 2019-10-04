@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
@@ -60,7 +61,7 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
  * 
  */
 public class NetworkAnalysisTool extends PostProcessor {
-	private static final Logger LOG = Logger.getLogger(NetworkAnalysisTool.class);
+	private static final Logger LOG = LogManager.getLogger(NetworkAnalysisTool.class);
 
 	private static final int CUT_OFF_PERCENTAGE = 10; // top 10 percent as bottle and hub
 

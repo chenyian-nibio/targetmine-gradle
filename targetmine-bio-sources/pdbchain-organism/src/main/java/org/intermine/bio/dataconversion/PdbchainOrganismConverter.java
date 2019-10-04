@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.FileConverter;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
@@ -23,7 +24,7 @@ import org.intermine.xml.full.Item;
  */
 public class PdbchainOrganismConverter extends FileConverter {
 
-	protected static final Logger LOG = Logger.getLogger(PdbchainOrganismConverter.class);
+	protected static final Logger LOG = LogManager.getLogger(PdbchainOrganismConverter.class);
 	//
 	private Map<String, String> organismMap = new HashMap<String, String>();
 
