@@ -154,7 +154,7 @@ public class HgmdConverter extends BioDBConverter {
             if (StringUtils.isEmpty(snpId)) {
                 snpId = resCui.getString("acc_num");
             }
-            String cui = resCui.getString("cui");
+            String cui = "UMLS:"+resCui.getString("cui");
             String hgmdRef = hgmdMap.get(snpId);
             // hgmd がnullでなく、cuiに一致するデータがumlsにある場合
             if (!StringUtils.isEmpty(hgmdRef) && umlsTermSet.contains(cui)) {
