@@ -4,6 +4,9 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="im"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 
+<%! int width = 400; %>
+<%! int height = 400; %>
+
 <div class="collection-table">
 
 <!-- Verify that there isnt an empty collection of data -->
@@ -17,7 +20,7 @@
     <!-- Visualization Container -->
     <div class='targetmineGraphDisplayer'>
       <!-- Left Column of the Visualization (main display) -->
-      <svg class='targetmineGraphSVG' id='canvas' viewbox='0 0 400 400'></svg>
+      <svg class='targetmineGraphSVG' id='canvas' viewbox="0 0 <%= width %> <%= ' ' %> <%= height%>"></svg>
       <!-- Right Column, reserved for visualization controls -->
       <div class='rightColumn'>
         <!-- Choose the property used to display color, and to make (in)visible
@@ -70,12 +73,30 @@
       </div>
     </div>
 
-    <script type='text/javascript'>
-      var graph = new BioActivityGraph('${compound}');
-      <!-- pass the information fetched from Java to the JS code -->
-      graph.loadData('${data}');
+    <script type="text/javascript">
+      console.log(window.location.pathname);
+      let loc = window.location.pathname;
+      import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
+        .then((module) => {
+          console.log(module);
+          var graph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
+          graph.loadData('${data}');
+          graph.initXLabels();
+          graph.initXAxis();
+          graph.initYAxis();
+          graph.initColorAndShape();
+          // graph._initColumns();
+          // /* update the axis of the graph */
+          // /* update the colors used for the data points in the graph */
+          // graph._updateTable('color');
+          // /* update the shapes used for the data points in the graph */
+          // graph._updateTable('shape');
+          /* plot the data points */
+          graph.plot();
+        });
+      // import { BioActivityGraph } from '../js/BioActivityGraph.mjs';
+      // console.log('estoy en el modyule');
     </script>
-
   </c:otherwise>
 </c:choose>
 

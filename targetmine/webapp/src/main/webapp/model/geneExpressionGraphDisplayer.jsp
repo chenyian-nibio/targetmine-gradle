@@ -33,15 +33,13 @@
 
       </div>
 
-      <!-- <script type="module" src="./js/TargetMineGraph.js"></script> -->
-
       <script type='text/javascript'>
         var graph = new GeneExpressionGraph('${gene}', <%= width %>, <%= height %>);
         graph.loadData('${data}');
-        graph.initXLabels("category");
+        graph.initXLabels();
         graph.initXAxis();
         graph.initYAxis();
-        graph.initDataColor();
+        graph.initColorAndShape();
         graph.plot();
       </script>
 
