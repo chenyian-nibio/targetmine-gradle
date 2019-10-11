@@ -33,14 +33,17 @@
 
       </div>
 
-      <script type='text/javascript'>
-        var graph = new GeneExpressionGraph('${gene}', <%= width %>, <%= height %>);
-        graph.loadData('${data}');
-        graph.initXLabels();
-        graph.initXAxis();
-        graph.initYAxis();
-        graph.initColorAndShape();
-        graph.plot();
+      <script type="text/javascript">
+        import(window.location.origin+'/targetmine/js/GeneExpressionGraph.mjs')
+          .then((module) => {
+            let graph = new module.GeneExpressionGraph('${gene}', <%= width %>, <%= height %>);
+            graph.loadData('${data}');
+            graph.initXLabels();
+            graph.initXAxis();
+            graph.initYAxis();
+            graph.initColorsAndShapes();
+            graph.plot();
+          });
       </script>
 
     </c:otherwise>

@@ -74,28 +74,22 @@
     </div>
 
     <script type="text/javascript">
-      console.log(window.location.pathname);
-      let loc = window.location.pathname;
       import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
         .then((module) => {
-          console.log(module);
-          var graph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
-          graph.loadData('${data}');
-          graph.initXLabels();
-          graph.initXAxis();
-          graph.initYAxis();
-          graph.initColorAndShape();
+          window.graph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
+          window.graph.loadData('${data}');
+          window.graph.initXLabels();
+          window.graph.initXAxis();
+          window.graph.initYAxis(true);
+          window.graph.initColorsAndShapes(false);
           // graph._initColumns();
-          // /* update the axis of the graph */
           // /* update the colors used for the data points in the graph */
-          // graph._updateTable('color');
+          window.graph.initColorTable();
           // /* update the shapes used for the data points in the graph */
-          // graph._updateTable('shape');
+          // window.graph.initTable('shape');
           /* plot the data points */
-          graph.plot();
+          window.graph.plot();
         });
-      // import { BioActivityGraph } from '../js/BioActivityGraph.mjs';
-      // console.log('estoy en el modyule');
     </script>
   </c:otherwise>
 </c:choose>

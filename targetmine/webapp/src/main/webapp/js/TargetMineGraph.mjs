@@ -112,6 +112,9 @@ export class TargetMineGraph {
    * linear and logarithmic.
    * The axis will always be generated based on the minimum and maximum values
    * found in the dataset for the corresponding this._y variable.
+   *
+   * @param {boolean} logScale Flag that indicates if the axis should be generated
+   * using a logarithmic scale or not. Default value: false.
    */
   initYAxis(logScale=false){
     let self = this;
@@ -145,24 +148,112 @@ export class TargetMineGraph {
   }
 
   /**
+   * Initialize list of colors and Shapes
+   * Different colors and shapes can be used to differentiate the categories of
+   * data points according to their X-axis dimension. Here, we generate the list
+   * of all colors and shapes according to the currently displayed categories.
    *
+   * @param {boolean} addXLabels Flag that indicates if individual shapes and
+   * colors should be assiged for each individual category available in the
+   * X axis of the graph. Default value: true.
    */
-  initColorAndShape(addXLabels=true){
+  initColorsAndShapes(addXLabels=true){
     let self = this;
-    this._colors = { 'Default': '#C0C0C0' };
-    this._shapes = { 'Default': 'Circle' };
+    // include default color and shape for the graph
+    this._colors = [ {'key': 'Default', 'value': '#C0C0C0' } ];
+    this._shapes = [ {'key': 'Default', 'value': 'Circle' } ];
 
+    // and if specified, add also color for each X-axis category
     if( addXLabels == true ){
       /* exclude the tips of the axis that do not represent any value */
       let labels = this._xLabels.slice(1, this._xLabels.length-1);
-      labels.map( (label,i) => this._colors[label] = d3.schemeCategory10[i%d3.schemeCategory10.length] );
+      labels.map( (label,i) => {
+        this._colors.push( { 'key': label, 'value': d3.schemeCategory10[i%d3.schemeCategory10.length] });
+      });
     }
+  }
 
-    /* map each label to a color */
+  /**
+   * Add color information to all points in the dataset
+   * Each point in the dataset can be drawn using a specific color. The match
+   * between property and color is stored in the _colors array. Here, we update
+   * the display color of each point in the dataset, according to the current
+   * color mapping
+   */
+  assignColors(){
+    let keys = this._colors.reduce(function(prev, curr){
+      prev.push(curr.key);
+      return prev;
+    },[]);
+
     this._data.forEach(function(item){
-      item.color = self._colors[item[self._x]] ? self._colors[item[self._x]] : self._colors['Default'];
-      item.shape = self._shapes['Default'];
-    });
+      item.color = item[this._x] != -1 ? this._c
+      self._colors[item[self._x]] ? self._colors[item[self._x]] : self._colors['Default'];
+    }, this);
+  }
+
+  /**
+   * Add shape information to all points in the dataset
+   * Each point in the dataset can be drawn using a specific shape. The match
+   * between property and shape is stored in the _shapes array. Here, we update
+   * the display shape of each point in the dataset, according to the current
+   * shapes mapping
+   */
+  assignShapes(){
+
+    // // assign the corresponding color and shape to each data point
+    // this._data.forEach(function(item){
+    //   item.color = self._colors[item[self._x]] ? self._colors[item[self._x]] : self._colors['Default'];
+    //   item.shape = self._shapes['Default'];
+    // });
+
+  }
+
+  /**
+   *
+   * @param {String} type The type of table that needs to be initialized.
+   * @param {Array} data The array of objects used as data for the definition of
+   * the values in the table
+   */
+  initTable(type, data){
+    let self = this;
+    /* remove previous table elements */
+    let table = d3.select('#'+type+'-table')
+      .selectAll('div').remove()
+    ;
+    table = d3.select('#'+type+'-table').selectAll('div')
+      .data(data)
+    ;
+
+    /* create each row */
+    let row = table.enter().append('div')
+      .attr('class', 'flex-row')
+      .attr('id', function(d){ return type+'-'+d.key; })
+      ;
+
+    /* first cell: a simple color background or an svg element with a symbol */
+    let cell = row.append('div')
+      .attr('class', 'flex-cell display')
+      ;
+
+    /* second cell: label */
+    row.append('div')
+      .attr('class', 'flex-cell label')
+      .text( function(d){ return d.key; } )
+      ;
+
+    /* third cell */
+    row.append('span')
+      .attr('class', 'flex-cell small-close')
+      .attr('data-index', function(d,i){ return i; })
+      .html('&times;')
+      // .on('click', function(){
+      //   if( this.dataset.key === 'Default' ) return;
+      //   self._colors.splice(this.dataset.index, 1);
+      //   self.assignColor();
+      //   self.initTable('color', self._colors);
+      // })
+    ;
 
   }
 
@@ -232,222 +323,3 @@ export class TargetMineGraph {
       .text('Concentration (nM)')
   }
 }
-
-
-//
-// /**
-//  * @class GeneExpressionGraph
-//  * @classdesc Used to display a Gene Expression level graph in the report page
-//  * of genes
-//  * @author Rodolfo Allendes
-//  * @version 0.1
-//  */
-// class GeneExpressionGraph extends TargetMineGraph{
-//
-//   /**
-//    * Initialize a new instance of GeneExpressionGraph
-//    *
-//    * @param {string} name The title for the graph
-//    */
-//   constructor(name, width, height){
-//     /* initialize super-class attributes */
-//     super(name, width, height);
-//
-//     /* the different levels of specificity at which we can look gene expression */
-//     this._levels = [
-//       'category',
-//       'organ',
-//       'name'
-//     ];
-//     Object.freeze(this._levels);
-//
-//     /* initial variables for X */
-//     this._x = 'category';
-//     this._y = 'value';
-//
-//     /* keep a reference to the level of specificity of each label in the X Axis*/
-//     this._xLabelLevels = undefined;
-//   }
-//
-//   /**
-//    * Initialize the labels of the X axis of the Graph.
-//    * Using the super-class method, not only set the text for the labels of the X
-//    * axis of the graph, but also initialize the list of levels associated to each
-//    * label.
-//    */
-//   initXLabels(){
-//     // initialize labels
-//     super.initXLabels();
-//     // and the levels
-//     this._xLabelLevels = Array(this._xLabels.length).fill(0);
-//   }
-//
-//   /**
-//    *
-//    * @param {string} key the source element which we are trying to collapse into
-//    * is parent category.
-//    * @return {boolean} whether the collapsing took place or not
-//    */
-//   collapseXLabels(key){
-//     let self = this;
-//     /* recover the information on the value being expanded */
-//     let i = this._xLabels.indexOf(key); // its position
-//     let lvl = this._xLabelLevels[i]; // its level
-//     console.log('Collapse:', key, i, lvl);
-//
-//     /* we can only collapse levels 1 and 2, otherwise, we do nothing */
-//     if( lvl === 1 || lvl === 2 ){
-//       let cat = this._levels[lvl];
-//       let supcat = this._levels[lvl-1];
-//
-//       /* I need to know the value of the parent category of the current key */
-//       let supkey = (this._data.find( ele => ele[cat] === key ))[supcat];
-//
-//       /* Search the list of all labels to see if its within the hierarchy rooted
-//        * at the supkey element */
-//       let delLabels = this._data.reduce(function(prev, current){
-//         if( current[supcat] === supkey ){
-//           if( !prev.includes(current[cat]) )
-//             prev.push(current[cat]);
-//           for( let i=lvl+1; i<self._levels.length; ++i ){
-//             let subcat = self._levels[i];
-//             if( !prev.includes(current[subcat]) )
-//               prev.push(current[subcat]);
-//           }
-//         }
-//         return prev;
-//       }, []);
-//
-//       /* add the supkey value at the position of the clicked element in the
-//        * xLabels */
-//       this._xLabels.splice(i, 0, supkey);
-//       this._xLabelLevels.splice(i, 0, lvl-1);
-//
-//       /* and remove all the labels that scheduled for removal */
-//       let newLabel = [];
-//       let newLevel = [];
-//       this._xLabels.forEach(function (ele, i){
-//         if( !delLabels.includes(ele) ){
-//           newLabel.push(ele);
-//           newLevel.push(self._xLabelLevels[i]);
-//         }
-//       });
-//       this._xLabels = newLabel;
-//       this._xLabelLevels = newLevel;
-//
-//       super.initXAxis();
-//       this.plot();
-//
-//       return true;
-//     }
-//     else{
-//       console.log('Not possible to collapse this level');
-//       return false;
-//     }
-//   }
-//
-//   /**
-//    *
-//    * @param {string} key
-//    * @return a boolean value indicating if the expansion was carried out or not
-//    */
-//   expandXLabels(key){
-//     /* recover the information on the value being expanded */
-//     let i = this._xLabels.indexOf(key); // its position
-//     let lvl = this._xLabelLevels[i]; // its level
-//     console.log('Expanding:', key, i, lvl);
-//
-//     /* we can only expand levels 0 and 1, otherwise, we do nothing */
-//     if( lvl === 0 || lvl === 1 ){
-//       let category = this._levels[lvl];
-//       let subcat = this._levels[lvl+1];
-//       let newLabels = this._data.reduce(function(prev, current){
-//         if( current[category] === key && !prev.includes(current[subcat]) )
-//         prev.push(current[subcat]);
-//         return prev;
-//       }, []);
-//       /* update the text labels */
-//       this._xLabels.splice(i, 1, newLabels);
-//       this._xLabels = this._xLabels.flat();
-//       /* and the level of the labels */
-//       this._xLabelLevels.splice(i, 1, Array(newLabels.length).fill(lvl+1));
-//       this._xLabelLevels = this._xLabelLevels.flat();
-//
-//       super.initXAxis();
-//       this.plot();
-//
-//       return true;
-//     }
-//     else{
-//       console.log('Not possible to expand this level');
-//       return false;
-//     }
-//   }
-//
-//   /**
-//    *
-//    */
-//   plotXAxis(angle){
-//     let self = this;
-//     super.plotXAxis(angle);
-//
-//     /* assign click function to axis labels if required */
-//     let labels = d3.selectAll('g#bottom-axis > g.tick > text')
-//       .on('click', function(d){ self.expandXLabels(d); })
-//       .on('contextmenu', function(d){ d3.event.preventDefault(); self.collapseXLabels(d); })
-//       ;
-//   }
-//
-//   /**
-//    *
-//    */
-//   plot(){
-//     let self = this;
-//     this.plotXAxis(45);
-//     this.plotYAxis();
-//
-//     /* Generate an array of data points positions and colors based on the scale
-//      * defined for each axis */
-//     let xscale = this._xAxis.scale();
-//     let yscale = this._yAxis.scale();
-//     let points = [];
-//     this._xLabels.slice(1,this._xLabels.length-1).forEach(function(label, i){
-//       let col = self._levels[self._xLabelLevels[i+1]];
-//       let current = self._data.reduce( function(prev, curr){
-//         if( curr[col] === label ){
-//           prev.push(
-//             {
-//               x: xscale(label),
-//               y: yscale(curr['value']),
-//               color: curr['color'],
-//             }
-//           );
-//         }
-//         return prev;
-//       },[]);
-//       points = points.concat(current);
-//     });
-//
-//     /* redraw the points, using the updated positions and colors */
-//     let canvas = d3.select('svg#canvas > g#graph');
-//     canvas.selectAll('#points').remove();
-//
-//     canvas.append('g')
-//       .attr('id', 'points')
-//     ;
-//
-//     /* for each data point, generate a group where we can add multiple svg
-//      * elements */
-//     let pts = d3.select('#points').selectAll('g')
-//       .data(points)
-//     let point = pts.enter().append('circle')
-//       .attr('cx', function(d){ return d.x; })
-//       .attr('cy', function(d){ return d.y; })
-//       .attr('r', '4')
-//       .style('fill', function(d){ return d.color; })
-//     ;
-//   }
-//
-//
-//
-// }

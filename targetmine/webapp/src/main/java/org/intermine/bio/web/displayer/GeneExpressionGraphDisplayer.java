@@ -98,7 +98,6 @@ public class GeneExpressionGraphDisplayer extends ReportDisplayer{
           row += (call+"\t");
           row += value;
 
-          // logger.warn("row "+row);
           data.add(row);
         }
 
