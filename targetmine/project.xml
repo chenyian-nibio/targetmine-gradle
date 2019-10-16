@@ -44,6 +44,10 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
       <property name="src.data.dir.includes" value="HumanDO.obo" />
     </source>
+    <source name="pharmaprojects" type="pharmaprojects">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pharmaprojects/" />
+      <property name="src.data.dir.includes" value="drug-export-pg-*.json" />
+    </source>
     <source name="who-trial" type="who-trial">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
       <property name="src.data.dir.includes" value="data.jl" />

@@ -61,15 +61,5 @@ public class Utils {
 		sb.append(template.substring(prevPos));
 		return sb.toString();
 	}
-	public static void main(String[] args) {
-		JSONObject variables = new JSONObject();
-		variables.put("test", "value");
-		System.out.println(replaceString(null, variables));
-	}
-	public static boolean empty(String string) {
-		return string == null || string.length() <= 0;
-	}
-	public static boolean isEmpty(String entrezGeneId) {
-		return entrezGeneId == null || entrezGeneId.length() <=0;
-	}
+
 }

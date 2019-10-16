@@ -25,7 +25,6 @@
         <attribute name="result" type="java.lang.String"/>
 
         <attribute name="condition" type="java.lang.String"/>
-        <collection name="umlses" referenced-type="UMLSTerm" reverse-reference="trials"/>
     </class>
     <class name="TrialTrove" extends="ClinicalTrial" is-interface="true">
     </class>
