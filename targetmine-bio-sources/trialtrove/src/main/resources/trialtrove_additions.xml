@@ -2,29 +2,31 @@
 <!-- This file details any extensions needed to the data model to store data from this source, everything else is automatically generated from the model description so this is all we need to do to add to the model. -->
 
 <classes>
-    <class name="TrialGroup" is-interface="true">
-        <attribute name="identifier" type="java.lang.String"/>
-        <collection name="trials" referenced-type="ClinicalTrial" reverse-reference="trialGroup"/>
-        
-    </class>
     <class name="ClinicalTrial" is-interface="true">
         <attribute name="name" type="java.lang.String"/>
         <attribute name="title" type="java.lang.String"/>
+        <attribute name="scientificTitle" type="java.lang.String"/>
+        <attribute name="studyType" type="java.lang.String"/>
+        <attribute name="recruitmentStatus" type="java.lang.String"/>
+        <attribute name="register" type="java.lang.String"/>
+        <attribute name="primarySponsor" type="java.lang.String"/>
         <attribute name="phase" type="java.lang.String"/>
-   		<reference name="trialGroup" referenced-type="TrialGroup" reverse-reference="trials"/>
-    </class>
-    <class name="TrialTrove" extends="ClinicalTrial" is-interface="true">
-        <attribute name="trialId" type="java.lang.Integer"/>
-        <attribute name="primaryDrugName" type="java.lang.String"/>
-        <attribute name="otherDrugName" type="java.lang.String"/>
-        <attribute name="studyDesign" type="java.lang.String"/>
-        <attribute name="treatmentPlan" type="java.lang.String"/>
+        <attribute name="firstEnrolmentDate" type="java.lang.String"/>
+        <attribute name="registrationDate" type="java.lang.String"/>
+        <attribute name="lastRefreshed" type="java.lang.String"/>
+        <attribute name="targetSampleSize" type="java.lang.String"/>
+        <attribute name="originalUrl" type="java.lang.String"/>e
+
+        <attribute name="url" type="java.lang.String"/>
+        <attribute name="interventions" type="java.lang.String"/>
+        <attribute name="countries" type="java.lang.String"/>
         <attribute name="primaryOutcome" type="java.lang.String"/>
         <attribute name="secondaryOutcome" type="java.lang.String"/>
-        <attribute name="criteria" type="java.lang.String"/>
         <attribute name="result" type="java.lang.String"/>
-        <attribute name="countries" type="java.lang.String"/>
+
         <attribute name="condition" type="java.lang.String"/>
-        
+        <collection name="umlses" referenced-type="UMLSTerm" reverse-reference="trials"/>
+    </class>
+    <class name="TrialTrove" extends="ClinicalTrial" is-interface="true">
     </class>
 </classes>
