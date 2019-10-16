@@ -189,3 +189,7 @@ include ':bio-source-who-trial'
 project(':bio-source-who-trial').projectDir = new File(settingsDir, './who-trial')
 include ':bio-source-hgmd'
 project(':bio-source-hgmd').projectDir = new File(settingsDir, './hgmd')
+include ':bio-source-trialtrove'
+project(':bio-source-trialtrove').projectDir = new File(settingsDir, './trialtrove')
+include ':bio-source-pharmaprojects'
+project(':bio-source-pharmaprojects').projectDir = new File(settingsDir, './pharmaprojects')
