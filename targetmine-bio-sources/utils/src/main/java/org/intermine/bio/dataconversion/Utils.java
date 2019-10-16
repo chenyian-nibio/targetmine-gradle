@@ -61,5 +61,9 @@ public class Utils {
 		sb.append(template.substring(prevPos));
 		return sb.toString();
 	}
-
+	public static void main(String[] args) {
+		JSONObject variables = new JSONObject();
+		variables.put("test", "value");
+		System.out.println(replaceString(null, variables));
+	}
 }

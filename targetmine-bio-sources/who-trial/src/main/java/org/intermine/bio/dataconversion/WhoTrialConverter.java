@@ -35,8 +35,8 @@ public class WhoTrialConverter extends BioFileConverter {
 	private File mrStyFile;
 
 	//
-	private static final String DATASET_TITLE = "who-trial2";
-	private static final String DATA_SOURCE_NAME = "who-trial2";
+	private static final String DATASET_TITLE = "who-trial";
+	private static final String DATA_SOURCE_NAME = "who-trial";
 
 	// key is CUI, value is reference to UmlsDisease item
 	private Map<String, Item> umlsTermMap = new HashMap<String, Item>();
@@ -55,14 +55,21 @@ public class WhoTrialConverter extends BioFileConverter {
 	private static int PRIMARY_KEY_STRING_LIMIT = 1000;
 
 	private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
-
+	
 
 	private void storeTrialElements(Map<String,String> trial) throws ObjectStoreException {
 		String name = trial.get("name");
-		if(idSet.contains(name)) {
+		if(idSet.contains(name) || name == null) {
+			if(name ==null){
+				System.out.println(trial);
+			}
 			return;
 		}
-		Item whoTrial = createItem("ClinicalTrial");
+		Item trialGroup = createItem("TrialGroup");
+		trialGroup.setAttribute("identifier", name);
+		store(trialGroup);
+		Item whoTrial = createItem("WHOTrial");
+		whoTrial.setReference("trialGroup", trialGroup);
 		for (String key : TrialXMLParser.getkeys()) {
 			String child = trial.get(key);
 			if(child == null) {
@@ -109,6 +116,7 @@ public class WhoTrialConverter extends BioFileConverter {
 		} catch (ObjectStoreException e) {
 			LOG.warn("Cannot store who trials", e);
 		}
+		
 	}
 
 	private String[] convertConditionToDiseaseNameSet(String condition) {
