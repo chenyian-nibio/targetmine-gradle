@@ -13,21 +13,12 @@ import java.io.File;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
-import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
-import org.intermine.objectstore.ObjectStoreFactory;
-import org.intermine.objectstore.query.Query;
-import org.intermine.objectstore.query.QueryClass;
-import org.intermine.objectstore.query.QueryField;
-import org.intermine.objectstore.query.Results;
-import org.intermine.objectstore.query.ResultsRow;
 import org.intermine.xml.full.Item;
 
 
@@ -53,14 +44,15 @@ public class UmlsConverter extends BioFileConverter
 	public UmlsConverter(ItemWriter writer, Model model) {
 		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
 	}
-
+	private IdSetLoader diseaseTermIdSet;
 	/**
 	 *
 	 *
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
-		getDiseaseTermIds();
+		diseaseTermIdSet = new IdSetLoader(osAlias, "DiseaseTerm", "identifier");
+		diseaseTermIdSet.loadIds();
 		try(UMLSParser parser = new UMLSParser(reader, mrStyFile,UMLSParser.DATA_TYPES)){
 			UMLS umls = null;
 			HashSet<String> keySet = new HashSet<>();
@@ -84,7 +76,7 @@ public class UmlsConverter extends BioFileConverter
 
 					diseaseConcept.addToCollection("terms", umlsTerm);
 					store(umlsTerm);
-					if(diseaseTermIdSet.contains(identifier)) {
+					if(diseaseTermIdSet.hasId(identifier)) {
 						String medgenIdentifier = getOrCreateItem("DiseaseTerm", identifier);
 						diseaseConcept.addToCollection("terms", medgenIdentifier);
 					}
@@ -127,30 +119,6 @@ public class UmlsConverter extends BioFileConverter
 
 	public void setOsAlias(String osAlias) {
 		this.osAlias = osAlias;
-	}
-
-	Set<String> diseaseTermIdSet = new HashSet<String>();
-
-	@SuppressWarnings("unchecked")
-	private void getDiseaseTermIds() throws Exception {
-		LOG.info("Start loading diseaseterm id");
-		ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
-
-		Query q = new Query();
-		QueryClass qcDiseaseTerm = new QueryClass(os.getModel().getClassDescriptorByName("DiseaseTerm").getType());
-
-		QueryField qfIdentifier = new QueryField(qcDiseaseTerm, "identifier");
-
-		q.addFrom(qcDiseaseTerm);
-		q.addToSelect(qfIdentifier);
-
-		Results results = os.execute(q);
-		Iterator<Object> iterator = results.iterator();
-		while (iterator.hasNext()) {
-			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
-			diseaseTermIdSet.add(rr.get(0));
-		}
-		LOG.info("loaded "+ diseaseTermIdSet.size()+" diseaseterm id " );
 	}
 
 	public void setMrStyFile( File mrStyFile ) {
