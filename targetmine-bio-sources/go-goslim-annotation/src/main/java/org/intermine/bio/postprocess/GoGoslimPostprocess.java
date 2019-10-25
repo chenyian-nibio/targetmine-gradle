@@ -16,7 +16,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.bio.util.Constants;
 import org.intermine.bio.util.PostProcessUtil;
 import org.intermine.metadata.ConstraintOp;
@@ -50,7 +51,7 @@ import org.intermine.postprocess.PostProcessor;
  */
 public class GoGoslimPostprocess extends PostProcessor
 {
-    private static final Logger LOG = Logger.getLogger(GoGoslimPostprocess.class);
+    private static final Logger LOG = LogManager.getLogger(GoGoslimPostprocess.class);
     protected ObjectStore os;
 
 

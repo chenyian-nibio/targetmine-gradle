@@ -20,16 +20,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.intermine.api.beans.ObjectDetails;
 import org.intermine.api.beans.PartnerLink;
 import org.intermine.api.mines.Mine;
 import org.intermine.api.mines.ObjectRequest;
+import org.intermine.metadata.Model;
+import org.intermine.metadata.Util;
 import org.intermine.pathquery.Constraints;
 import org.intermine.pathquery.OrderDirection;
 import org.intermine.pathquery.PathQuery;
-import org.intermine.metadata.Model;
-import org.intermine.metadata.Util;
 import org.intermine.web.displayer.InterMineLinkGenerator;
 import org.intermine.webservice.server.core.Predicate;
 
@@ -58,7 +57,7 @@ public final class TmFriendlyMineLinkGenerator implements InterMineLinkGenerator
 
     }
 
-    private static final Logger LOG = Logger.getLogger(TmFriendlyMineLinkGenerator.class);
+//    private static final Logger LOG = Logger.getLogger(TmFriendlyMineLinkGenerator.class);
 
     /**
      * Constructor

@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStore;
@@ -33,7 +34,7 @@ import org.intermine.xml.full.Item;
  */
 public class DbsnpTxtConverter extends BioFileConverter
 {
-	private static final Logger LOG = Logger.getLogger(DbsnpTxtConverter.class);
+	private static final Logger LOG = LogManager.getLogger(DbsnpTxtConverter.class);
 	//
     private static final String DATASET_TITLE = "dbSNP";
     private static final String DATA_SOURCE_NAME = "NCBI";

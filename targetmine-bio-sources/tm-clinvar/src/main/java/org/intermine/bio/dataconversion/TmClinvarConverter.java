@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -24,7 +25,7 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class TmClinvarConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(TmClinvarConverter.class);
+	private static final Logger LOG = LogManager.getLogger(TmClinvarConverter.class);
 	//
 	private static final String DATASET_TITLE = "ClinVar";
 	private static final String DATA_SOURCE_NAME = "NCBI";
@@ -198,10 +199,17 @@ public class TmClinvarConverter extends BioFileConverter {
 				}
 				if (accPubmedIdMap.containsKey(accession)) {
 					String[] pubmedIds = accPubmedIdMap.get(accession).split(",");
+					int count = 0;
 					for (String pubmedId : pubmedIds) {
-						item.addToCollection("publications", getPublication(pubmedId));
+						try {
+							Integer.parseInt(pubmedId);
+							item.addToCollection("publications", getPublication(pubmedId));
+							count++;
+						} catch (NumberFormatException e) {
+							LOG.warn(String.format("Not a valid pubmed ID: %s", pubmedId));
+						}
 					}
-					item.setAttribute("numOfPublications", String.valueOf(pubmedIds.length));
+					item.setAttribute("numOfPublications", String.valueOf(count));
 				} else {
 					item.setAttribute("numOfPublications", "0");
 				}
@@ -253,7 +261,13 @@ public class TmClinvarConverter extends BioFileConverter {
 					if (varPubMap.get(cols[1]) == null) {
 						varPubMap.put(cols[1], new HashSet<String>());
 					}
-					varPubMap.get(cols[1]).add(cols[5]);
+					String cid = cols[5];
+					// chenyian: There are some strange records found (2019.10.1)
+					// 46592   38036   81002905                PubMed  30472649, PMID
+					if (cols[5].endsWith(", PMID")) {
+						cid = cols[5].substring(0, cols[5].indexOf(","));
+					}
+					varPubMap.get(cols[1]).add(cid);
 				}
 			}
 			reader.close();

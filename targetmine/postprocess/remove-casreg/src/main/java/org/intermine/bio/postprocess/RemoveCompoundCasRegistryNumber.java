@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
 import org.intermine.objectstore.intermine.ObjectStoreWriterInterMineImpl;
@@ -19,7 +20,7 @@ import org.intermine.sql.Database;
  */
 public class RemoveCompoundCasRegistryNumber extends PostProcessor {
 
-	private static final Logger LOG = Logger.getLogger(RemoveCompoundCasRegistryNumber.class);
+	private static final Logger LOG = LogManager.getLogger(RemoveCompoundCasRegistryNumber.class);
 
 	public RemoveCompoundCasRegistryNumber(ObjectStoreWriter osw) {
 		super(osw);

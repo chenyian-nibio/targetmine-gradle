@@ -20,7 +20,8 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.tools.ant.BuildException;
 import org.intermine.metadata.StringUtil;
 import org.intermine.objectstore.ObjectStore;
@@ -42,7 +43,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  */
 public class OrganismXomRetriever {
-	protected static final Logger LOG = Logger.getLogger(OrganismXomRetriever.class);
+	protected static final Logger LOG = LogManager.getLogger(OrganismXomRetriever.class);
 	private static final String ESUMMARY_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=taxonomy&retmode=xml&version=2.0&id=";
     
 	// number of records to retrieve per request

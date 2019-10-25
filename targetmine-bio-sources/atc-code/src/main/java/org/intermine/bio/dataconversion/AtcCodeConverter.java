@@ -7,7 +7,8 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.FileConverter;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
@@ -19,7 +20,7 @@ import org.intermine.xml.full.Item;
  */
 public class AtcCodeConverter extends FileConverter {
 	//
-	private static Logger LOG = Logger.getLogger(AtcCodeConverter.class);
+	private static Logger LOG = LogManager.getLogger(AtcCodeConverter.class);
 	
 	private Map<String, String> atcMap = new HashMap<String, String>();
 

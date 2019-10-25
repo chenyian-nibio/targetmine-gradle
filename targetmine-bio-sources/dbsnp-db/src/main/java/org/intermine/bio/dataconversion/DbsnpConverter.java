@@ -9,17 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-/*
- * Copyright (C) 2002-2016 FlyMine
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public Licence.  This should
- * be distributed with the code.  See the LICENSE file for more
- * information or http://www.gnu.org/copyleft/lesser.html.
- *
- */
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
@@ -33,7 +24,7 @@ import org.intermine.xml.full.Item;
  */
 public class DbsnpConverter extends BioDBConverter
 {
-	private static final Logger LOG = Logger.getLogger(DbsnpConverter.class);
+	private static final Logger LOG = LogManager.getLogger(DbsnpConverter.class);
 	// 
     private static final String DATASET_TITLE = "dbSNP";
     private static final String DATA_SOURCE_NAME = "NCBI";

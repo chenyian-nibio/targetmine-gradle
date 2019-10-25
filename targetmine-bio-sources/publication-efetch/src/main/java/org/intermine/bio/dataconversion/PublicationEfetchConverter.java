@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.model.bio.Publication;
@@ -33,7 +34,7 @@ import nu.xom.Elements;
  * @author chenyian
  */
 public class PublicationEfetchConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(PublicationEfetchConverter.class);
+	private static final Logger LOG = LogManager.getLogger(PublicationEfetchConverter.class);
 	//
 	private static final String DATASET_TITLE = "PubMed";
 	private static final String DATA_SOURCE_NAME = "PubMed";

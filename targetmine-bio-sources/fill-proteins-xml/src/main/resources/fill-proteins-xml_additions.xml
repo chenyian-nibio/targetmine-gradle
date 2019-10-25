@@ -16,6 +16,7 @@
 		<attribute name="isUniprotCanonical" type="java.lang.Boolean"/>
 		<attribute name="uniprotAccession" type="java.lang.String"/>
 		<attribute name="uniprotName" type="java.lang.String"/>
+		<collection name="genes" referenced-type="Gene" reverse-reference="proteins"/>
 		<collection name="comments" referenced-type="Comment" />
 		<collection name="components" referenced-type="Component" reverse-reference="protein" />
 		<collection name="keywords" referenced-type="OntologyTerm" />
@@ -23,18 +24,26 @@
 		<collection name="otherAccessions" referenced-type="ProteinAccession" reverse-reference="protein" />
 		<collection name="modifications" referenced-type="Modification" />
 		<collection name="regions" referenced-type="ProteinRegion" reverse-reference="protein" />
+		<collection name="subcellularLocation" referenced-type="SubcellularLocation" />
+	</class>
+	<class name="Gene" extends="SequenceFeature" is-interface="true">
+		<collection name="proteins" referenced-type="Protein" reverse-reference="genes"/>
 	</class>
 	<class name="Component" is-interface="true">
 		<attribute name="name" type="java.lang.String" />
 		<reference name="protein" referenced-type="Protein" reverse-reference="components" />
 	</class>
 	<class name="Comment" is-interface="true">
+		<attribute name="type" type="java.lang.String"/>
+		<attribute name="description" type="java.lang.String"/>
 		<collection name="publications" referenced-type="Publication"/>
 	</class>
 	<class name="ProteinAccession" is-interface="true">
 		<attribute name="accession" type="java.lang.String" />
 		<reference name="protein" referenced-type="Protein" reverse-reference="otherAccessions" />
 	</class>
+	<!-- The following information are skipped in this source -->
 	<class name="Modification" is-interface="true"/>
+	<class name="SubcellularLocation" is-interface="true"/>
 	
 </classes>

@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.biopax.paxtools.controller.PropertyEditor;
 import org.biopax.paxtools.controller.SimpleEditorMap;
 import org.biopax.paxtools.controller.Traverser;
@@ -34,7 +35,7 @@ import org.intermine.xml.full.Item;
  */
 public class Biopax3Converter extends BioFileConverter {
 
-	private static final Logger LOG = Logger.getLogger(Biopax3Converter.class);
+	private static final Logger LOG = LogManager.getLogger(Biopax3Converter.class);
 	//
 	private static final String DATASET_TITLE = "Reactome";
 	private static final String DATA_SOURCE_NAME = "Reactome";
@@ -107,26 +108,25 @@ public class Biopax3Converter extends BioFileConverter {
 						EntityReference er = p.getEntityReference();
 						if (er != null) {
 							if (er instanceof ProteinReference) {
-								String taxonId = ((ProteinReference) er).getOrganism().getXref()
-										.iterator().next().getId();
 								for (Xref x : er.getXref()) {
 									if (x instanceof UnificationXref
 											|| x instanceof RelationshipXref) {
-										// LOG.info(String.format("Protein: %s", x.getId()));
-										String identifier = x.getId();
-										if (identifier.contains("-")) {
-											identifier = identifier.split("-")[0];
-										}
-										if (StringUtils.isEmpty(identifier)) {
-											continue;
-										}
-										// discard the ensembl proteins 
+										String db = x.getDb();
+										// discard the non-uniprot proteins  
 										// unless we want to translate to uniport id (maybe not worth)
-										if (identifier.startsWith("ENS")) {
-											continue;
+										if (db.equals("UniProt")) {
+											String identifier = x.getId();
+											if (identifier.contains("-")) {
+												identifier = identifier.split("-")[0];
+											}
+											if (StringUtils.isEmpty(identifier)) {
+												continue;
+											}
+											String taxonId = ((ProteinReference) er).getOrganism().getXref()
+													.iterator().next().getId();
+											Item item = getProtein(identifier, taxonId);
+											item.addToCollection("pathways", currentPathway);
 										}
-										Item item = getProtein(identifier, taxonId);
-										item.addToCollection("pathways", currentPathway);
 									}
 								}
 							}
@@ -175,7 +175,6 @@ public class Biopax3Converter extends BioFileConverter {
 			}
 			if (comment != null) {
 				if (comment.startsWith("This event has been computationally inferred")) {
-//					pathwayName += " (computationally inferred)";
 					currentPathway.setAttribute("label2", "computationally inferred");
 				}
 				

@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
@@ -38,7 +39,7 @@ import org.intermine.util.DynamicUtil;
  * 
  */
 public class CalculateBioThemeBackground extends PostProcessor {
-	private static final Logger LOG = Logger.getLogger(CalculateBioThemeBackground.class);
+	private static final Logger LOG = LogManager.getLogger(CalculateBioThemeBackground.class);
 
 	private static final List<String> PROCESS_TAXONIDS = Arrays.asList("9606", "10090", "10116");
 

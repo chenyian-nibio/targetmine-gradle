@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -21,7 +22,7 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class GwasConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(GwasConverter.class);
+	private static final Logger LOG = LogManager.getLogger(GwasConverter.class);
 
 	private static final String DATASET_TITLE = "GWAS Catalog";
 	private static final String DATA_SOURCE_NAME = "GWAS Catalog";

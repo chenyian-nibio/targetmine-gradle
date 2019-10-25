@@ -2,7 +2,8 @@ package org.intermine.bio.postprocess;
 
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.model.bio.Gene;
 import org.intermine.objectstore.ObjectStore;
@@ -23,7 +24,7 @@ import org.intermine.postprocess.PostProcessor;
  *
  */
 public class TranscribeNcbiGeneId extends PostProcessor {
-	private static final Logger LOG = Logger.getLogger(TranscribeNcbiGeneId.class);
+	private static final Logger LOG = LogManager.getLogger(TranscribeNcbiGeneId.class);
 	
 	public TranscribeNcbiGeneId(ObjectStoreWriter osw) {
 		super(osw);

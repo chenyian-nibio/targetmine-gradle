@@ -20,7 +20,6 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 
 import org.apache.commons.lang.StringUtils;
-//import org.apache.log4j.Logger;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
@@ -45,6 +44,8 @@ public class UniprotXomConverter extends BioFileConverter {
 	private static final String FEATURE_TYPES = "initiator methionine, signal peptide, transit peptide, propeptide, chain, peptide, topological domain, transmembrane region, intramembrane region, domain, repeat, calcium-binding region, zinc finger region, DNA-binding region, nucleotide phosphate-binding region, region of interest, coiled-coil region, short sequence motif, compositionally biased region, active site, metal ion-binding site, binding site, site, non-standard amino acid, modified residue, lipid moiety-binding region, glycosylation site, disulfide bond, cross-link";
 	private static final String UNIPROT_NAMESPACE = "http://uniprot.org/uniprot";
 
+	private static final String SUBCELLULAR_LOCATION = "subcellular location";
+	
 	private String dataSource;
 	private Set<String> featureTypes = new HashSet<String>(Arrays.asList(FEATURE_TYPES
 			.split(",\\s*")));
@@ -236,10 +237,11 @@ public class UniprotXomConverter extends BioFileConverter {
 						for (int i = 0; i < comments.size(); i++) {
 							Element comment = comments.get(i);
 							Element text = comment.getFirstChildElement("text",UNIPROT_NAMESPACE);
+							String commentType = comment.getAttributeValue("type");
 							if (text != null) {
 								String commentText = text.getValue();
 								Item item = createItem("Comment");
-								item.setAttribute("type", comment.getAttributeValue("type"));
+								item.setAttribute("type", commentType);
 								if (commentText.length() > POSTGRES_INDEX_SIZE) {
 									// comment text is a string
 									String ellipses = "...";
@@ -249,7 +251,6 @@ public class UniprotXomConverter extends BioFileConverter {
 								} else {
 									item.setAttribute("description", commentText);
 								}
-								// TODO add publications for comments (not confirmed)
 								String evidStringIds = text.getAttributeValue("evidence");
 								if (evidStringIds != null) {
 									for (String eId : evidStringIds.split(" ")) {
@@ -261,6 +262,29 @@ public class UniprotXomConverter extends BioFileConverter {
 								
 								store(item);
 								protein.addToCollection("comments", item);
+							}
+							
+							if (commentType.equals(SUBCELLULAR_LOCATION)) {
+								Elements subLocs = comment.getChildElements("subcellularLocation",UNIPROT_NAMESPACE);
+								for (int j = 0; j < subLocs.size(); j++) {
+									Elements locs = subLocs.get(j).getChildElements("location",UNIPROT_NAMESPACE);
+									for (int k = 0; k < locs.size(); k++) {
+										Element location = locs.get(k);
+										String value = location.getValue();
+										Item item = createItem("SubcellularLocation");
+										item.setAttribute("name", value);
+										String evidStringIds = location.getAttributeValue("evidence");
+										if (evidStringIds != null) {
+											for (String eId : evidStringIds.split(" ")) {
+												if (evidPubMap.get(eId) != null) {
+													item.addToCollection("publications", getPublication(evidPubMap.get(eId)));
+												}
+											}
+										}
+										store(item);
+										protein.addToCollection("subcellularLocations", item);
+									}
+								}
 							}
 						}
 
@@ -289,13 +313,6 @@ public class UniprotXomConverter extends BioFileConverter {
 							Element dbRef = dbReferences.get(i);
 							String type = dbRef.getAttributeValue("type");
 							String id = dbRef.getAttributeValue("id");
-							// if (xrefs.contains(type)) {
-							// Item item = createCrossReference(protein.getIdentifier(),
-							// id, type, false);
-							// if (item != null) {
-							// synonymsAndXrefs.add(item);
-							// }
-							// }
 							if (type.equals("GeneID")) {
 								geneIds.add(id);
 							} else if (type.equals("Ensembl")) {
@@ -596,19 +613,6 @@ public class UniprotXomConverter extends BioFileConverter {
 		}
 		return md5Checksum;
 	}
-
-//	private String getKeyword(String title) throws ObjectStoreException {
-//		String refId = keywords.get(title);
-//		if (refId == null) {
-//			Item item = createItem("OntologyTerm");
-//			item.setAttribute("name", title);
-//			item.setReference("ontology", ontologies.get("UniProtKeyword"));
-//			refId = item.getIdentifier();
-//			keywords.put(title, refId);
-//			store(item);
-//		}
-//		return refId;
-//	}
 
 	private String getPublication(String pubMedId) throws ObjectStoreException {
 		String refId = publications.get(pubMedId);

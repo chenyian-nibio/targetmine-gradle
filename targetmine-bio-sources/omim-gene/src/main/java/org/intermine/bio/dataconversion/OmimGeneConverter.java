@@ -9,7 +9,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -35,7 +36,7 @@ public class OmimGeneConverter extends BioFileConverter {
 	private Map<String, String> titleMap = new HashMap<String, String>();
 	private Map<String, String> diseaseTermMap = new HashMap<String, String>();
 
-	private static final Logger LOG = Logger.getLogger(OmimGeneConverter.class);
+	private static final Logger LOG = LogManager.getLogger(OmimGeneConverter.class);
 
 	// omim and geneId mapping file
 	private File titleFile;

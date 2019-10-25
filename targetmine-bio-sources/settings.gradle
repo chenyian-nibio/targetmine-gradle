@@ -179,3 +179,5 @@ include ':bio-source-chembl-mechanism'
 project(':bio-source-chembl-mechanism').projectDir = new File(settingsDir, './chembl-mechanism')
 include ':bio-source-human-body-index'
 project(':bio-source-human-body-index').projectDir = new File(settingsDir, './human-body-index')
+include ':bio-source-gene-medgen'
+project(':bio-source-gene-medgen').projectDir = new File(settingsDir, './gene-medgen')

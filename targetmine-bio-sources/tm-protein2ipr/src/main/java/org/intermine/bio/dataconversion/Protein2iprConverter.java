@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
@@ -46,9 +47,9 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class Protein2iprConverter extends BioFileConverter {
-	private static final Logger LOG = Logger.getLogger(Protein2iprConverter.class);
+	private static final Logger LOG = LogManager.getLogger(Protein2iprConverter.class);
 	//
-	private static final String DATASET_TITLE = "InterPro";
+	private static final String DATASET_TITLE = "InterPro data set";
 	private static final String DATA_SOURCE_NAME = "InterPro";
 
 	private Collection<String> taxonIds = new ArrayList<String>();

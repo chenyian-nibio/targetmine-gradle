@@ -19,7 +19,8 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
@@ -41,7 +42,7 @@ import org.intermine.xml.full.Item;
  */
 public class FillProteinsXomConverter extends BioFileConverter {
 
-	private static final Logger LOG = Logger.getLogger(FillProteinsXomConverter.class);
+	private static final Logger LOG = LogManager.getLogger(FillProteinsXomConverter.class);
 
 	private static final String DATA_SOURCE_NAME = "UniProt";
 	private static final int POSTGRES_INDEX_SIZE = 2712;

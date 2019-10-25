@@ -18,7 +18,8 @@ import nu.xom.Element;
 import nu.xom.Elements;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -32,7 +33,7 @@ import org.intermine.xml.full.Item;
  */
 public class GeneEsummaryConverter extends BioFileConverter
 {
-	private static final Logger LOG = Logger.getLogger(GeneEsummaryConverter.class);
+	private static final Logger LOG = LogManager.getLogger(GeneEsummaryConverter.class);
 	//
     private static final String DATASET_TITLE = "Gene";
     private static final String DATA_SOURCE_NAME = "NCBI";
