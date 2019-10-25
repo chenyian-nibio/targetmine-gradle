@@ -210,15 +210,26 @@ export class TargetMineGraph {
    * shapes mapping
    */
   assignShapes(){
+    /* get a list of the values associated to a specific shape for display */
     let keys = this._shapes.reduce(function(prev, curr){
       prev.push(curr.key);
       return prev;
     },[]);
-
-    this._data.forEach(function(item){
-      let idx = keys.indexOf(item[this._x]);
-      item.shape =  idx !== -1 ? this._shapes[idx].value : this._shapes[0].value ;
-    }, this);
+    /* for each data point, check if there is any shape associated to its values
+     * and use it for its display. In the case of multiple values having an
+     * assigned shape, the last one in teh list is used */
+    this._data.map(data=>{
+      data.shape = this._shapes[0].value; // use default as first case
+      let values = Object.values(data);
+      // console.log(data, keys, values);
+      for( let i=keys.length; i>0; --i ){
+        if( values.includes(keys[i]) ){
+          data.shape = this._shapes[i].value; // change if a match is found
+          return data; // stop searching
+        }
+      }
+      return data; // return default if nothing found
+    });
   }
 
   /**
@@ -236,31 +247,26 @@ export class TargetMineGraph {
     table = d3.select('#'+type+'-table').selectAll('div')
       .data(data)
     ;
-
     /* create each row */
     let row = table.enter().append('div')
       .attr('class', 'flex-row')
       .attr('id', function(d){ return type+'-'+d.key; })
       ;
-
     /* first cell: a simple color background or an svg element with a symbol */
     let cell = row.append('div')
       .attr('class', 'flex-cell display')
       ;
-
     /* second cell: label */
     row.append('div')
       .attr('class', 'flex-cell label')
       .text( function(d){ return d.key; } )
       ;
-
     /* third cell */
     row.append('span')
       .attr('class', 'flex-cell small-close')
       .attr('data-index', function(d,i){ return i; })
       .html('&times;')
     ;
-
   }
 
   /**

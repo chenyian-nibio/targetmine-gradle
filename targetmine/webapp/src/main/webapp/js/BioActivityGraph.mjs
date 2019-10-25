@@ -102,7 +102,6 @@ export class BioActivityGraph extends TargetMineGraph{
       .style('display', 'flex')
       .attr('data-type', type)
     ;
-
     /* Define the type of input: color input for color scale, or radio buttons
      * for shape selection */
     let inp = d3.selectAll('#modal-input > *').remove();
@@ -111,7 +110,6 @@ export class BioActivityGraph extends TargetMineGraph{
       let title = d3.select('#modal-title')
         .text('Select color to apply:')
       ;
-
       inp = d3.select('#modal-input')
         .append('input')
           .property('type', 'color')
@@ -189,12 +187,12 @@ export class BioActivityGraph extends TargetMineGraph{
   initColorTable(){
     let self = this;
     super.initTable('color', this._colors);
-
+    /* update the color backgroud of components */
     let displays = d3.select('#color-table').selectAll('.display')
       .data(this._colors)
       .style('background-color', function(d){ return d.value; })
     ;
-
+    /* update the contents of the remove button */
     let close = d3.select('#color-table').selectAll('.small-close')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
@@ -207,12 +205,12 @@ export class BioActivityGraph extends TargetMineGraph{
   }
 
   /**
-   *
+   * Initialize the display of the shape table
    */
   initShapeTable(){
     let self = this;
     super.initTable('shape', this._shapes);
-
+    /* update the display of the corresponding shapes */
     let displays = d3.select('#shape-table').selectAll('.display')
       .data(this._shapes)
       .append('svg')
@@ -229,7 +227,7 @@ export class BioActivityGraph extends TargetMineGraph{
             return symbol();
           })
     ;
-
+    /* update the contents of the remove button */
     let close = d3.select("#shape-table").selectAll('.small-close')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
@@ -239,7 +237,6 @@ export class BioActivityGraph extends TargetMineGraph{
         self.plot();
       })
     ;
-
   }
 
   /**
