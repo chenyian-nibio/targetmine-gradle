@@ -181,15 +181,25 @@ export class TargetMineGraph {
    * color mapping
    */
   assignColors(){
+    /* make a list of all the individual values that have an associated color */
     let keys = this._colors.reduce(function(prev, curr){
       prev.push(curr.key);
       return prev;
     },[]);
-
-    this._data.forEach(function(item){
-      item.color = item[this._x] != -1 ? this._c
-      self._colors[item[self._x]] ? self._colors[item[self._x]] : self._colors['Default'];
-    }, this);
+    /* for each data point, check if there is any color associated to its values
+     * and use it for its display. In the case of multiple values having an
+     * assigned color, the last one in the list is used */
+    this._data.map(data =>{
+      data.color = this._colors[0].value;
+      let values = Object.values(data);
+      for( let i=keys.length; i>0; --i ){
+        if(values.includes(keys[i])){
+          data.color = this._colors[i].value;
+          return data;
+        }
+      }
+      return data;
+    });
   }
 
   /**
@@ -200,13 +210,15 @@ export class TargetMineGraph {
    * shapes mapping
    */
   assignShapes(){
+    let keys = this._shapes.reduce(function(prev, curr){
+      prev.push(curr.key);
+      return prev;
+    },[]);
 
-    // // assign the corresponding color and shape to each data point
-    // this._data.forEach(function(item){
-    //   item.color = self._colors[item[self._x]] ? self._colors[item[self._x]] : self._colors['Default'];
-    //   item.shape = self._shapes['Default'];
-    // });
-
+    this._data.forEach(function(item){
+      let idx = keys.indexOf(item[this._x]);
+      item.shape =  idx !== -1 ? this._shapes[idx].value : this._shapes[0].value ;
+    }, this);
   }
 
   /**
@@ -247,12 +259,6 @@ export class TargetMineGraph {
       .attr('class', 'flex-cell small-close')
       .attr('data-index', function(d,i){ return i; })
       .html('&times;')
-      // .on('click', function(){
-      //   if( this.dataset.key === 'Default' ) return;
-      //   self._colors.splice(this.dataset.index, 1);
-      //   self.assignColor();
-      //   self.initTable('color', self._colors);
-      // })
     ;
 
   }

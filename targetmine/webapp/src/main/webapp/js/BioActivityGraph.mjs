@@ -25,79 +25,83 @@ export class BioActivityGraph extends TargetMineGraph{
     /* initial variables for X and Y axis */
     this._x = 'Activity Type';
     this._y = 'Activity Concentration';
-
-    /* init listeners for interface components */
-    let self = this;
-    d3.select('#color-add')
-      .on('click', function(){ self._displayModal(); })
-    ;
-    d3.select('#shape-add')
-      .on('click', function(){ self._displayModal(); })
-    ;
-    d3.select('#modal-ok')
-      .on('click', function(){ self._okModal(); })
-    ;
-    d3.select('#modal-cancel')
-      .on('click', function(){ self._cancelModal(); })
-    ;
   }
 
   /**
-   * Set individual columns
+   * Init modal components and its listeners
    */
-  _initColumns(){
+  initModal(){
     let self = this;
-    this._columns = this._data.columns.reduce(function(prev, curr){
-      if( typeof(self._data[0][curr]) === 'string' )
-        prev.push( curr );
-      return prev;
-    }, [])
-  }
-
-  /**
-   * Find individual values for a given column.
-   * Indiviudual values are required to construct the categorical scales used
-   * for color and shape, later used to map distinctive points at the time of
-   * display.
-   *
-   * @param {string} column The column in the data for which we are trying to
-   * find all individual values
-   * @return An array with all the distinctive values found for a given column
-   * in the data - Used to define the domain of a categorical scale.
-   */
-  _individualValues(column){
-    let values = this._data.reduce(function(prev, current){
-      if( ! prev.includes(current[column]) )
-        prev.push( current[column] );
+    /* filter only categories within the data values */
+    let options = this._data.columns.reduce(function(prev, curr){
+      if( typeof(self._data[0][curr]) === 'string' ) prev.push(curr);
       return prev;
     }, []);
-    return values;
+    /* add options based on the previous filtering */
+    let opts = d3.select('#column-select').selectAll('option')
+      .data(options)
+    opts.enter()
+      .append('option')
+      .attr('value', function(d){ return d; })
+      .text(function(d){ return d; })
+    ;
+    opts.attr('value', function(d){ return d; })
+      .text(function(d){ return d; })
+    ;
+    /* init listeners for the different modal components */
+    let cols = d3.select('#column-select')
+      .on('change', function(){
+        let values = [...new Set(self._data.map(pa => pa[d3.event.target.value]))];
+        self._updateSelectOptions('#value-select', values);
+      })
+    ;
+    d3.select('#column-select').dispatch('change');
+
+    d3.select('#color-add').on('click', function(){ self._displayModal('color'); });
+    d3.select('#shape-add').on('click', function(){ self._displayModal('shape'); });
+    d3.select('#modal-ok').on('click', function(){ self._okModal(); });
+    d3.select('#modal-cancel').on('click', function(){ d3.select('#modal').style('display', 'none'); });
   }
 
   /**
+   * Update the options available for a given Select DOM element.
+   * Given the id of a select element, it updates the options available based on
+   * the list of values provided
    *
+   * @param {string} id The id of the select component that should be updated
+   * @param {string} values The list of values to use for the definition of
+   * options
    */
-  _displayModal(){
-    let type = d3.event.target.id.split('-')[0];
+  _updateSelectOptions(id, values){
+    /* select all the elements */
+    let opts = d3.select(id).selectAll('option')
+      .data(values)
+    /* add options according to the amount required */
+    opts.enter()
+      .append('option')
+      .attr('value', function(d){ return d; })
+      .text(function(d){ return d; })
+    ;
+    /* remove unnecesary options */
+    opts.exit().remove();
+    /* update values of re-used options */
+    opts.attr('value', function(d){ return d; })
+      .text(function(d){ return d; })
+    ;
+  }
+
+  /**
+   * Display the modal to allow user interaction
+   *
+   * @param {string} type An identifier of the type of modal to be shown, either
+   * 'color' or 'shape'.
+   */
+  _displayModal(type){
     let self = this;
-    /* Show the modal */
     let content = d3.select('#modal')
       .style('display', 'flex')
       .attr('data-type', type)
     ;
-
-    /* Update options for data columns */
-    this._updateSelectOptions('#column-select', this._columns);
-    let cols = d3.select('#column-select')
-    /* dynamically update values options depending on the selected column */
-    cols.on('change', function(){
-      let values = self._individualValues(d3.event.target.value);
-      self._updateSelectOptions('#value-select', values);
-    });
-
-    /* Set default value selection */
-    let val = d3.select('#value-select')
-      .property('value', 'undefined')
 
     /* Define the type of input: color input for color scale, or radio buttons
      * for shape selection */
@@ -143,179 +147,99 @@ export class BioActivityGraph extends TargetMineGraph{
   }
 
   /**
-   *
+   * Handle application of color or shape to data.
+   * Once the user selects to apply a specific color or shape to a category of
+   * data, here we handle the update of the color or shape list, and apply the
+   * corresponding change to the dataset.
    */
   _okModal(){
-
-    let modal = d3.select('#modal')
-      .style('display', 'none')
-    ;
+    /* hide the modal from view */
+    let modal = d3.select('#modal').style('display', 'none');
+    /* capture the type of modal and the values that the user selected */
     let type = modal.attr('data-type');
-
     let col = d3.select('#column-select').property('value');
     let val = d3.select('#value-select').property('value');
-
-    /* are the changes to be made to color or shape? */
     let upd = type === 'color' ?
       d3.select('#modal-input > input').property('value') :
       d3.select('input[name="shape"]:checked').property('value')
     ;
-
-    this._data.forEach(function(d){
-      if( d[col] === val )
-      d[type] = upd;
+    /* apply the changes in visual properties to the corresponding data points */
+    this._data.map(data => {
+      if(data[col] === val)
+        data[type]=upd;
+      return data;
     });
 
     /* update the corresponding table */
-    if( type === 'color')
-      this._colors[col+'-'+val] = upd;
-    else
-      this._shapes[col+'-'+val] = upd;
-    this._updateTable(type);
+    if( type === 'color'){
+      this._colors.push( {'key': val, 'value': upd} );
+      this.initColorTable();
+    }
+    else{
+      this._shapes.push( {'key': val, 'value': upd} );
+      this.initShapeTable();
+    }
     /* redraw the graph */
-    this.plot(this._xPlot, this._yPlot);
+    this.plot();
   }
 
   /**
-   *
-   */
-  _cancelModal(){
-    d3.select('#modal')
-      .style('display', 'none')
-    ;
-  }
-
-  /**
-   * Update the options available for a given Select DOM element.
-   * Given the id of a select element, it updates the options available based on
-   * the list of values provided
-   *
-   * @param {string} id The id of the select component that should be updated
-   * @param {string} values The list of values to use for the definition of
-   * options
-   */
-  _updateSelectOptions(id, values){
-
-    /* delete all previous options */
-    let sel = d3.select(id)
-      .selectAll('option').remove();
-
-    /* add new options based on the provided values */
-    sel = d3.select(id).selectAll('option')
-      .data(values);
-
-    let opt = sel.enter().append('option')
-      .attr('value', function(d){ return d; })
-      .text(function(d){ return d; })
-    ;
-    /* add a first 'Select...' option */
-    d3.select(id).append('option')
-      .lower()
-      .attr('value', 'undefined')
-      .text('Select...')
-      .property('selected', true)
-    ;
-  }
-
-  /**
-   *
+   * Initialize the display of the color table
    */
   initColorTable(){
-    /* Generate an array of data elements that we can use to generate a 'table'
-     * of elements using D3 */
-    // let data = Object.entries(this._colors).map( function(d){
-    //   return { 'key': d[0], 'value': d[1] };
-    // });
-
+    let self = this;
     super.initTable('color', this._colors);
-    /* display the colors in the color cell */
-    // let cell = row.append('div')
-    //   .attr('class', 'flex-cell')
-    //   ;
-    // if( type === 'color' )
-    //   cell.style('background-color', function(d){ return d.value; });
-    //
 
-    /* have to add the function to the close span */
-    // .on('click', function(){
-    //   if( this.dataset.key === 'Default' ) return;
-    //   self._colors.splice(this.dataset.index, 1);
-    //   self.assignColor();
-    //   self.initTable('color', self._colors);
+    let displays = d3.select('#color-table').selectAll('.display')
+      .data(this._colors)
+      .style('background-color', function(d){ return d.value; })
+    ;
 
-    //   .on('click', function() {
-    //     if (this.dataset.key === 'Default') return;
-    //     self._removeHighlight(this.dataset.type, this.dataset.key, this.dataset.value);
-    //     self._updateTable(this.dataset.type);
-    //   })
-    // ;
+    let close = d3.select('#color-table').selectAll('.small-close')
+      .on('click', function(){
+        if( this.dataset.key === 'Default' ) return;
+        self._colors.splice(this.dataset.index, 1);
+        self.assignColors();
+        self.initColorTable();
+        self.plot();
+      })
+    ;
   }
 
   /**
    *
    */
   initShapeTable(){
-    super.initTable('color', this._colors);
-    /* display the colors in the color cell */
-    //   cell.append('svg')
-    //     .attr('viewBox', '-5 -5 10 10')
-    //     .style('height', 'inherit')
-    //     .append('path')
-    //       .attr('fill', 'black')
-    //       .attr('d', function(d){
-    //         let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
-    //         let symbol = d3.symbol()
-    //           .size(10)
-    //           .type(d3.symbols[s.indexOf(d.value)])
-    //         ;
-    //         return symbol();
-    //       })
-    //
+    let self = this;
+    super.initTable('shape', this._shapes);
 
-    /* have to add the function to the close span */
-    // row.append('span')
-    // .on('click', function(){
-    //   if( this.dataset.key === 'Default' ) return;
-    //   self._colors.splice(this.dataset.index, 1);
-    //   self.assignColor();
-    //   self.initTable('color', self._colors);
-    //   .on('click', function() {
-    //     if (this.dataset.key === 'Default') return;
-    //     self._removeHighlight(this.dataset.type, this.dataset.key, this.dataset.value);
-    //     self._updateTable(this.dataset.type);
-    //   })
-    // ;
+    let displays = d3.select('#shape-table').selectAll('.display')
+      .data(this._shapes)
+      .append('svg')
+        .attr('viewBox', '-5 -5 10 10')
+        .style('height', 'inherit')
+        .append('path')
+          .attr('fill', 'black')
+          .attr('d', function(d){
+            let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
+            let symbol = d3.symbol()
+              .size(10)
+              .type(d3.symbols[s.indexOf(d.value)])
+            ;
+            return symbol();
+          })
+    ;
 
-  }
+    let close = d3.select("#shape-table").selectAll('.small-close')
+      .on('click', function(){
+        if( this.dataset.key === 'Default' ) return;
+        self._shapes.splice(this.dataset.index, 1);
+        self.assignShapes();
+        self.initShapeTable();
+        self.plot();
+      })
+    ;
 
-  /**
-   *
-   * @param {string} type The type of highlight (color or shape) we are trying
-   * to remove
-   * @param {string} key A combination of column and value for the points in the
-   * dataset, whose highlight we are trying to remove
-   * @param {string} value The value associated to the key that we are trying to
-   * remove
-   */
-  _removeHighlight(type, key, value){
-    let col = key.split('-')[0];
-    let val = key.split('-')[1];
-    /* return the property (color or shape) to its default values */
-    let upd = type === 'color' ? '#C0C0C0' : 'Circle';
-    this._data.forEach(function(d){
-      /* we only remove the hightlight of the points that match both the column/
-       * value combination, and that have been highlighted with the color or
-       * shape we are removing */
-      if( d[col] === val && d[type] === value )
-        d[type] = upd;
-    });
-    /* remove from table */
-    if( type === 'color' )
-      delete this._colors[key];
-    else
-      delete this._shapes[key];
-
-    this.plot(this._xPlot, this._yPlot);
   }
 
   /**

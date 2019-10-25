@@ -36,13 +36,14 @@
       <script type="text/javascript">
         import(window.location.origin+'/targetmine/js/GeneExpressionGraph.mjs')
           .then((module) => {
-            let graph = new module.GeneExpressionGraph('${gene}', <%= width %>, <%= height %>);
-            graph.loadData('${data}');
-            graph.initXLabels();
-            graph.initXAxis();
-            graph.initYAxis();
-            graph.initColorsAndShapes();
-            graph.plot();
+            window.graph = new module.GeneExpressionGraph('${gene}', <%= width %>, <%= height %>);
+            window.graph.loadData('${data}');
+            window.graph.initXLabels();
+            window.graph.initXAxis();
+            window.graph.initYAxis();
+            window.graph.initColorsAndShapes();
+            window.graph.assignColors();
+            window.graph.plot();
           });
       </script>
 

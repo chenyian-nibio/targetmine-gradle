@@ -40,7 +40,7 @@
         <!-- Choose the property used to map display shape, and to make (in)visible
         data points associated to specific shapes in the scale -->
         <div id='shape-div' style='flex-direction: column;'>
-          <label for='shape-select'>Shape based on:</label>
+          <label for='shape-select'>Shape Scale:</label>
           <br />
           <%-- <select id='shape-select'>
             <option value=undefined>Select...</option>
@@ -57,7 +57,7 @@
       <!-- Modal content -->
       <div id='modal-content' class="modal-content">
         <h3 id='modal-title'></h3>
-        <span class="close">&times;</span>
+        <%-- <span class="close">&times;</span> --%>
         <select id='column-select'>
           <option value=undefined>Select...</option>
         </select>
@@ -78,15 +78,17 @@
         .then((module) => {
           window.graph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
           window.graph.loadData('${data}');
+          window.graph.initModal();
           window.graph.initXLabels();
           window.graph.initXAxis();
           window.graph.initYAxis(true);
           window.graph.initColorsAndShapes(false);
-          // graph._initColumns();
-          // /* update the colors used for the data points in the graph */
+          window.graph.assignColors();
+          window.graph.assignShapes();
+          /* update the colors used for the data points in the graph */
           window.graph.initColorTable();
           // /* update the shapes used for the data points in the graph */
-          // window.graph.initTable('shape');
+          window.graph.initShapeTable();
           /* plot the data points */
           window.graph.plot();
         });
