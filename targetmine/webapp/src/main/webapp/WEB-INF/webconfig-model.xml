@@ -1037,6 +1037,11 @@
                      replacesFields="atcCodes,jsccCodes,uspClassifications,synonyms" 
                      types="DrugCompound"/>
 
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.DrugCompoundInfoDisplayer"
+                     jspName="model/chemblAtcClassificationDisplayer.jsp"
+                     replacesFields="atcCodes" 
+                     types="ChemblCompound"/>
+
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.ChemblAlternateFormDisplayer"
                      jspName="model/chemblAlternateFormDisplayer.jsp"
                      replacesFields="parent, alternateForms" 
@@ -1056,7 +1061,7 @@
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.BioActivityGraphDisplayer"
                      jspName="model/bioActivityGraphDisplayer.jsp"
                      replacesFields=""
-                     types="Compound"/>
+                     types="ChemblCompound"/>
 
   </reportdisplayers>
 
