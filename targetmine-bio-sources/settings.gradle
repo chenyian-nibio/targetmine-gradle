@@ -193,3 +193,5 @@ include ':bio-source-trialtrove'
 project(':bio-source-trialtrove').projectDir = new File(settingsDir, './trialtrove')
 include ':bio-source-pharmaprojects'
 project(':bio-source-pharmaprojects').projectDir = new File(settingsDir, './pharmaprojects')
+include ':bio-source-ctod'
+project(':bio-source-ctod').projectDir = new File(settingsDir, './ctod')

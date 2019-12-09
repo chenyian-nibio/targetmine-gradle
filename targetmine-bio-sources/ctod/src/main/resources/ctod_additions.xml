@@ -3,50 +3,5 @@
 
 <classes>
 <!-- add any <class> elements here -->
-    <class name="UMLSTerm" is-interface="true">
-        <attribute name="identifier" type="java.lang.String"/>
-        <collection name="ctodTrials" referenced-type="CTODTrial" reverse-reference="umls"/>
-    </class>
-    <class name="TrialGroup" is-interface="true">
-        <attribute name="identifier" type="java.lang.String"/>
-        <collection name="trials" referenced-type="ClinicalTrial" reverse-reference="trialGroup"/>
-        
-    </class>
-	<class name="Compound" is-interface="true">
-		<attribute name="identifier" type="java.lang.String"/>
-		<collection name="ctodTrialArms" referenced-type="CTODTrialArm" reverse-reference="compounds"/>
-	</class>
 
-    <class name="ClinicalTrial" is-interface="true">
-        <attribute name="name" type="java.lang.String"/>
-        <attribute name="title" type="java.lang.String"/>
-        <attribute name="countries" type="java.lang.String"/>
-        <attribute name="phase" type="java.lang.String"/>
-   	<reference name="trialGroup" referenced-type="TrialGroup" reverse-reference="trials"/>
-    </class>
-       <class name="Publication" is-interface="true">
-        <attribute name="pubMedId" type="java.lang.String"/>
-        <collection name="ctodTrials" referenced-type="CTODTrial" reverse-reference="publication"/>
-    </class>
-    <class name="CTODTrial" extends="ClinicalTrial" is-interface="true">
-        <attribute name="registryNumber" type="java.lang.String"/>
-        <attribute name="inclusionCriteria" type="java.lang.String"/>
-        <attribute name="exclusionnCriteria" type="java.lang.String"/>
-   		<reference name="publication" referenced-type="Publication" reverse-reference="ctodTrials"/>
-   		<reference name="umls" referenced-type="UMLSTerm" reverse-reference="ctodTrials"/>
-        <attribute name="articleUrl" type="java.lang.String"/>
-        <collection name="arms" referenced-type="CTODTrialArm" reverse-reference="trial"/>
-	</class>
-	<class name="CTODTrialArm" extends="ClinicalTrial" is-interface="true">
-   		<reference name="trial" referenced-type="CTODTrial" reverse-reference="arms"/>
-        <attribute name="armId" type="java.lang.String"/>
-        <attribute name="name" type="java.lang.String"/>
-        <attribute name="control" type="java.lang.String"/>
-        <attribute name="treatment" type="java.lang.String"/>
-        <attribute name="primaryOutcome" type="java.lang.String"/>
-        <attribute name="secondaryOutcome" type="java.lang.String"/>
-        <attribute name="patientCharacterisiticInfo" type="java.lang.String"/>
-		<collection name="compounds" referenced-type="Compound" reverse-reference="ctodTrialArms"/>
-	</class>
-	
 </classes>
