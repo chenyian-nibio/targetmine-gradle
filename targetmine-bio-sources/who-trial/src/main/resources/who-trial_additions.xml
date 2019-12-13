@@ -14,13 +14,9 @@
     <class name="ClinicalTrial" is-interface="true">
         <attribute name="name" type="java.lang.String"/>
         <attribute name="title" type="java.lang.String"/>
-        <attribute name="primaryOutcome" type="java.lang.String"/>
-        <attribute name="secondaryOutcome" type="java.lang.String"/>
         <attribute name="phase" type="java.lang.String"/>
-        <attribute name="criteria" type="java.lang.String"/>
-        <attribute name="result" type="java.lang.String"/>
+>>>>>>> Implements COTDTrialConverter
         <attribute name="countries" type="java.lang.String"/>
-        <attribute name="condition" type="java.lang.String"/>
    		<reference name="trialGroup" referenced-type="TrialGroup" reverse-reference="trials"/>
     </class>
     <class name="WHOTrial" extends="ClinicalTrial" is-interface="true">
@@ -36,6 +32,11 @@
         <attribute name="originalUrl" type="java.lang.String"/>e
         <attribute name="url" type="java.lang.String"/>
         <attribute name="interventions" type="java.lang.String"/>
+        <attribute name="primaryOutcome" type="java.lang.String"/>
+        <attribute name="secondaryOutcome" type="java.lang.String"/>
+        <attribute name="criteria" type="java.lang.String"/>
+        <attribute name="result" type="java.lang.String"/>
+        <attribute name="condition" type="java.lang.String"/>
         <collection name="umlses" referenced-type="UMLSTerm" reverse-reference="trials"/>
     </class>
 </classes>
