@@ -66,4 +66,7 @@ public class Utils {
 		variables.put("test", "value");
 		System.out.println(replaceString(null, variables));
 	}
+	public static boolean empty(String string) {
+		return string == null || string.length() <= 0;
+	}
 }
