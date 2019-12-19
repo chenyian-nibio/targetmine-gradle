@@ -17,7 +17,7 @@
         <attribute name="primaryOutcome" type="java.lang.String"/>
         <attribute name="secondaryOutcome" type="java.lang.String"/>
         <attribute name="phase" type="java.lang.String"/>
-        <attribute name="critelra" type="java.lang.String"/>
+        <attribute name="criteria" type="java.lang.String"/>
         <attribute name="result" type="java.lang.String"/>
         <attribute name="countries" type="java.lang.String"/>
         <attribute name="condition" type="java.lang.String"/>
