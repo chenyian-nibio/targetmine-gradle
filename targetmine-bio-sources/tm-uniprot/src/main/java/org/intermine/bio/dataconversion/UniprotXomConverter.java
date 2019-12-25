@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -378,6 +379,12 @@ public class UniprotXomConverter extends BioFileConverter {
 								featureItem.setAttribute("description", featureDescription);
 							}
 							Element location = feature.getFirstChildElement("location",UNIPROT_NAMESPACE);
+							Attribute sequenceAttr = location.getAttribute("sequence");
+							if (sequenceAttr != null && !sequenceAttr.getValue().equals(accession)) {
+								// skip this feature
+								continue;
+							}
+							
 							Element position = location.getFirstChildElement("position",UNIPROT_NAMESPACE);
 							String modiPos = null;
 							if (position != null) {
@@ -448,6 +455,9 @@ public class UniprotXomConverter extends BioFileConverter {
 											modification.setAttribute("regionType", "modification");
 											
 											int pos = Integer.valueOf(modiPos).intValue();
+											if (pos > aaSeq.length()) {
+												throw new RuntimeException(accession + " position out of range: " + pos);
+											}
 											modification.setAttribute("residue", aaSeq.substring(pos - 1, pos));
 											
 											modification.addToCollection(
