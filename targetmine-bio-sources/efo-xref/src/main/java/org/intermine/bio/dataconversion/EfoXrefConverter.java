@@ -62,6 +62,7 @@ public class EfoXrefConverter extends BioFileConverter
 		UMLSResolver resolver = new UMLSResolver(mrConsoFile,mrStyFile);
 		Set<String> meshIdSet = new HashSet<String>();
 		Set<String> doIdSet = new HashSet<String>();
+		Set<String> cuiIdSet = new HashSet<String>();
 		String cui = null;
 		while ((line = in.readLine()) != null) {
 			if (line.equals("[Term]")) {
@@ -72,6 +73,7 @@ public class EfoXrefConverter extends BioFileConverter
 				String name = line.substring("name: ".length()).trim();
 				cui = resolver.getIdentifier(name);
 				if(cui!=null) {
+					cuiIdSet.add(cui);
 					System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
 				}
 			} else if (line.startsWith("synonym: ")) {
@@ -80,6 +82,7 @@ public class EfoXrefConverter extends BioFileConverter
 					String name = matcher.group(1);
 					cui = resolver.getIdentifier(name);
 					if(cui!=null){
+						cuiIdSet.add(cui);
 						System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
 					}
 				}
@@ -106,8 +109,10 @@ public class EfoXrefConverter extends BioFileConverter
 					Item efoTerm = createItem("EFOTerm");
 					efoTerm.setAttribute("identifier", identifier);
 					efoTerm.setReference("ontology", getOntology("EFO"));
-					if(cui!=null && diseaseEfoSet.contains(identifier)) {
-						efoTerm.addToCollection("diseaseConcepts", getUMLSDisease(cui));
+					if(identifier.startsWith("EFO:")) {
+						for (String cuiId:cuiIdSet){
+							efoTerm.addToCollection("diseaseConcepts", getUMLSDisease(cuiId));
+						}
 					}
 					for (String meshIdentifier : meshIdSet) {
 						efoTerm.addToCollection("crossReferences", getMeshTerm(meshIdentifier));
@@ -122,6 +127,7 @@ public class EfoXrefConverter extends BioFileConverter
 				cui = null;
 				meshIdSet = new HashSet<String>();
 				doIdSet = new HashSet<String>();
+				cuiIdSet = new HashSet<String>();
 			}
 
 		}
