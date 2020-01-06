@@ -40,6 +40,8 @@
 
 	<class name="ChemblCompound" extends="Compound" is-interface="true">
 		<attribute name="maxPhase" type="java.lang.Integer"/>
+		<attribute name="molecularWeight" type="java.lang.Float"/>
+		<attribute name="molecularWeightFreebase" type="java.lang.Float"/>
 		<collection name="drugTypes" referenced-type="DrugType"/>
 		<collection name="atcCodes" referenced-type="AtcClassification"/>
 	</class>

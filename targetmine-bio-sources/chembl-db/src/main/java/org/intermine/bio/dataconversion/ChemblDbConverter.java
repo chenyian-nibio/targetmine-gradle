@@ -110,8 +110,10 @@ public class ChemblDbConverter extends BioDBConverter {
 		
 		// create chembl compound entries for all compound
 		String queryMolecule = " select md.molregno, md.pref_name, md.chembl_id, md.molecule_type, "
-				+ " md.max_phase, cs.standard_inchi_key, cs.standard_inchi, canonical_smiles "
+				+ " md.max_phase, cp.mw_freebase, cp.full_mwt, "
+				+ " cs.standard_inchi_key, cs.standard_inchi, canonical_smiles "
 				+ " from molecule_dictionary as md "
+				+ " join compound_properties as cp on cp.molregno = md.molregno "
 				+ " left join compound_structures as cs on cs.molregno=md.molregno ";
 		ResultSet resMolecule = stmt.executeQuery(queryMolecule);
 		int c = 0;
@@ -123,6 +125,8 @@ public class ChemblDbConverter extends BioDBConverter {
 			String smiles = String.valueOf(resMolecule.getString("canonical_smiles"));
 			String moleculeType = resMolecule.getString("molecule_type");
 			int maxPhase = resMolecule.getInt("max_phase");
+			double wmFreebase = resMolecule.getDouble("mw_freebase");
+			double fullMwt = resMolecule.getDouble("full_mwt");
 			
 			Map<String,String> structureMap = new HashMap<String, String>();
 			if (inchi != null && !"".equals(inchi) && !"null".equals(inchi)) {
@@ -153,6 +157,9 @@ public class ChemblDbConverter extends BioDBConverter {
 				}
 				compound.setAttribute("name", name);
 				compound.setAttribute("maxPhase", String.valueOf(maxPhase));
+				
+				compound.setAttribute("molecularWeight", String.valueOf(fullMwt));
+				compound.setAttribute("molecularWeightFreebase", String.valueOf(wmFreebase));
 
 				if (!StringUtils.isEmpty(moleculeType) && !moleculeType.equals("Unclassified") && !moleculeType.equals("Unknown")) {
 					compound.addToCollection("drugTypes", getDrugType(moleculeType.toLowerCase()));
