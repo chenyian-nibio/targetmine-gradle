@@ -16,7 +16,9 @@ sourceSets {
         }
     }
 }
-
+dependencies {
+   compile project(':bio-source-utils')
+}
 processResources {
     from('.') { include ("*.properties")}
 }
