@@ -195,3 +195,5 @@ include ':bio-source-pharmaprojects'
 project(':bio-source-pharmaprojects').projectDir = new File(settingsDir, './pharmaprojects')
 include ':bio-source-ctod'
 project(':bio-source-ctod').projectDir = new File(settingsDir, './ctod')
+include ':bio-source-ipf'
+project(':bio-source-ipf').projectDir = new File(settingsDir, './ipf')
