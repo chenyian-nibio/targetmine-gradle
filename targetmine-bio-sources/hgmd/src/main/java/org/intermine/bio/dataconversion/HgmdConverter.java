@@ -43,7 +43,7 @@ public class HgmdConverter extends BioDBConverter {
     // 
     private static final String DATASET_TITLE = "hgmd";
     private static final String DATA_SOURCE_NAME = "hgmd";
-
+    private GeneIdFinder geneIdFinder;
     private Map<String, String> hgmdMap = new HashMap<String, String>();
     private Map<String, String> geneMap = new HashMap<String, String>();
     private Map<String, String> snpMap = new HashMap<String, String>();
@@ -86,6 +86,7 @@ public class HgmdConverter extends BioDBConverter {
      * {@inheritDoc}
      */
     public void process() throws Exception {
+    	geneIdFinder = new GeneIdFinder(osAlias, this);
         // Get data already registered in other Converter.
         getSnpIds();
         getSnpFunctionNames();
@@ -120,9 +121,11 @@ public class HgmdConverter extends BioDBConverter {
             if (!snpIdSet.contains(snpId)) {
                 // SNPFunction data input. return SNPFunctionId.
                 String snpFunctionRef = getOrCreateSnpFunction(resAllmut);
-                // get GeneId.
-                String geneId = getGenePrimaryId(resAllmut);
-                String geneRef = getGene(geneId);
+                String geneId = geneIdFinder.getGenePrimayIdBySynonym(resAllmut.getString("refCore"));
+                String geneRef = null;
+                if(geneId!=null) {
+                	geneRef = geneIdFinder.getGeneRef(geneId);
+                }
 
                 // get variationAnnotation
                 if (StringUtils.isEmpty(geneId)) geneId = "0";
@@ -398,52 +401,6 @@ public class HgmdConverter extends BioDBConverter {
         return ret;
     }
 
-    private String getGenePrimaryId(ResultSet response) throws Exception {
-        // get refCore
-        String refCore = response.getString("refCORE");
-        if (StringUtils.isEmpty(refCore)) {
-            return "";
-        }
-
-        // refCore contains synonym.intermine_value, get synonym.subjectid.
-        Map<String, String> synonymSubjectMap = getSynonymSubject(refCore);
-        String genePrimaryId = synonymSubjectMap.get(refCore);
-
-        return genePrimaryId;
-    }
-
-    private Map<String, String> getSynonymSubject(String refCore) throws Exception {
-        Map<String, String> synonymSubjectIdMap = new HashMap();
-
-        ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
-
-        Query q = new Query();
-        QueryClass qcSynonym = new QueryClass(os.getModel().
-                getClassDescriptorByName("Synonym").getType());
-
-        q.addFrom(qcSynonym);
-        q.addToSelect(qcSynonym);
-        QueryField qcSynonymInterMineValue = new QueryField(qcSynonym, "value");
-        SimpleConstraint sc = new SimpleConstraint(qcSynonymInterMineValue, ConstraintOp.EQUALS, new QueryValue(refCore));
-        q.setConstraint(sc);
-        // query = select * from synonym where value = refCore;
-        Results results = os.execute(q);
-        Iterator<Object> iterator = results.iterator();
-
-        while (iterator.hasNext()) {
-            ResultsRow<InterMineObject> rr = (ResultsRow<InterMineObject>) iterator.next();
-            InterMineObject p = rr.get(0);
-
-            // synonym.subject is 'gene' Item, get subject.
-            InterMineObject geneItem = (InterMineObject) p.getFieldValue("subject");
-            String genePrimaryId = (String) geneItem.getFieldValue("primaryIdentifier");
-            if (genePrimaryId != null) {
-                synonymSubjectIdMap.put(refCore, genePrimaryId);
-            }
-        }
-        return synonymSubjectIdMap;
-    }
-
     private String getGene(String primaryIdentifier) throws ObjectStoreException {
         if (StringUtils.isEmpty(primaryIdentifier)) {
             return "";
@@ -561,5 +518,5 @@ public class HgmdConverter extends BioDBConverter {
 
     public void setOsAlias(String osAlias) {
         this.osAlias = osAlias;
-    }
+dddffffffff    }
 }

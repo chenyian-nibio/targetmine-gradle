@@ -69,4 +69,7 @@ public class Utils {
 	public static boolean empty(String string) {
 		return string == null || string.length() <= 0;
 	}
+	public static boolean isEmpty(String entrezGeneId) {
+		return entrezGeneId == null || entrezGeneId.length() <=0;
+	}
 }
