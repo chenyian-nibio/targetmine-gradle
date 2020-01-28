@@ -90,10 +90,10 @@ public class IpfConverter extends BioFileConverter
 		
 		
         p = new HashMap<>();
-		p.put("biomarkerName","biomarker_name_STD");
-		p.put("markerType","marker_type");
-		p.put("markerNature","marker_nature");
-        	p.put("identifier","s_no");
+		p.put("name","biomarker_name_STD");
+		p.put("type","marker_type");
+		p.put("nature","marker_nature");
+        p.put("identifier","s_no");
         //Entrez id
         //Uniprot id
 		p.put("typeOfVariation","type_of_variation");
@@ -126,12 +126,8 @@ public class IpfConverter extends BioFileConverter
     }
 	ItemCreator geneCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
 	DBIDFinder geneIdFinder = new DBIDFinder(osAlias,"Protein","ncbiGeneId","primaryAccession");
-    private void addReferenceToGene(Item item,String collectionName,String uniportIds) throws Exception {
-    	if(!Utils.empty(uniportIds)) {
-    		return;
-    	}
-    	String[] ids = uniportIds.split("\\|");
-    	for (String uniportId : ids) {
+    private void addReferenceToGene(Item item,String collectionName,String[] uniportIds) throws Exception {
+    	for (String uniportId : uniportIds) {
     		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
     		if(!Utils.empty(identifier)) {
     			String proteinRef = proteinCreator.createItemRef(identifier);
@@ -141,12 +137,8 @@ public class IpfConverter extends BioFileConverter
     }
 	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
 	DBIDFinder proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
-    private void addReferenceToProtein(Item item,String collectionName,String uniportIds) throws Exception {
-    	if(!Utils.empty(uniportIds)) {
-    		return;
-    	}
-    	String[] ids = uniportIds.split("\\|");
-    	for (String uniportId : ids) {
+    private void addReferenceToProtein(Item item,String collectionName,String[] uniportIds) throws Exception {
+    	for (String uniportId : uniportIds) {
     		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
     		if(!Utils.empty(identifier)) {
     			String proteinRef = proteinCreator.createItemRef(identifier);
@@ -167,6 +159,7 @@ public class IpfConverter extends BioFileConverter
 				String referenceId = map.get("reference_id");
 				if(prevReferenceId == null || prevReferenceId.equals(referenceId)) {
 					item = createItem("IPFTrial");
+					item.setAttribute("name", "IPF:"+referenceId);
 					String refType = map.get("reference_type");
 					String trialName = referenceId;
 					if ("PubMed".equals(refType)) {
@@ -187,10 +180,27 @@ public class IpfConverter extends BioFileConverter
 							item.setAttribute(entry.getKey(), value);
 						}
 					}
+					String cui = resolver.getIdentifier(map.get("disease_name"));
+					if(Utils.isEmpty(cui)) {
+						String diseaseRef = diseaseCreator.createItemRef(cui);
+						item.setReference("diseaseUmls", diseaseRef);
+					}
 					store(item);
 				}
 				prevReferenceId = referenceId;
-				
+				Item biomarkerItem = createItem("IPFBiomarker");
+				biomarkerItem.setReference("trial", item);
+				for (Entry<String, String> entry : markerPropertyNames.entrySet()) {
+					String value = map.get(entry.getValue());
+					if(!Utils.isEmpty(value) || "[NA]".equals(value)) {
+						biomarkerItem.setAttribute(entry.getKey(), value);
+					}
+				}
+				String[] entrezIds = map.get("Entrez id").split(";\\s*");
+				addReferenceToGene(biomarkerItem, "genes", entrezIds);
+				String[] uniprotIds = map.get("Uniprot id").split(";\\s*");
+				addReferenceToGene(biomarkerItem, "proteins", uniprotIds);
+				store(biomarkerItem);
 				
 			}
 
