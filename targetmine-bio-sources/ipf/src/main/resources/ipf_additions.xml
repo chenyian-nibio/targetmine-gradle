@@ -3,6 +3,14 @@
 
 <classes>
 <!-- add any <class> elements here -->
+	<class name="Compound" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+	</class>
+
+	<class name="ChemblCompound" extends="Compound" is-interface="true">
+		<collection name="ipfTrials" referenced-type="IPFTrial"  reverse-reference="chemblCompounds"/>
+	</class>
+
     <class name="Publication" is-interface="true">
         <attribute name="pubMedId" type="java.lang.String"/>
         <collection name="ipfs" referenced-type="IPF" reverse-reference="reference" />
@@ -14,38 +22,80 @@
     
     <class name="Protein" is-interface="true">
         <attribute name="primaryIdenfitifer" type="java.lang.String"/>
-        <collection name="ipfFromNodes" referenced-type="IPF" reverse-reference="fromNodeProteins" />
-        <collection name="ipfToNodes" referenced-type="IPF" reverse-reference="toNodeProteins" />
+        <collection name="ipfBioMarkers" referenced-type="IPFBiomarker" reverse-reference="proteins" />
     </class>
     <class name="Gene" is-interface="true">
         <attribute name="primaryIdenfitifer" type="java.lang.String"/>
-        <collection name="ipfFromNodes" referenced-type="IPF" reverse-reference="fromNodeGenes" />
-        <collection name="ipfToNodes" referenced-type="IPF" reverse-reference="toNodeGenes" />
+        <collection name="ipfBioMarkers" referenced-type="IPFBiomarker" reverse-reference="genes" />
     </class>
-    <class name="IPF" is-interface="true">
-        <attribute name="idenfitifer" type="java.lang.String"/>
-        <reference name="reference" referenced-type="Publication" reverse-reference="ipfs"/>
-        <reference name="diseaseUmls" referenced-type="UMLSTerm" reverse-reference="ipfs"/>
+    <class name="TrialGroup" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <collection name="trials" referenced-type="ClinicalTrial" reverse-reference="trialGroup"/>
         
-       	<!-- From Node -->
-        <attribute name="fromNodeName" type="java.lang.String"/>
-        <attribute name="fromNodeType" type="java.lang.String"/>
-        <attribute name="fromNodeNature" type="java.lang.String"/>
-        <collection name="fromNodeGenes" referenced-type="Gene" reverse-reference="ipfFromNodes"/>
-        <collection name="fromNodeProteins" referenced-type="Protein" reverse-reference="ipfFromNodes"/>
-        <attribute name="fromNodeAnalysis" type="java.lang.String"/>
-        <attribute name="fromNodeAlteration" type="java.lang.String"/>
-        <attribute name="fromNodeEffect" type="java.lang.String"/>
-       	<!-- To Node -->
-        <attribute name="toNodeName" type="java.lang.String"/>
-        <attribute name="toNodeType" type="java.lang.String"/>
-        <attribute name="toNodeNature" type="java.lang.String"/>
-        <collection name="toNodeGenes" referenced-type="Gene" reverse-reference="ipfToNodes"/>
-        <collection name="toNodeProteins" referenced-type="Protein" reverse-reference="ipfToNodes"/>
-        <attribute name="toNodeAnalysis" type="java.lang.String"/>
-        <attribute name="toNodeAlteration" type="java.lang.String"/>
-        <attribute name="toNodeEffect" type="java.lang.String"/>
-       	<!-- Phenotype Details -->
+    </class>
+
+    <class name="ClinicalTrial" is-interface="true">
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="title" type="java.lang.String"/>
+        <attribute name="phase" type="java.lang.String"/>
+        <attribute name="countries" type="java.lang.String"/>
+   		<reference name="trialGroup" referenced-type="TrialGroup" reverse-reference="trials"/>
+    </class>
+
+    <class name="IPFTrial" extends="ClinicalTrial" is-interface="true">
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="title" type="java.lang.String"/>
+        <attribute name="phase" type="java.lang.String"/>
+        <attribute name="countries" type="java.lang.String"/>
+   		<reference name="trialGroup" referenced-type="TrialGroup" reverse-reference="trials"/>
+   		
+        <attribute name="referenceType" type="java.lang.String"/>
+        <attribute name="therapy" type="java.lang.String"/>
+        <attribute name="referenceTherapy" type="java.lang.String"/>
+        <attribute name="treatmentDetails" type="java.lang.String"/>
+        <attribute name="dose" type="java.lang.String"/>
+        <attribute name="routeOfAdministration" type="java.lang.String"/>
+        <attribute name="duration" type="java.lang.String"/>
+        <attribute name="approvedDrug" type="java.lang.String"/>
+        <attribute name="approvalAutority" type="java.lang.String"/>
+        <attribute name="diseaseName" type="java.lang.String"/>
+        <attribute name="diseaseSubCategory" type="java.lang.String"/>
+        <attribute name="stage" type="java.lang.String"/>
+        <attribute name="grade" type="java.lang.String"/>
+        <attribute name="histoparhology" type="java.lang.String"/>
+        <attribute name="studyType" type="java.lang.String"/>
+        <attribute name="cellLineName" type="java.lang.String"/>
+        <attribute name="totalSampleNumber" type="java.lang.String"/>
+        <attribute name="patientNumberInCase" type="java.lang.String"/>
+        <attribute name="patientNumberInReference" type="java.lang.String"/>
+        <attribute name="age" type="java.lang.String"/>
+        <attribute name="gender" type="java.lang.String"/>
+        <attribute name="ethnicity" type="java.lang.String"/>
+        <attribute name="trialStatus" type="java.lang.String"/>
+        <attribute name="sponsor" type="java.lang.String"/>
+        <attribute name="inclusionCriteria" type="java.lang.String"/>
+        <attribute name="exclusionCriteria" type="java.lang.String"/>
+        <attribute name="allocation" type="java.lang.String"/>
+        <attribute name="interventionModel" type="java.lang.String"/>
+        <attribute name="masking" type="java.lang.String"/>
+        <attribute name="primaryPurpose" type="java.lang.String"/>
+        <collection name="biomarkers" referenced-type="IPFBiomarker" reverse-reference="trial" />
+        <collection name="chemblCompounds" referenced-type="ChemblCompound" reverse-reference="ipfTrials" />
+        <reference name="diseaseUmls" referenced-type="UMLSTerm" reverse-reference="ipfTrials" />
+        <reference name="reference" referenced-type="Publication" reverse-reference="ipfTrials" />
+    </class>
+    <class name="IPFBiomarker" is-interface="true">
+   	<reference name="trial" referenced-type="IPFTrial" reverse-reference="biomarkers"/>
+
+        <attribute name="identifier" type="java.lang.String"/>
+        <attribute name="name" type="java.lang.String"/>
+        <attribute name="type" type="java.lang.String"/>
+        <attribute name="nature" type="java.lang.String"/>
+        <attribute name="typeOfVariation" type="java.lang.String"/>
+        <attribute name="HGVSName" type="java.lang.String"/>
+        <attribute name="association" type="java.lang.String"/>
+        <attribute name="alteration" type="java.lang.String"/>
+        <attribute name="typeOfAlteration" type="java.lang.String"/>
         <attribute name="phenotype" type="java.lang.String"/>
         <attribute name="go" type="java.lang.String"/>
         <attribute name="phenotypeAlteration" type="java.lang.String"/>
