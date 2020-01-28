@@ -518,5 +518,5 @@ public class HgmdConverter extends BioDBConverter {
 
     public void setOsAlias(String osAlias) {
         this.osAlias = osAlias;
-dddffffffff    }
+    }
 }

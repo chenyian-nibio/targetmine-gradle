@@ -9,7 +9,7 @@
     </class>
     <class name="UMLSTerm" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
-        <collection name="ipfs"  referenced-type="IPF" reverse-reference="umlse"/>
+        <collection name="ipfs"  referenced-type="IPF" reverse-reference="diseaseUmls"/>
     </class>
     
     <class name="Protein" is-interface="true">
