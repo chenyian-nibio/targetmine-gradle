@@ -11,9 +11,13 @@ package org.intermine.bio.dataconversion;
  */
 
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
@@ -146,6 +150,31 @@ public class IpfConverter extends BioFileConverter
     		}
 		}
     }
+    private static Pattern chemblIdPat = Pattern.compile("CHEMBL\\d+");
+	ItemCreator chemblCompoundCreator = new ItemCreator(this,"ChemblCompound","identifier");
+	DBIDFinder compoundIdFinder = new DBIDFinder(osAlias,"ChemblCompound","name","identifier");
+    private void addReferenceToChemblCompound(Item item,String collectionName,String chemblIds) throws Exception {
+    	for (String uniportId : getChemblIds(chemblIds)) {
+    		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
+    		if(!Utils.empty(identifier)) {
+    			String proteinRef = chemblCompoundCreator.createItemRef(identifier);
+    			item.addToCollection(collectionName, proteinRef);
+    		}
+		}
+    }
+    private static String[] getChemblIds(String chemblIds) {
+    	ArrayList<String> ids = new ArrayList<>();
+    	Matcher matcher = chemblIdPat.matcher(chemblIds);
+    	while(matcher.find()) {
+    		ids.add(matcher.group());
+    	}
+    	return ids.toArray(new String[ids.size()]);
+    }
+    public static void main(String[] args) {
+		String[] chemblIds = getChemblIds("CHEMBL429876 (Cilengitide); CHEMBL92 (Docetaxel)");
+		System.out.println(chemblIds);
+	}
+	private UMLSResolver resolver;
     /**
      * 
      *
@@ -166,8 +195,6 @@ public class IpfConverter extends BioFileConverter
 						String referenceRef = publicationCreator.createItemRef(referenceId);
 						item.setReference("reference", referenceRef);
 						trialName = map.get("associated_clinical trials");
-					}else {
-						
 					}
 					String trialIdentifier = trialGroupFinder.getIdentifierByValue(trialName);
 					if(!Utils.empty(trialIdentifier)) {
@@ -176,7 +203,7 @@ public class IpfConverter extends BioFileConverter
 					}
 					for (Entry<String, String> entry : trialPropertyNames.entrySet()) {
 						String value = map.get(entry.getValue());
-						if(!Utils.isEmpty(value) || "[NA]".equals(value)) {
+						if(!Utils.isEmpty(value) && !"[NA]".equals(value)) {
 							item.setAttribute(entry.getKey(), value);
 						}
 					}
@@ -185,6 +212,7 @@ public class IpfConverter extends BioFileConverter
 						String diseaseRef = diseaseCreator.createItemRef(cui);
 						item.setReference("diseaseUmls", diseaseRef);
 					}
+					addReferenceToChemblCompound(item, "chemblCompounds", map.get("ChEMBL"));
 					store(item);
 				}
 				prevReferenceId = referenceId;
@@ -192,14 +220,14 @@ public class IpfConverter extends BioFileConverter
 				biomarkerItem.setReference("trial", item);
 				for (Entry<String, String> entry : markerPropertyNames.entrySet()) {
 					String value = map.get(entry.getValue());
-					if(!Utils.isEmpty(value) || "[NA]".equals(value)) {
+					if(!Utils.isEmpty(value) && !"[NA]".equals(value)) {
 						biomarkerItem.setAttribute(entry.getKey(), value);
 					}
 				}
 				String[] entrezIds = map.get("Entrez id").split(";\\s*");
 				addReferenceToGene(biomarkerItem, "genes", entrezIds);
 				String[] uniprotIds = map.get("Uniprot id").split(";\\s*");
-				addReferenceToGene(biomarkerItem, "proteins", uniprotIds);
+				addReferenceToProtein(biomarkerItem, "proteins", uniprotIds);
 				store(biomarkerItem);
 				
 			}
