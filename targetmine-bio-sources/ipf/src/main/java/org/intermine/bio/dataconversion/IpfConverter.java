@@ -44,6 +44,7 @@ public class IpfConverter extends BioFileConverter
     }
     private String osAlias = null;
     public void setOsAlias(String osAlias) {
+	System.out.println("osAlias="+osAlias);
         this.osAlias = osAlias;
     }
 
@@ -129,10 +130,13 @@ public class IpfConverter extends BioFileConverter
 		p.put("preclinical","preclinical_details");
     }
 	ItemCreator geneCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
-	DBIDFinder geneIdFinder = new DBIDFinder(osAlias,"Protein","ncbiGeneId","primaryAccession");
+	DBIDFinder geneIdFinder;
     private void addReferenceToGene(Item item,String collectionName,String[] uniportIds) throws Exception {
+	if(geneIdFinder == null){
+		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryAccession");
+	}
     	for (String uniportId : uniportIds) {
-    		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
+    		String identifier = geneIdFinder.getIdentifierByValue(uniportId);
     		if(!Utils.empty(identifier)) {
     			String proteinRef = proteinCreator.createItemRef(identifier);
     			item.addToCollection(collectionName, proteinRef);
@@ -140,8 +144,11 @@ public class IpfConverter extends BioFileConverter
 		}
     }
 	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
-	DBIDFinder proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
+	DBIDFinder proteinIdFinder;
     private void addReferenceToProtein(Item item,String collectionName,String[] uniportIds) throws Exception {
+	if(proteinIdFinder==null){
+		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
+	}
     	for (String uniportId : uniportIds) {
     		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
     		if(!Utils.empty(identifier)) {
@@ -208,9 +215,11 @@ public class IpfConverter extends BioFileConverter
 						}
 					}
 					String cui = resolver.getIdentifier(map.get("disease_name"));
-					if(Utils.isEmpty(cui)) {
+					if(!Utils.isEmpty(cui)) {
 						String diseaseRef = diseaseCreator.createItemRef(cui);
 						item.setReference("diseaseUmls", diseaseRef);
+					}else{
+					System.out.println("diseaseName="+map.get("disease_name")+" has cui ="+cui);
 					}
 					addReferenceToChemblCompound(item, "chemblCompounds", map.get("ChEMBL"));
 					store(item);

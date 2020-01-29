@@ -94,25 +94,16 @@
         <attribute name="HGVSName" type="java.lang.String"/>
         <attribute name="association" type="java.lang.String"/>
         <attribute name="alteration" type="java.lang.String"/>
+        <attribute name="markerAlteration" type="java.lang.String"/>
         <attribute name="typeOfAlteration" type="java.lang.String"/>
         <attribute name="phenotype" type="java.lang.String"/>
         <attribute name="go" type="java.lang.String"/>
         <attribute name="phenotypeAlteration" type="java.lang.String"/>
         <attribute name="significance" type="java.lang.String"/>
-        <attribute name="relationship" type="java.lang.String"/>
-        <attribute name="annotation" type="java.lang.String"/>
-        <attribute name="therapy" type="java.lang.String"/>
-        <attribute name="referenceDrug" type="java.lang.String"/>
-        <attribute name="treatmentDetail" type="java.lang.String"/>
-        <attribute name="chemblCompound" type="java.lang.String"/>
-        <attribute name="mechanismOfAction" type="java.lang.String"/>
-        <attribute name="inducer" type="java.lang.String"/>
-        <attribute name="inhibitor" type="java.lang.String"/>
-        <attribute name="studyType" type="java.lang.String"/>
-        <attribute name="methodology" type="java.lang.String"/>
-        <attribute name="specimen" type="java.lang.String"/>
-        <attribute name="model_name" type="java.lang.String"/>
-        <attribute name="preclinical" type="java.lang.String"/>
+        <attribute name="pValue" type="java.lang.String"/>
+        <attribute name="application" type="java.lang.String"/>
+        <collection name="genes" referenced-type="Gene" reverse-reference="ipfBioMarkers" />
+        <collection name="proteins" referenced-type="Protein" reverse-reference="ipfBioMarkers" />
     </class>
 
 </classes>
