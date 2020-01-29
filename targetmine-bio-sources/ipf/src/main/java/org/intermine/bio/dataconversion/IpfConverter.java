@@ -133,7 +133,7 @@ public class IpfConverter extends BioFileConverter
 	DBIDFinder geneIdFinder;
     private void addReferenceToGene(Item item,String collectionName,String[] uniportIds) throws Exception {
 	if(geneIdFinder == null){
-		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryAccession");
+		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryIdentifier");
 	}
     	for (String uniportId : uniportIds) {
     		String identifier = geneIdFinder.getIdentifierByValue(uniportId);
