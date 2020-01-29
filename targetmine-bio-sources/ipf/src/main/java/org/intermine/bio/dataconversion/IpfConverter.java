@@ -177,10 +177,6 @@ public class IpfConverter extends BioFileConverter
     	}
     	return ids.toArray(new String[ids.size()]);
     }
-    public static void main(String[] args) {
-		String[] chemblIds = getChemblIds("CHEMBL429876 (Cilengitide); CHEMBL92 (Docetaxel)");
-		System.out.println(chemblIds);
-	}
 	private UMLSResolver resolver;
     /**
      * 
