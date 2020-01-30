@@ -44,7 +44,6 @@ public class IpfConverter extends BioFileConverter
     }
     private String osAlias = null;
     public void setOsAlias(String osAlias) {
-	System.out.println("osAlias="+osAlias);
         this.osAlias = osAlias;
     }
 
@@ -61,6 +60,7 @@ public class IpfConverter extends BioFileConverter
   		p.put("dose","dose");
   		p.put("routeOfAdministration","route of administration");
   		p.put("duration","duration");
+  		p.put("chembl","ChEMBL");
   		//CAS id
         //ChEMBL
         //drug bank id
@@ -143,11 +143,11 @@ public class IpfConverter extends BioFileConverter
     		}
 		}
     }
-	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
+	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdentifier");
 	DBIDFinder proteinIdFinder;
     private void addReferenceToProtein(Item item,String collectionName,String[] uniportIds) throws Exception {
 	if(proteinIdFinder==null){
-		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
+		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdentifier");
 	}
     	for (String uniportId : uniportIds) {
     		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
@@ -159,10 +159,13 @@ public class IpfConverter extends BioFileConverter
     }
     private static Pattern chemblIdPat = Pattern.compile("CHEMBL\\d+");
 	ItemCreator chemblCompoundCreator = new ItemCreator(this,"ChemblCompound","identifier");
-	DBIDFinder compoundIdFinder = new DBIDFinder(osAlias,"ChemblCompound","name","identifier");
+	DBIDFinder compoundIdFinder;
     private void addReferenceToChemblCompound(Item item,String collectionName,String chemblIds) throws Exception {
+	if(compoundIdFinder==null){
+		compoundIdFinder = new DBIDFinder(osAlias,"ChemblCompound","originalId","identifier");
+	}
     	for (String uniportId : getChemblIds(chemblIds)) {
-    		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
+    		String identifier = compoundIdFinder.getIdentifierByValue(uniportId);
     		if(!Utils.empty(identifier)) {
     			String proteinRef = chemblCompoundCreator.createItemRef(identifier);
     			item.addToCollection(collectionName, proteinRef);
@@ -215,7 +218,6 @@ public class IpfConverter extends BioFileConverter
 						String diseaseRef = diseaseCreator.createItemRef(cui);
 						item.setReference("diseaseUmls", diseaseRef);
 					}else{
-					System.out.println("diseaseName="+map.get("disease_name")+" has cui ="+cui);
 					}
 					addReferenceToChemblCompound(item, "chemblCompounds", map.get("ChEMBL"));
 					store(item);

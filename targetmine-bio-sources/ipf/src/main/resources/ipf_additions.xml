@@ -21,7 +21,7 @@
     </class>
     
     <class name="Protein" is-interface="true">
-        <attribute name="primaryIdenfitifer" type="java.lang.String"/>
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
         <collection name="ipfBioMarkers" referenced-type="IPFBiomarker" reverse-reference="proteins" />
     </class>
     <class name="Gene" is-interface="true">
@@ -50,6 +50,7 @@
    		<reference name="trialGroup" referenced-type="TrialGroup" reverse-reference="trials"/>
    		
         <attribute name="referenceType" type="java.lang.String"/>
+        <attribute name="chembl" type="java.lang.String"/>
         <attribute name="therapy" type="java.lang.String"/>
         <attribute name="referenceTherapy" type="java.lang.String"/>
         <attribute name="treatmentDetails" type="java.lang.String"/>
