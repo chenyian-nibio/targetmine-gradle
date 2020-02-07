@@ -171,4 +171,9 @@ public class ChebiDbConverter extends BioDBConverter {
 		store(syn);
 	}
 
+	@Override
+	public String getLicence() {
+		return "https://creativecommons.org/licenses/by/4.0/";
+	}
+
 }

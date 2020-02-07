@@ -461,4 +461,10 @@ public class DbsnpConverter extends BioDBConverter
 		}
 		
 	}
+
+	@Override
+	public String getLicence() {
+		// TODO so far unknown
+		return null;
+	}
 }

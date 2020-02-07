@@ -187,4 +187,9 @@ public class ChemblMechanismConverter extends BioDBConverter {
 			return url;
 		}
 	}
+
+	@Override
+	public String getLicence() {
+		return "https://creativecommons.org/licenses/by-sa/3.0/";
+	}
 }

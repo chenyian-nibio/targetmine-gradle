@@ -80,4 +80,9 @@ public class ChemblProteinConverter extends BioDBConverter {
 	public String getDataSetTitle(String taxonId) {
 		return DATASET_TITLE;
 	}
+
+	@Override
+	public String getLicence() {
+		return "https://creativecommons.org/licenses/by-sa/3.0/";
+	}
 }
