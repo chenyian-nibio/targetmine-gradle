@@ -29,6 +29,7 @@ public class ChemblDbConverter extends BioDBConverter {
 
 	private Map<String, Set<String>> drugMap = new HashMap<String, Set<String>>();
 	private Map<String, Set<String>> synonymMap = new HashMap<String, Set<String>>();
+	private Map<String, Set<String>> atcClassificationMap = new HashMap<String, Set<String>>();
 
 	private Map<String, String> proteinMap = new HashMap<String, String>();
 	private Map<String, String> compoundMap = new HashMap<String, String>();
@@ -37,22 +38,15 @@ public class ChemblDbConverter extends BioDBConverter {
 	private Map<String, String> drugTypeMap = new HashMap<String, String>();
 	private Map<String, String> interactionMap = new HashMap<String, String>();
 
-//	private Map<String, String> drugTypeTranslateMap = new HashMap<String, String>();
-
 	/**
 	 * Construct a new ChemblDbConverter.
 	 * 
-	 * @param database
-	 *            the database to read from
-	 * @param model
-	 *            the Model used by the object store we will write to with the ItemWriter
-	 * @param writer
-	 *            an ItemWriter used to handle Items created
+	 * @param database the database to read from
+	 * @param model the Model used by the object store we will write to with the ItemWriter
+	 * @param writer an ItemWriter used to handle Items created
 	 */
 	public ChemblDbConverter(Database database, Model model, ItemWriter writer) {
 		super(database, model, writer, DATA_SOURCE_NAME, DATASET_TITLE);
-//		drugTypeTranslateMap.put("Protein", "biotech");
-//		drugTypeTranslateMap.put("Small molecule", "small molecule");
 	}
 
 	/**
@@ -78,7 +72,7 @@ public class ChemblDbConverter extends BioDBConverter {
 
 		String queryDrug = "select distinct molregno, trade_name " + " from formulations as fo "
 				+ " join products on fo.product_id=products.product_id "
-				+ " where approval_date is not null";
+				+ " where approval_date is not null ";
 		ResultSet resDrug = stmt.executeQuery(queryDrug);
 		while (resDrug.next()) {
 			String molId = String.valueOf(resDrug.getInt("molregno"));
@@ -89,7 +83,7 @@ public class ChemblDbConverter extends BioDBConverter {
 			drugMap.get(molId).add(tradeName);
 		}
 		String querySynonym = "select distinct molregno, synonyms "
-				+ " from molecule_synonyms where syn_type != 'RESEARCH_CODE'";
+				+ " from molecule_synonyms where syn_type != 'RESEARCH_CODE' ";
 		ResultSet resSynonym = stmt.executeQuery(querySynonym);
 		while (resSynonym.next()) {
 			String molId = String.valueOf(resSynonym.getInt("molregno"));
@@ -100,10 +94,26 @@ public class ChemblDbConverter extends BioDBConverter {
 			synonymMap.get(molId).add(synonym);
 		}
 		
+		String queryAtcCode = " select molregno, mac.level5 as code, ac.who_name as title "
+				+ " from molecule_atc_classification as mac "
+				+ " join atc_classification as ac on ac.level5 = mac.level5 ";
+		ResultSet resAtcCode = stmt.executeQuery(queryAtcCode);
+		while (resAtcCode.next()) {
+			String molId = String.valueOf(resAtcCode.getInt("molregno"));
+			String code = resAtcCode.getString("code");
+			String title = resAtcCode.getString("title");
+			if (atcClassificationMap.get(molId) == null) {
+				atcClassificationMap.put(molId, new HashSet<String>());
+			}
+			atcClassificationMap.get(molId).add(String.format("%s::%s", code, title));
+		}
+		
 		// create chembl compound entries for all compound
 		String queryMolecule = " select md.molregno, md.pref_name, md.chembl_id, md.molecule_type, "
-				+ " md.max_phase, cs.standard_inchi_key, cs.standard_inchi, canonical_smiles "
+				+ " md.max_phase, cp.mw_freebase, cp.full_mwt, "
+				+ " cs.standard_inchi_key, cs.standard_inchi, canonical_smiles "
 				+ " from molecule_dictionary as md "
+				+ " join compound_properties as cp on cp.molregno = md.molregno "
 				+ " left join compound_structures as cs on cs.molregno=md.molregno ";
 		ResultSet resMolecule = stmt.executeQuery(queryMolecule);
 		int c = 0;
@@ -115,6 +125,8 @@ public class ChemblDbConverter extends BioDBConverter {
 			String smiles = String.valueOf(resMolecule.getString("canonical_smiles"));
 			String moleculeType = resMolecule.getString("molecule_type");
 			int maxPhase = resMolecule.getInt("max_phase");
+			double wmFreebase = resMolecule.getDouble("mw_freebase");
+			double fullMwt = resMolecule.getDouble("full_mwt");
 			
 			Map<String,String> structureMap = new HashMap<String, String>();
 			if (inchi != null && !"".equals(inchi) && !"null".equals(inchi)) {
@@ -142,15 +154,13 @@ public class ChemblDbConverter extends BioDBConverter {
 					if (synonymMap.get(molId) == null) {
 						synonymMap.put(molId, new HashSet<String>());
 					}
-//					synonymMap.get(molId).add(name);
 				}
 				compound.setAttribute("name", name);
 				compound.setAttribute("maxPhase", String.valueOf(maxPhase));
+				
+				compound.setAttribute("molecularWeight", String.valueOf(fullMwt));
+				compound.setAttribute("molecularWeightFreebase", String.valueOf(wmFreebase));
 
-//				String drugType = drugTypeTranslateMap.get(moleculeType);
-//				if (!StringUtils.isEmpty(drugType)) {
-//					compound.addToCollection("drugTypes", getDrugType(drugType));
-//				}
 				if (!StringUtils.isEmpty(moleculeType) && !moleculeType.equals("Unclassified") && !moleculeType.equals("Unknown")) {
 					compound.addToCollection("drugTypes", getDrugType(moleculeType.toLowerCase()));
 				}
@@ -180,6 +190,14 @@ public class ChemblDbConverter extends BioDBConverter {
 						if (!synonyms.contains(tn)) {
 							setSynonyms(compound, tn);
 						}
+					}
+				}
+				
+				Set<String> classifications = atcClassificationMap.get(molId);
+				if (classifications != null) {
+					for (String atcClassification : classifications) {
+						String[] split = atcClassification.split("::");
+						compound.addToCollection("atcCodes", getAtcClassification(split[0], split[1]));
 					}
 				}
 
@@ -396,4 +414,42 @@ public class ChemblDbConverter extends BioDBConverter {
 		syn.setReference("subject", subject);
 		store(syn);
 	}
+	
+	private Map<String, String> atcMap = new HashMap<String, String>();
+
+	private String getAtcClassification(String atcCode, String name) throws ObjectStoreException {
+		String ret = atcMap.get(atcCode);
+		if (ret == null) {
+			Item item = createItem("AtcClassification");
+			item.setAttribute("atcCode", atcCode);
+			item.setAttribute("name", name);
+			// add parent
+			String parentCode = atcCode.substring(0, 5);
+			item.setReference("parent", getParent(parentCode));
+			
+			// create parents; to be improved
+			item.addToCollection("allParents", getParent(parentCode));
+			item.addToCollection("allParents", getParent(parentCode.substring(0, 4)));
+			item.addToCollection("allParents", getParent(parentCode.substring(0, 3)));
+			item.addToCollection("allParents", getParent(parentCode.substring(0, 1)));
+
+			store(item);
+			ret = item.getIdentifier();
+			atcMap.put(atcCode, ret);
+		}
+		return ret;
+	}
+
+	private String getParent(String parentCode) throws ObjectStoreException {
+		String ret = atcMap.get(parentCode);
+		if (ret == null) {
+			Item item = createItem("AtcClassification");
+			item.setAttribute("atcCode", parentCode);
+			store(item);
+			ret = item.getIdentifier();
+			atcMap.put(parentCode, ret);
+		}
+		return ret;
+	}
+
 }
