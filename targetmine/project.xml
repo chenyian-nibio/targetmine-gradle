@@ -153,6 +153,11 @@
       <property name="src.data.dir.includes" value="*/*/*.xml"/>
     </source>
 
+    <source name="kgml" type="kgml-file">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/kgml"/>
+      <property name="src.data.dir.includes" value="*/*/*.xml"/>
+    </source>
+
     <source name="kegg-compound" type="kegg-compound">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/compound"/>
       <property name="src.data.dir.includes" value="compound"/>

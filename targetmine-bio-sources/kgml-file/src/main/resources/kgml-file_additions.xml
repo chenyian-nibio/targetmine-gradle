@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="Pathway" is-interface="true" >
+		<attribute name="identifier" type="java.lang.String"/>
+		<reference name="graph" referenced-type="PathwayGraph"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+	<class name="PathwayGraph" is-interface="true" >
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="kgmlFile" type="org.intermine.objectstore.query.ClobAccess"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+</classes>
