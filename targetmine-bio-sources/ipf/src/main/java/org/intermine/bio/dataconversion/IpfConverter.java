@@ -192,7 +192,7 @@ public class IpfConverter extends BioFileConverter
 		try(CSVParser parser = new CSVParser(reader, true)){
 			for (Map<String, String> map : parser) {
 				String referenceId = map.get("reference_id");
-				if(prevReferenceId == null || prevReferenceId.equals(referenceId)) {
+				if(prevReferenceId == null || !prevReferenceId.equals(referenceId)) {
 					item = createItem("IPFTrial");
 					item.setAttribute("name", "IPF:"+referenceId);
 					String refType = map.get("reference_type");
