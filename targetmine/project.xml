@@ -481,6 +481,11 @@
     </source>
 
     <source name="disease-summary" type="disease-summary"/>
+    <source name="bioexpress" type="bioexpress">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/BioExpress/CEL_Image_Files" />
+      <property name="src.data.dir.includes" value="*/CEL/expression.txt" />
+      <property name="annotationCsvFile" value="/data/bio/db/Targetmine/BioExpress/Human_Plus2_Oncology_Annotations.csv"/>
+    </source>
     
     <source name="dataset-info" type="dataset-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine" />

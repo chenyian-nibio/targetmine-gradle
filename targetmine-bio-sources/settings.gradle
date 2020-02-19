@@ -197,3 +197,5 @@ include ':bio-source-ctod'
 project(':bio-source-ctod').projectDir = new File(settingsDir, './ctod')
 include ':bio-source-ipf'
 project(':bio-source-ipf').projectDir = new File(settingsDir, './ipf')
+include ':bio-source-bioexpress'
+project(':bio-source-bioexpress').projectDir = new File(settingsDir, './bioexpress')
