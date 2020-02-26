@@ -34,6 +34,9 @@
 		<attribute name="sampleSetName" type="java.lang.String"/>
 		<attribute name="sampleId" type="java.lang.String"/>
 		<attribute name="experimentName" type="java.lang.String"/>
+		<attribute name="sampleTime" type="java.lang.String"/>
+		<attribute name="cumulative" type="java.lang.String"/>
+		<collection name="relatedSamples" referenced-type="BioExpressSample"/>
 	</class>
 	<class name="Tissue" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
