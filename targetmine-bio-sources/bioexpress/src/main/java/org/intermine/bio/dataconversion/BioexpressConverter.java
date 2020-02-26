@@ -17,13 +17,30 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.intermine.dataconversion.ItemWriter;
+import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
+import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.objectstore.ObjectStoreFactory;
+import org.intermine.objectstore.query.ConstraintSet;
+import org.intermine.objectstore.query.ContainsConstraint;
+import org.intermine.objectstore.query.Query;
+import org.intermine.objectstore.query.QueryClass;
+import org.intermine.objectstore.query.QueryCollectionReference;
+import org.intermine.objectstore.query.QueryExpression;
+import org.intermine.objectstore.query.QueryField;
+import org.intermine.objectstore.query.QueryValue;
+import org.intermine.objectstore.query.Results;
+import org.intermine.objectstore.query.ResultsRow;
+import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.xml.full.Item;
+
+import com.google.common.base.Ticker;
 
 
 /**
@@ -56,46 +73,16 @@ public class BioexpressConverter extends BioFileConverter
 		"Treatment Comments",
     };
 
-    private static String convertToDescription(Map<String,String> entry,String prefix,String[] names) {
+    private static String convertToDescription(Map<String,String> entry,String prefix) {
     	StringBuffer sb = new StringBuffer();
-    	for (String name : names) {
-			String value = entry.get(prefix+name);
-			if(!Utils.isEmpty(value)) {
+    	for (Entry<String,String> e : entry.entrySet()) {
+			if(e.getKey().startsWith(prefix) && !Utils.isEmpty(e.getValue())) {
 				if(sb.length()>0) {
 					sb.append(". ");
 				}
-				sb.append(name);
+				sb.append(e.getKey().substring(prefix.length()));
 				sb.append(": ");
-				sb.append(value);
-			}
-		}
-    	return sb.toString();
-    }
-    private int[] getHeaderIndexWithPrefix(String prefix,String[] headers) {
-    	ArrayList<Integer> ids = new ArrayList<>();
-    	for (int i = 0; i < headers.length; i++) {
-			if(headers[i].startsWith(prefix)) {
-				
-			}
-		}
-    	int[] id = new int[ids.size()];
-    	for (int i = 0; i < id.length; i++) {
-			id[i] = ids.get(i);
-		}
-    	return id;
-    }
-    private static String convertToDescription(Map<String,String> entry,String prefix,String[] headers,int[] indexes) {
-    	StringBuffer sb = new StringBuffer();
-    	for (int index : indexes) {
-			String key = headers[index];
-			String value = entry.get(key);
-			if(!Utils.isEmpty(value)) {
-				if(sb.length()>0) {
-					sb.append(". ");
-				}
-				sb.append(key.substring(prefix.length()));
-				sb.append(": ");
-				sb.append(value);
+				sb.append(e.getValue());
 			}
 		}
     	return sb.toString();
@@ -158,23 +145,29 @@ public class BioexpressConverter extends BioFileConverter
     	donorRef.put(donorId, donor.getIdentifier());
     	return donor.getIdentifier();
     }
-	private static HashMap<String,String> sampleRef;
-    private void createSampleRef(Map<String,String> entry) throws ObjectStoreException {
+	private static HashMap<String,String> sampleRefByExperimantName;
+    private void createSampleRef(Map<String,String> entry) throws Exception {
     	String genomicId = entry.get("Genomics ID");
     	String exerimentName = entry.get("Experiment Name - HG-U133_Plus_2");
     	Item sample = createItem("BioExpressSample");
     	for (Entry<String, String> e : sampleProperties.entrySet()) {
 			String value = entry.get(e.getKey());
-			if(!Utils.isEmpty(value)) {
-				sample.setAttribute(e.getValue(), value);
-			}
+			sample.setAttributeIfNotNull(e.getValue(), value);
 		}
+    	String atSampleTime = convertToDescription(entry, "At Sample Time:  ");
+    	sample.setAttributeIfNotNull("sampleTime", atSampleTime);
+    	String cumulative = convertToDescription(entry, "Cumulative  ");
+    	sample.setAttributeIfNotNull("cumulative", cumulative);
+    	String tissueName = entry.get("Sample Site");
+    	String tissueRef = createTissueRef(tissueName);
+    	sample.addToCollection("tissues", tissueRef);
     	String donorRef = createDonorRef(entry);
     	if(!Utils.isEmpty(donorRef)) {
     		sample.setReference("donor", donorRef);
     	}
+    	
     	store(sample);
-    	sampleRef.put(exerimentName, sample.getIdentifier());
+    	sampleRefByExperimantName.put(exerimentName, sample.getIdentifier());
     }
 
     /**
@@ -183,8 +176,8 @@ public class BioexpressConverter extends BioFileConverter
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
-    	if(sampleRef == null) {
-    		sampleRef = new HashMap<String, String>();
+    	if(sampleRefByExperimantName == null) {
+    		sampleRefByExperimantName = new HashMap<String, String>();
     		try(CSVParser parser = new CSVParser(new FileReader(annotationCsvFile), false)){
     			for (Map<String, String> entry : parser) {
     				createSampleRef(entry);
@@ -199,7 +192,7 @@ public class BioexpressConverter extends BioFileConverter
     	String[] sampleRefs = new String[filenames.length];
     	for (int i = 1; i < filenames.length; i++) {
     		experimantNames[i] = filenames[i].replaceFirst("\\.cel$", "").toUpperCase();
-    		sampleRefs[i] = sampleRef.get(experimantNames[i]);
+    		sampleRefs[i] = sampleRefByExperimantName.get(experimantNames[i]);
 		}
     	while((line = bufreader.readLine()) != null) {
     		String[] split = line.split("\t");
@@ -214,6 +207,49 @@ public class BioexpressConverter extends BioFileConverter
 			}
     	}
     }
+    private Map<String,String> tissueMap = new HashMap<>();
+    private String createTissueRef(String name) throws Exception {
+    	if(tissueMap.containsKey(name)) {
+    		return tissueMap.get(name);
+    	}
+    	String tissueIdentifier = queryIdByName(name);
+		Item item = createItem("Tissue");
+    	if(Utils.isEmpty(tissueIdentifier)) {
+    		item.setAttribute("identifier", name.toLowerCase().replaceAll("\\s", "_"));
+    		item.setAttribute("name", name);
+    	}else {
+    		item.setAttribute("identifier", tissueIdentifier);
+    	}
+		store(item);
+		tissueMap.put(name,item.getIdentifier());
+		return item.getIdentifier();
+    }
+	@SuppressWarnings("unchecked")
+	public String queryIdByName(String name) throws Exception {
+		ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
+		Query q = new Query();
+		QueryClass qcTissue = new QueryClass(os.getModel().getClassDescriptorByName("Tissue").getType());
+		QueryField qfIdenfifier = new QueryField(qcTissue, "identifier");
+		QueryField qName = new QueryField(qcTissue, "name");
+		q.addFrom(qcTissue);
+		q.addToSelect(qfIdenfifier);
+
+		q.setConstraint(new SimpleConstraint(new QueryExpression(QueryExpression.LOWER, qName), ConstraintOp.EQUALS, new QueryValue(name.toLowerCase())));
+		Results results = os.execute(q);
+		Iterator<Object> iterator = results.iterator();
+		while(iterator.hasNext()) {
+			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
+			String id = rr.get(0);
+			if(id!=null && id.length() > 0) {
+				return id;
+			}
+		}
+		return null;
+	}
+	private String osAlias = null;
+	public void setOsAlias(String osAlias) {
+		this.osAlias = osAlias;
+	}
 	private File annotationCsvFile;
 	public void setAnnotationCsvFile(File annotationCsvFile) {
 		this.annotationCsvFile = annotationCsvFile;

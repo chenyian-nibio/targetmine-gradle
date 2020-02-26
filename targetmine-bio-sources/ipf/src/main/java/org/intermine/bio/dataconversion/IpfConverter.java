@@ -47,7 +47,8 @@ public class IpfConverter extends BioFileConverter
         this.osAlias = osAlias;
     }
 
-    private static Map<String, String> propertyNames = new HashMap<String, String>();
+    private static Map<String, String> trialPropertyNames = new HashMap<String, String>();
+    private static Map<String, String> markerPropertyNames = new HashMap<String, String>();
     
     static {
         Map<String, String> p = new HashMap<>();
@@ -189,7 +190,11 @@ public class IpfConverter extends BioFileConverter
     public void process(Reader reader) throws Exception {
     	ItemCreator publicationCreator = new ItemCreator(this,"Publication","pubMedId");
     	ItemCreator diseaseCreator = new ItemCreator(this,"DiseaseConcept","identifier");
+    	DBIDFinder trialGroupFinder = new DBIDFinder(osAlias,"TrialGroup","identifier","identifier");
+    	ItemCreator trialGrouopCreator = new ItemCreator(this,"TrialGroup","identifier");
 		try(CSVParser parser = new CSVParser(reader, true)){
+			String prevReferenceId = null;
+			Item item = null;
 			for (Map<String, String> map : parser) {
 				String referenceId = map.get("reference_id");
 				if(prevReferenceId == null || !prevReferenceId.equals(referenceId)) {

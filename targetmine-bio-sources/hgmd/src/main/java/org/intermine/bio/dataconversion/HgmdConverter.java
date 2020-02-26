@@ -80,6 +80,10 @@ public class HgmdConverter extends BioDBConverter {
     public HgmdConverter(Database database, Model model, ItemWriter writer) {
         super(database, model, writer, DATA_SOURCE_NAME, DATASET_TITLE);
     }
+    @Override
+    public String getLicence() {
+    	return "http://www.hgmd.cf.ac.uk/docs/register.html";
+    }
 
 
     /**
