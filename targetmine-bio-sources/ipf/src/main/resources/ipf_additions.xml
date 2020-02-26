@@ -13,11 +13,11 @@
 
     <class name="Publication" is-interface="true">
         <attribute name="pubMedId" type="java.lang.String"/>
-        <collection name="ipfs" referenced-type="IPF" reverse-reference="reference" />
+        <collection name="ipfTrials" referenced-type="IPFTrial" reverse-reference="reference" />
     </class>
     <class name="UMLSTerm" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
-        <collection name="ipfs"  referenced-type="IPF" reverse-reference="diseaseUmls"/>
+        <collection name="ipfTrials"  referenced-type="IPFTrial" reverse-reference="diseaseUmls"/>
     </class>
     
     <class name="Protein" is-interface="true">
