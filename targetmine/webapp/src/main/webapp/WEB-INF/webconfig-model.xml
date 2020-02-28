@@ -1039,7 +1039,7 @@
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.DrugCompoundInfoDisplayer"
                      jspName="model/chemblAtcClassificationDisplayer.jsp"
-                     replacesFields="atcCodes" 
+                     replacesFields="atcCodes"
                      types="ChemblCompound"/>
 
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.ChemblAlternateFormDisplayer"
@@ -1067,6 +1067,11 @@
                      jspName="model/geneExpressionGraphDisplayer.jsp"
                      replacesFields=""
                      types="Gene" />
+
+    <reportdisplayer javaClass="org.intermine.bio.web.displayer.PathwayGraphDisplayer"
+                     jspName="model/pathwayGraphDisplayer.jsp"
+                     replacesFields=""
+                     types="Pathway" />
 
   </reportdisplayers>
 

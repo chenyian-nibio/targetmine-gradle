@@ -20,7 +20,7 @@ export class BioActivityGraph extends TargetMineGraph{
    */
   constructor(name, width, height){
     /* initialize super class attributes */
-    super(name, width, height);
+    super('bioActivity', name, width, height);
 
     /* initial variables for X and Y axis */
     this._x = 'Activity Type';
@@ -272,7 +272,7 @@ export class BioActivityGraph extends TargetMineGraph{
     }, []);
 
     /* redraw the points, using the updated positions and colors */
-    let canvas = d3.select('svg#canvas > g#graph');
+    let canvas = d3.select('svg#canvas_bioActivity > g#graph');
     canvas.selectAll('#points').remove();
 
     canvas.append('g')

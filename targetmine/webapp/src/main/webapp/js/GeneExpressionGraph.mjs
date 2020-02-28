@@ -20,7 +20,7 @@ export class GeneExpressionGraph extends TargetMineGraph{
    */
   constructor(name, width, height){
     /* initialize super-class attributes */
-    super(name, width, height);
+    super('geneExpression', name, width, height);
 
     /* initial variables for X */
     this._x = 'category';
@@ -36,7 +36,6 @@ export class GeneExpressionGraph extends TargetMineGraph{
       'name'
     ];
     Object.freeze(this._levels);
-
 
   }
 
@@ -200,7 +199,7 @@ export class GeneExpressionGraph extends TargetMineGraph{
     });
 
     /* redraw the points, using the updated positions and colors */
-    let canvas = d3.select('svg#canvas > g#graph');
+    let canvas = d3.select('svg#canvas_geneExpression > g#graph');
     canvas.selectAll('#points').remove();
 
     canvas.append('g')

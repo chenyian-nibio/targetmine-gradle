@@ -11,12 +11,18 @@ export class TargetMineGraph {
 
   /**
    * Initialize a new instance of TargetMineGraph
+   * This is a general container for any graph definition added to TargetMine,
+   * thus, information such as the type of graph and general aspects as the size
+   * of it should be stored
    *
+   * @param {string} type The type of graph being displayed
    * @param {string} name The title for the graph
    * @param {int} width The width of the viewbox in the svg element
    * @param {int} height The height of the viewBox in the svg element
    */
-  constructor(name, width, height){
+  constructor(type, name, width, height){
+    /* the type of graph */
+    this._type = type;
     /* the title of the graph */
     this._name = name;
     /* dimensions of the canvas and margins for display */
@@ -44,7 +50,7 @@ export class TargetMineGraph {
 
     /* Add a base component to the SVG element. The drawing of each element in
      * the svg will be nested to this basic component */
-    let graph = d3.select('svg#canvas').append('g')
+    let graph = d3.select('svg#canvas_'+this._type).append('g')
       .attr('id', 'graph')
     ;
   }
@@ -221,7 +227,6 @@ export class TargetMineGraph {
     this._data.map(data=>{
       data.shape = this._shapes[0].value; // use default as first case
       let values = Object.values(data);
-      // console.log(data, keys, values);
       for( let i=keys.length; i>0; --i ){
         if( values.includes(keys[i]) ){
           data.shape = this._shapes[i].value; // change if a match is found
@@ -233,6 +238,7 @@ export class TargetMineGraph {
   }
 
   /**
+   * Initialize the DOM elements of a table
    *
    * @param {String} type The type of table that needs to be initialized.
    * @param {Array} data The array of objects used as data for the definition of
@@ -278,7 +284,7 @@ export class TargetMineGraph {
    */
   plotXAxis(labelAngle=0){
     /* remove previous axis components */
-    let canvas = d3.select('svg#canvas > g#graph');
+    let canvas = d3.select('svg#canvas_'+this._type+' > g#graph');
     canvas.selectAll('#bottom-axis').remove();
 
     /* add the axis to the display */
@@ -302,7 +308,7 @@ export class TargetMineGraph {
      * The title is always positioned anchored to the mid-point of the bottom
      * margin */
     if( this._x != undefined ){
-      d3.selectAll('svg#canvas > text#bottom-axis-label').remove();
+      d3.selectAll('svg#canvas_'+this._type+' > text#bottom-axis-label').remove();
       let label = canvas.append('text')
         .attr('id', 'bottom-axis-label')
         .attr('transform', 'translate('+this._width/2+','+(this._height-this._margin.bottom/3)+')')
@@ -313,10 +319,10 @@ export class TargetMineGraph {
   }
 
   /**
-   *
+   * Add DOM elements required for Y-axis display
    */
   plotYAxis(){
-    let canvas = d3.select('svg#canvas > g#graph');
+    let canvas = d3.select('svg#canvas_'+this._type+' > g#graph');
     canvas.selectAll('#left-axis').remove();
     canvas.append("g")
       .attr('id', 'left-axis')
@@ -324,7 +330,7 @@ export class TargetMineGraph {
       .call(this._yAxis)
     ;
 
-    d3.selectAll('svg#canvas > text#left-axis-label').remove();
+    d3.selectAll('svg#canvas_'+this._type+' > text#left-axis-label').remove();
     let label = canvas.append('text')
       .attr('id', 'left-axis-label')
       .attr('transform', 'rotate(-90)')

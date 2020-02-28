@@ -12,15 +12,17 @@
 <!-- Verify that there isnt an empty collection of data -->
 <c:choose>
   <c:when test="${empty data}">
-    <h3>No data to visualize</h3>
+    <h3>No BioActivity Data to Display</h3>
   </c:when>
 
   <c:otherwise>
     <h3>Bio-Activities Graph</h3>
     <!-- Visualization Container -->
     <div class='targetmineGraphDisplayer'>
+
       <!-- Left Column of the Visualization (main display) -->
-      <svg class='targetmineGraphSVG' id='canvas' viewbox="0 0 <%= width %> <%= ' ' %> <%= height%>"></svg>
+      <svg class='targetmineGraphSVG' id='canvas_bioActivity' viewbox="0 0 <%= width %> <%= ' ' %> <%= height%>"></svg>
+
       <!-- Right Column, reserved for visualization controls -->
       <div class='rightColumn'>
         <!-- Choose the property used to display color, and to make (in)visible
@@ -28,13 +30,10 @@
         <div id='color-div' style='flex-direction: column;'>
           <label for='color-table'>Color Scale:</label>
           <br />
-          <table id='color-table'><tbody></tbody></table>
-          <%-- <select id='color-select'> --%>
-          <%-- <ul id='color-select'> --%>
-            <%-- <option value=undefined>Select...</option> --%>
-          <%-- </ul> --%>
-          <%-- </select> --%>
-
+          <table id='color-table'>
+            <tbody>
+            </tbody>
+          </table>
           <button id='color-add'>Add</button>
         </div>
         <!-- Choose the property used to map display shape, and to make (in)visible
@@ -42,12 +41,11 @@
         <div id='shape-div' style='flex-direction: column;'>
           <label for='shape-select'>Shape Scale:</label>
           <br />
-          <%-- <select id='shape-select'>
-            <option value=undefined>Select...</option>
-          </select> --%>
-          <table id='shape-table'><tbody></tbody></table>
+          <table id='shape-table'>
+            <tbody>
+            </tbody>
+          </table>
           <button id='shape-add'>Add</button>
-
         </div>
       </div>
     </div>
@@ -57,7 +55,6 @@
       <!-- Modal content -->
       <div id='modal-content' class="modal-content">
         <h3 id='modal-title'></h3>
-        <%-- <span class="close">&times;</span> --%>
         <select id='column-select'>
           <option value=undefined>Select...</option>
         </select>
@@ -76,21 +73,18 @@
     <script type="text/javascript">
       import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
         .then((module) => {
-          window.graph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
-          window.graph.loadData('${data}');
-          window.graph.initModal();
-          window.graph.initXLabels();
-          window.graph.initXAxis();
-          window.graph.initYAxis(true);
-          window.graph.initColorsAndShapes(false);
-          window.graph.assignColors();
-          window.graph.assignShapes();
-          /* update the colors used for the data points in the graph */
-          window.graph.initColorTable();
-          // /* update the shapes used for the data points in the graph */
-          window.graph.initShapeTable();
-          /* plot the data points */
-          window.graph.plot();
+          window.bioActivityGraph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
+          window.bioActivityGraph.loadData('${data}');
+          window.bioActivityGraph.initModal();
+          window.bioActivityGraph.initXLabels();
+          window.bioActivityGraph.initXAxis();
+          window.bioActivityGraph.initYAxis(true);
+          window.bioActivityGraph.initColorsAndShapes(false);
+          window.bioActivityGraph.assignColors();
+          window.bioActivityGraph.assignShapes();
+          window.bioActivityGraph.initColorTable();
+          window.bioActivityGraph.initShapeTable();
+          window.bioActivityGraph.plot();
         });
     </script>
   </c:otherwise>
