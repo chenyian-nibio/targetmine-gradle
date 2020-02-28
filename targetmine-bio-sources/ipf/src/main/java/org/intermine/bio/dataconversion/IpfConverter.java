@@ -43,8 +43,7 @@ public class IpfConverter extends BioFileConverter
         this.osAlias = osAlias;
     }
 
-    private static Map<String, String> trialPropertyNames = new HashMap<String, String>();
-    private static Map<String, String> markerPropertyNames = new HashMap<String, String>();
+    private static Map<String, String> propertyNames = new HashMap<String, String>();
     
     static {
         Map<String, String> p = new HashMap<>();
@@ -152,7 +151,7 @@ public class IpfConverter extends BioFileConverter
 			String prevReferenceId = null;
 			Item item = null;
 			for (Map<String, String> map : parser) {
-				Item item = createItem("IPF");
+				item = createItem("IPF");
 				String publicationRef = publicationCreator.createItemRef(map.get("PubMed id"));
 				if(!Utils.empty(publicationRef)) {
 					item.setReference("reference", publicationRef);
