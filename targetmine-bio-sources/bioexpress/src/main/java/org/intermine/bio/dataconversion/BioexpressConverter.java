@@ -160,7 +160,7 @@ public class BioexpressConverter extends BioFileConverter
     	sample.setAttributeIfNotNull("cumulative", cumulative);
     	String tissueName = entry.get("Sample Site");
     	String tissueRef = createTissueRef(tissueName);
-    	sample.setReference("tissues", tissueRef);
+    	sample.addToCollection("tissues", tissueRef);
     	String donorRef = createDonorRef(entry);
     	if(!Utils.isEmpty(donorRef)) {
     		sample.setReference("donor", donorRef);

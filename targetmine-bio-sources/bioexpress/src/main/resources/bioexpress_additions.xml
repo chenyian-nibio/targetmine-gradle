@@ -17,7 +17,7 @@
 		<collection name="tissues" referenced-type="Tissue" reverse-reference="samples"/>
 		<collection name="series" referenced-type="MicroarraySeries" reverse-reference="samples"/>
 	</class>
-	<class name="BioExpressSample" extends="Expression" is-interface="true">
+	<class name="BioExpressSample" extends="MicroarraySample" is-interface="true">
 		<reference name="donor" referenced-type="BioExpressDonor" reverse-reference="samples"/>
 		<attribute name="identifier" type="java.lang.String"/>
 		<attribute name="sampleType" type="java.lang.String"/>
