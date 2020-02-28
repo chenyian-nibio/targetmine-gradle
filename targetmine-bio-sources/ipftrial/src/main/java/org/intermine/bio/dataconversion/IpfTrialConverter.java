@@ -10,6 +10,7 @@ package org.intermine.bio.dataconversion;
  *
  */
 
+import java.io.File;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,18 +29,18 @@ import org.intermine.xml.full.Item;
  * 
  * @author
  */
-public class IpfConverter extends BioFileConverter
+public class IpfTrialConverter extends BioFileConverter
 {
     //
-    private static final String DATASET_TITLE = "Add DataSet.title here";
-    private static final String DATA_SOURCE_NAME = "Add DataSource.name here";
+    private static final String DATASET_TITLE = "IPF Trial";
+    private static final String DATA_SOURCE_NAME = "IPFTrial";
 
     /**
      * Constructor
      * @param writer the ItemWriter used to handle the resultant items
      * @param model the Model
      */
-    public IpfConverter(ItemWriter writer, Model model) {
+    public IpfTrialConverter(ItemWriter writer, Model model) {
         super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
     }
     private String osAlias = null;
@@ -182,12 +183,25 @@ public class IpfConverter extends BioFileConverter
     	return ids.toArray(new String[ids.size()]);
     }
 	private UMLSResolver resolver;
+	private File mrConsoFile;
+	private File mrStyFile;
+	public void setMrConsoFile(File mrConsoFile) {
+		this.mrConsoFile = mrConsoFile;
+	}
+
+	public void setMrStyFile( File mrStyFile ) {
+		this.mrStyFile = mrStyFile;
+	}
+
     /**
      * 
      *
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
+	if(resolver==null){
+		resolver = new UMLSResolver(mrConsoFile, mrStyFile);
+	}
     	ItemCreator publicationCreator = new ItemCreator(this,"Publication","pubMedId");
     	ItemCreator diseaseCreator = new ItemCreator(this,"DiseaseConcept","identifier");
     	DBIDFinder trialGroupFinder = new DBIDFinder(osAlias,"TrialGroup","identifier","identifier");

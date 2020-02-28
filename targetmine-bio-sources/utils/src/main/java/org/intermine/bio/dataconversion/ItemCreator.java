@@ -18,6 +18,9 @@ public class ItemCreator {
 		this.identifierName = identifierName;
 	}
 	public String createItemRef(String identifier) throws ObjectStoreException {
+		if(Utils.isEmpty(identifier)){
+			return null;
+		}
 		if(itemMap.containsKey(identifier)){
 			return itemMap.get(identifier);
 		}

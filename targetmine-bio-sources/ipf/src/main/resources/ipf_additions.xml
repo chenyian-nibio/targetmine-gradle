@@ -5,11 +5,11 @@
 <!-- add any <class> elements here -->
     <class name="Publication" is-interface="true">
         <attribute name="pubMedId" type="java.lang.String"/>
-        <collection name="ipfTrials" referenced-type="IPFTrial" reverse-reference="reference" />
+        <collection name="ipfs" referenced-type="IPF" reverse-reference="reference" />
     </class>
     <class name="UMLSTerm" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>
-        <collection name="ipfTrials"  referenced-type="IPFTrial" reverse-reference="diseaseUmls"/>
+        <collection name="ipfs"  referenced-type="IPF" reverse-reference="diseaseUmls"/>
     </class>
     
     <class name="Protein" is-interface="true">

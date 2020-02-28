@@ -108,26 +108,32 @@ public class IpfConverter extends BioFileConverter
 		p.put("preclinical","preclinical_details");
     }
 	ItemCreator geneCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
-	DBIDFinder geneIdFinder = new DBIDFinder(osAlias,"Protein","ncbiGeneId","primaryAccession");
+	DBIDFinder geneIdFinder;
     private void addReferenceToGene(Item item,String collectionName,String uniportIds) throws Exception {
-    	if(!Utils.empty(uniportIds)) {
+    	if(Utils.empty(uniportIds)) {
     		return;
     	}
+	if(geneIdFinder==null){
+		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryAccession");
+	}
     	String[] ids = uniportIds.split("\\|");
     	for (String uniportId : ids) {
-    		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
+    		String identifier = geneIdFinder.getIdentifierByValue(uniportId);
     		if(!Utils.empty(identifier)) {
-    			String proteinRef = proteinCreator.createItemRef(identifier);
-    			item.addToCollection(collectionName, proteinRef);
+    			String geneRef = geneCreator.createItemRef(identifier);
+    			item.addToCollection(collectionName, geneRef);
     		}
 		}
     }
 	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
-	DBIDFinder proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
+	DBIDFinder proteinIdFinder;
     private void addReferenceToProtein(Item item,String collectionName,String uniportIds) throws Exception {
-    	if(!Utils.empty(uniportIds)) {
+    	if(Utils.empty(uniportIds)) {
     		return;
     	}
+	if(proteinIdFinder==null){
+		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
+	}
     	String[] ids = uniportIds.split("\\|");
     	for (String uniportId : ids) {
     		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
