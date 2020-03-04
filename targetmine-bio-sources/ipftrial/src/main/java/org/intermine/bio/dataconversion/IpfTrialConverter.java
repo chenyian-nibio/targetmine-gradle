@@ -175,6 +175,9 @@ public class IpfTrialConverter extends BioFileConverter
 		}
     }
     private static String[] getChemblIds(String chemblIds) {
+	if(chemblIds==null){
+		return new String[0];
+	}
     	ArrayList<String> ids = new ArrayList<>();
     	Matcher matcher = chemblIdPat.matcher(chemblIds);
     	while(matcher.find()) {
@@ -232,11 +235,13 @@ public class IpfTrialConverter extends BioFileConverter
 							item.setAttribute(entry.getKey(), value);
 						}
 					}
-					String cui = resolver.getIdentifier(map.get("disease_name"));
-					if(!Utils.isEmpty(cui)) {
-						String diseaseRef = diseaseCreator.createItemRef(cui);
-						item.setReference("diseaseUmls", diseaseRef);
-					}else{
+					String diseaseName = map.get("disease_name");
+					if(diseaseName!=null){
+						String cui = resolver.getIdentifier(map.get("disease_name"));
+						if(!Utils.isEmpty(cui)) {
+							String diseaseRef = diseaseCreator.createItemRef(cui);
+							item.setReference("diseaseUmls", diseaseRef);
+						}
 					}
 					addReferenceToChemblCompound(item, "chemblCompounds", map.get("ChEMBL"));
 					store(item);

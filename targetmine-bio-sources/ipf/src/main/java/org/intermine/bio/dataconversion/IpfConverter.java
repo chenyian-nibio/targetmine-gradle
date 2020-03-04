@@ -27,8 +27,8 @@ import org.intermine.xml.full.Item;
 public class IpfConverter extends BioFileConverter
 {
     //
-    private static final String DATASET_TITLE = "Add DataSet.title here";
-    private static final String DATA_SOURCE_NAME = "Add DataSource.name here";
+    private static final String DATASET_TITLE = "IPF";
+    private static final String DATA_SOURCE_NAME = "IPF";
 
     /**
      * Constructor
@@ -107,14 +107,14 @@ public class IpfConverter extends BioFileConverter
 		p.put("model_name","cells /cell_line/ model_name");
 		p.put("preclinical","preclinical_details");
     }
-	ItemCreator geneCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
+	ItemCreator geneCreator = new ItemCreator(this,"Gene","primaryIdentifier");
 	DBIDFinder geneIdFinder;
     private void addReferenceToGene(Item item,String collectionName,String uniportIds) throws Exception {
     	if(Utils.empty(uniportIds)) {
     		return;
     	}
 	if(geneIdFinder==null){
-		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryAccession");
+		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryIdentifier");
 	}
     	String[] ids = uniportIds.split("\\|");
     	for (String uniportId : ids) {
@@ -125,14 +125,14 @@ public class IpfConverter extends BioFileConverter
     		}
 		}
     }
-	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
+	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdentifier");
 	DBIDFinder proteinIdFinder;
     private void addReferenceToProtein(Item item,String collectionName,String uniportIds) throws Exception {
     	if(Utils.empty(uniportIds)) {
     		return;
     	}
 	if(proteinIdFinder==null){
-		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdenfitifer");
+		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdentifier");
 	}
     	String[] ids = uniportIds.split("\\|");
     	for (String uniportId : ids) {
@@ -168,7 +168,7 @@ public class IpfConverter extends BioFileConverter
 				}
 				String fromEntrezGeneId = map.get("from_node_Entrez id");
 				addReferenceToGene(item, "fromNodeGenes", fromEntrezGeneId);
-				String toEntrezGeneId = map.get("to_node_Entrez id");
+				String toEntrezGeneId = map.get("to_node_Entrez ID");
 				addReferenceToGene(item, "toNodeGenes", toEntrezGeneId);
 				String fromUniportIds = map.get("from_node_Uniprot id");
 				addReferenceToProtein(item, "fromNodeProteins", fromUniportIds);
@@ -177,8 +177,8 @@ public class IpfConverter extends BioFileConverter
 				for (Entry<String, String> entry : propertyNames.entrySet()) {
 					String value = map.get(entry.getValue());
 					item.setAttribute(entry.getKey(), value);
-					System.out.println("key ="+entry.getKey()+", value=" + entry.getValue());
 				}
+				store(item);
 			}
 
 		}

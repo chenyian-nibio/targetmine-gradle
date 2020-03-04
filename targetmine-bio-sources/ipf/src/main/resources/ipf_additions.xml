@@ -13,17 +13,17 @@
     </class>
     
     <class name="Protein" is-interface="true">
-        <attribute name="primaryIdenfitifer" type="java.lang.String"/>
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
         <collection name="ipfFromNodes" referenced-type="IPF" reverse-reference="fromNodeProteins" />
         <collection name="ipfToNodes" referenced-type="IPF" reverse-reference="toNodeProteins" />
     </class>
     <class name="Gene" is-interface="true">
-        <attribute name="primaryIdenfitifer" type="java.lang.String"/>
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
         <collection name="ipfFromNodes" referenced-type="IPF" reverse-reference="fromNodeGenes" />
         <collection name="ipfToNodes" referenced-type="IPF" reverse-reference="toNodeGenes" />
     </class>
     <class name="IPF" is-interface="true">
-        <attribute name="idenfitifer" type="java.lang.String"/>
+        <attribute name="identifier" type="java.lang.String"/>
         <reference name="reference" referenced-type="Publication" reverse-reference="ipfs"/>
         <reference name="diseaseUmls" referenced-type="UMLSTerm" reverse-reference="ipfs"/>
         
