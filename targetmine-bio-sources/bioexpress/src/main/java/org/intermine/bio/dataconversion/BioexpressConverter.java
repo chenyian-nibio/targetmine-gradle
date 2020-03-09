@@ -154,6 +154,14 @@ public class BioexpressConverter extends BioFileConverter
 			String value = entry.get(e.getKey());
 			sample.setAttributeIfNotNull(e.getValue(), value);
 		}
+    	if(umlsCreator==null) {
+    		umlsCreator = new ItemCreator(this, "UMLSTerm", "identifier");
+    	}
+    	String primaryDisease = resolver.getIdentifier("At Sample Time: Primary  Donor Primary Disease");
+    	String umlsRef = umlsCreator.createItemRef(primaryDisease);
+    	if(umlsRef!=null) {
+        	sample.setReference("umls", umlsRef);
+    	}
     	String atSampleTime = convertToDescription(entry, "At Sample Time:  ");
     	sample.setAttributeIfNotNull("sampleTime", atSampleTime);
     	String cumulative = convertToDescription(entry, "Cumulative  ");
@@ -169,7 +177,7 @@ public class BioexpressConverter extends BioFileConverter
     	store(sample);
     	sampleRefByExperimantName.put(exerimentName, sample.getIdentifier());
     }
-
+    private ItemCreator umlsCreator;
     /**
      * 
      *
@@ -183,6 +191,9 @@ public class BioexpressConverter extends BioFileConverter
     				createSampleRef(entry);
     			}
     		}
+    	}
+    	if(resolver==null) {
+    		resolver = new UMLSResolver(mrConsoFile, mrStyFile);
     	}
     	ItemCreator probeSetCreator = new ItemCreator(this,"ProbeSet","primaryIdentifier");
     	BufferedReader bufreader = new BufferedReader(reader);
@@ -207,6 +218,32 @@ public class BioexpressConverter extends BioFileConverter
 			}
     	}
     }
+	// key is CUI, value is reference to UmlsDisease item
+	private Map<String, String> umlsTermMap = new HashMap<String, String>();
+
+	public String createUMLSTerm(String cui) throws ObjectStoreException {
+		String key = umlsTermMap.get(cui);
+		if (key == null) {
+
+			Item item = createItem("UMLSTerm");
+			item.setAttribute("identifier", "UMLS:" + cui);
+			store(item);
+			umlsTermMap.put(cui, item.getIdentifier());
+		}
+		return key;
+	}
+
+	private UMLSResolver resolver;
+	private File mrConsoFile;
+	private File mrStyFile;
+	public void setMrConsoFile(File mrConsoFile) {
+		this.mrConsoFile = mrConsoFile;
+	}
+
+	public void setMrStyFile( File mrStyFile ) {
+		this.mrStyFile = mrStyFile;
+	}
+
     private Map<String,String> tissueMap = new HashMap<>();
     private String createTissueRef(String name) throws Exception {
     	if(tissueMap.containsKey(name)) {

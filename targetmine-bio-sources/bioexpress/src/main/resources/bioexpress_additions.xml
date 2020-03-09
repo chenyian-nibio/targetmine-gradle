@@ -2,6 +2,11 @@
 <!-- This file details any extensions needed to the data model to store data from this source, everything else is automatically generated from the model description so this is all we need to do to add to the model. -->
 
 <classes>
+    <class name="UMLSTerm" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <collection name="bioexpressSamples" referenced-type="BioExpressSample" reverse-reference="umls"/>
+    </class>
+
 	<class name="BioExpressDonor" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
 		<attribute name="gender" type="java.lang.String"/>
@@ -27,6 +32,7 @@
 		<attribute name="generalPathologicCategory" type="java.lang.String"/>
 		<attribute name="primarySite" type="java.lang.String"/>
 		<attribute name="primaryDisease" type="java.lang.String"/>
+   		<reference name="umls" referenced-type="UMLSTerm" reverse-reference="bioexpressSamples"/>
 		<attribute name="qcReport" type="java.lang.String"/>
 		<attribute name="description" type="java.lang.String"/>
 		<attribute name="autopsy" type="java.lang.String"/>
