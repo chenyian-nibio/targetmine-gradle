@@ -21,11 +21,11 @@ import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.xml.full.Item;
 
 public class GeneIdFinder {
-	private BioDBConverter converter;
+	private DataConverter converter;
 	private String osAlias;
 	private Map<String, String> geneMap = new HashMap<>();
 	public GeneIdFinder(String osAlias,DataConverter converter) {
-
+		this.converter = converter;
 		this.osAlias = osAlias;
 	}
     Map<String, String> synonymSubjectIdMap = new HashMap<>();

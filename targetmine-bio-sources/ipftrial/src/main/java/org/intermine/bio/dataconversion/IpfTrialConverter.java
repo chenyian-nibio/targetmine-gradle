@@ -130,6 +130,7 @@ public class IpfTrialConverter extends BioFileConverter
 		p.put("specimen","specimen");
 		p.put("model_name","cells /cell_line/ model_name");
 		p.put("preclinical","preclinical_details");
+	markerPropertyNames = p;
     }
 	ItemCreator geneCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
 	DBIDFinder geneIdFinder;
