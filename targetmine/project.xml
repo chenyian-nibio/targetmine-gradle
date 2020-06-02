@@ -18,6 +18,13 @@
       <property name="src.data.dir.includes" value="*.xml"/>
       <property name="ptmlistFile" value="/data/bio/db/Targetmine/uniprot/docs/ptmlist.txt"/>
     </source>
+<!--
+    <source name="covid19" type="tm-uniprot">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot-covid19"/>
+      <property name="src.data.dir.includes" value="covid-19.xml"/>
+      <property name="ptmlistFile" value="/data/bio/db/Targetmine/uniprot/docs/ptmlist.txt"/>
+    </source>
+-->
     <source name="uniprot-keywords" type="keyword-xml">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/keyword"/>
       <property name="src.data.dir.includes" value="keywlist.xml"/>
@@ -41,7 +48,7 @@
     <source name="gene-info" type="gene-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="*.gene_info"/>
-      <property name="geneinfo.organisms" value="9606 10090 10116"/>
+      <property name="geneinfo.organisms" value="9606 10090 10116 694009 2697049"/>
       <property name="unigene.organisms" value="Hs Rn Mm"/>
       <property name="gene2unigeneFile" value="/data/bio/db/Targetmine/gene_info/gene2unigene"/>
       <property name="gene2accessionFile" value="/data/bio/db/Targetmine/gene_info/gene2accession"/>
@@ -60,7 +67,7 @@
     <source name="protein2ipr" type="tm-protein2ipr">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/interpro"/>
       <property name="src.data.dir.includes" value="protein2ipr.dat"/>
-      <property name="organisms" value="9606 10090 10116"/>
+      <property name="organisms" value="9606 10090 10116 694009 2697049"/>
       <property name="osAlias" value="os.production"/>
     </source>
 
@@ -443,7 +450,7 @@
 
     <source name="gene-pubmed" type="gene-pubmed">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/publication"/>
-      <property name="pubmed.organisms" value="9606 10090 10116"/>
+      <property name="pubmed.organisms" value="9606 10090 10116 694009 2697049"/>
       <property name="src.data.dir.includes" value="gene2pubmed"/>
     </source>
 
