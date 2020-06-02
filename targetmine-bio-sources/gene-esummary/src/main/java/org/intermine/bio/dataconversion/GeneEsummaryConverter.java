@@ -128,24 +128,31 @@ public class GeneEsummaryConverter extends BioFileConverter
 							}
 							
 							String chromosome = element.getChildElements("Chromosome").get(0).getValue();
-							if (element.getChildElements("GenomicInfo").get(0).getChildElements("GenomicInfoType").size() > 0) {
+							if (!StringUtils.isEmpty(chromosome)) {
+							    if (element.getChildElements("GenomicInfo").get(0).getChildElements("GenomicInfoType").size() > 0) {
 								Element genomicInfo = element.getChildElements("GenomicInfo").get(0).getChildElements("GenomicInfoType").get(0);
 								String chrRef = getChromosome(taxonId, genomicInfo.getChildElements("ChrAccVer").get(0).getValue(), chromosome);
 								geneItem.setReference("chromosome", chrRef);
 								
 								Item location = createItem("Location");
-								Integer startValue = Integer.valueOf(genomicInfo.getChildElements("ChrStart").get(0).getValue()) + 1;
-								location.setAttribute("start", String.valueOf(startValue));
-								Integer endValue = Integer.valueOf(genomicInfo.getChildElements("ChrStop").get(0).getValue()) + 1;
-								location.setAttribute("end", String.valueOf(endValue));
-								String strand = endValue.intValue() > startValue.intValue() ? "+" : "-";
-								location.setAttribute("strand", String.valueOf(strand));
+								Integer chrStart = Integer.valueOf(genomicInfo.getChildElements("ChrStart").get(0).getValue()) + 1;
+								Integer chrStop = Integer.valueOf(genomicInfo.getChildElements("ChrStop").get(0).getValue()) + 1;
+								if (chrStop.intValue() > chrStart.intValue()) {
+									location.setAttribute("strand", String.valueOf("+"));
+									location.setAttribute("start", String.valueOf(chrStart));
+									location.setAttribute("end", String.valueOf(chrStop));
+								} else {
+									location.setAttribute("strand", String.valueOf("-"));
+									location.setAttribute("start", String.valueOf(chrStop));
+									location.setAttribute("end", String.valueOf(chrStart));
+								}
 								if (chrRef != null) {
 									location.setReference("locatedOn", chrRef);
 								}
 								location.setReference("feature", geneItem);
 								store(location);
 								geneItem.setReference("chromosomeLocation", location);
+							    }
 							}
 
 							store(geneItem);
