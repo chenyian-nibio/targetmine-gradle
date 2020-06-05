@@ -69,6 +69,18 @@
       <fieldconfig fieldExpr="strand"/>
     </fields>
   </class>
+ <class className="org.intermine.model.bio.WHOTrial">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="scientificTitle"/>
+    </fields>
+  </class>
+ <class className="org.intermine.model.bio.PharmaProject">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="overview"/>
+    </fields>
+  </class>
 
 
   <class className="org.intermine.model.bio.SequenceFeature">

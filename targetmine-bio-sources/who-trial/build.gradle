@@ -1,0 +1,28 @@
+dependencies {
+    compile group: 'org.openscience.cdk', name: 'cdk-bundle', version: '2.1.1'
+}
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/gen']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+dependencies {
+   compile project(':bio-source-utils')
+}
+
+processResources {
+    from('.') { include ("*.properties")}
+}

@@ -29,6 +29,12 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/keyword"/>
       <property name="src.data.dir.includes" value="keywlist.xml"/>
     </source>
+    <source name="umls" type="umls">
+      <property name="src.data.dir" location="/data/bio/db/umls/2018/2018AB/META/"/>
+      <property name="src.data.dir.includes" value="MRCONSO.RRF"/>
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+      <property name="osAlias" value="os.production"/>
+    </source>
     <source name="protein-ortholog" type="protein-ortholog">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/protein-ortholog/" />
       <property name="src.data.dir.includes" value="*.bb" />
@@ -44,6 +50,50 @@
     <source name="do-mesh" type="do-mesh">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
       <property name="src.data.dir.includes" value="HumanDO.obo" />
+    </source>
+    <source name="pharmaprojects" type="pharmaprojects">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pharmaprojects/" />
+      <property name="src.data.dir.includes" value="drug-export-pg-*.json" />
+      <property name="smilesInchiKeyFile" value="/data/bio/db/Targetmine/pharmaprojects/smilesinchikeys.tsv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="ctod" type="ctod">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/ctod/" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="who-trial" type="who-trial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
+      <property name="src.data.dir.includes" value="data.jl" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+    </source>
+    <source name="who-trial2" type="who-trial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials2" />
+      <property name="src.data.dir.includes" value="*/*.xml" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+    </source>
+    <source name="trialtrove" type="trialtrove">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/trialtrove" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+    <source name="ipf" type="ipf">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/IPF" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="osAlias" value="os.production"/>
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+    </source>
+    <source name="ipftrial" type="ipftrial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/IPFTrial" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="osAlias" value="os.production"/>
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
     <source name="gene-info" type="gene-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
@@ -231,6 +281,8 @@
     <source name="efo-xref" type="efo-xref">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
       <property name="src.data.dir.includes" value="efo.modi.obo" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>  
     <source name="mesh-term" type="mesh-term">
       <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
@@ -360,6 +412,11 @@
     <source name="chembl-mec" type="chembl-mechanism">
       <property name="source.db.name" value="chembl-psql"/>
     </source>
+
+    <source name="hgmd" type="hgmd">
+      <property name="source.db.name" value="hgmd-db"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
     
     <source name="irefindex" type="irefindex">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>
@@ -442,6 +499,13 @@
     </source>
 
     <source name="disease-summary" type="disease-summary"/>
+    <source name="bioexpress" type="bioexpress">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/BioExpress/CEL_Image_Files" />
+      <property name="src.data.dir.includes" value="*/CEL/expression.txt" />
+      <!-- <property name="src.data.dir.includes" value="*/CEL/expression.txt" /> -->
+      <property name="annotationCsvFile" value="/data/bio/db/Targetmine/BioExpress/Human_Plus2_Oncology_Annotations.csv"/>
+      <property name="osAlias" value="os.production"/>
+    </source>
     
     <source name="dataset-info" type="dataset-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine" />
