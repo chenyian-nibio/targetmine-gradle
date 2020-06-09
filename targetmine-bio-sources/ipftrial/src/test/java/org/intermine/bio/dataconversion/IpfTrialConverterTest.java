@@ -1,5 +1,9 @@
 package org.intermine.bio.dataconversion;
 
+import org.intermine.dataconversion.ItemsTestCase;
+import org.intermine.dataconversion.MockItemWriter;
+import org.intermine.metadata.Model;
+
 /*
  * Copyright (C) 2002-2018 FlyMine
  *
@@ -10,13 +14,13 @@ package org.intermine.bio.dataconversion;
  *
  */
 
-public class IpfConverterTest extends ItemsTestCase
+public class IpfTrialConverterTest extends ItemsTestCase
 {
     Model model = Model.getInstanceByName("genomic");
-    IpfConverter converter;
+    IpfTrialConverter converter;
     MockItemWriter itemWriter;
 
-    public IpfConverterTest(String arg) {
+    public IpfTrialConverterTest(String arg) {
         super(arg);
     }
 
