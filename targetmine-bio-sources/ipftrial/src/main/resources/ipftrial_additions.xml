@@ -25,7 +25,7 @@
         <collection name="ipfBioMarkers" referenced-type="IPFBiomarker" reverse-reference="proteins" />
     </class>
     <class name="Gene" is-interface="true">
-        <attribute name="primaryIdenfitifer" type="java.lang.String"/>
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
         <collection name="ipfBioMarkers" referenced-type="IPFBiomarker" reverse-reference="genes" />
     </class>
     <class name="TrialGroup" is-interface="true">

@@ -15,7 +15,6 @@ import java.io.FileReader;
  */
 
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,11 +26,8 @@ import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreFactory;
-import org.intermine.objectstore.query.ConstraintSet;
-import org.intermine.objectstore.query.ContainsConstraint;
 import org.intermine.objectstore.query.Query;
 import org.intermine.objectstore.query.QueryClass;
-import org.intermine.objectstore.query.QueryCollectionReference;
 import org.intermine.objectstore.query.QueryExpression;
 import org.intermine.objectstore.query.QueryField;
 import org.intermine.objectstore.query.QueryValue;
@@ -39,8 +35,6 @@ import org.intermine.objectstore.query.Results;
 import org.intermine.objectstore.query.ResultsRow;
 import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.xml.full.Item;
-
-import com.google.common.base.Ticker;
 
 
 /**
@@ -50,8 +44,8 @@ import com.google.common.base.Ticker;
 public class BioexpressConverter extends BioFileConverter
 {
     //
-    private static final String DATASET_TITLE = "Add DataSet.title here";
-    private static final String DATA_SOURCE_NAME = "Add DataSource.name here";
+    private static final String DATASET_TITLE = "BioExpress";
+    private static final String DATA_SOURCE_NAME = "BioExpress"	;
 
     /**
      * Constructor
@@ -156,8 +150,9 @@ public class BioexpressConverter extends BioFileConverter
 		}
     	if(umlsCreator==null) {
     		umlsCreator = new ItemCreator(this, "UMLSTerm", "identifier");
+    		resolver = new UMLSResolver(mrConsoFile, mrStyFile);
     	}
-    	String primaryDisease = resolver.getIdentifier("At Sample Time: Primary  Donor Primary Disease");
+    	String primaryDisease = resolver.getIdentifier(entry.get("At Sample Time: Primary  Donor Primary Disease"));
     	String umlsRef = umlsCreator.createItemRef(primaryDisease);
     	if(umlsRef!=null) {
         	sample.setReference("umls", umlsRef);
@@ -191,9 +186,6 @@ public class BioexpressConverter extends BioFileConverter
     				createSampleRef(entry);
     			}
     		}
-    	}
-    	if(resolver==null) {
-    		resolver = new UMLSResolver(mrConsoFile, mrStyFile);
     	}
     	ItemCreator probeSetCreator = new ItemCreator(this,"ProbeSet","primaryIdentifier");
     	BufferedReader bufreader = new BufferedReader(reader);
