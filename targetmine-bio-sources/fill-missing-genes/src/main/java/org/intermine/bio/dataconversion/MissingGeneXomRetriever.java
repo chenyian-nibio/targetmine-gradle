@@ -24,6 +24,7 @@ import org.intermine.metadata.StringUtil;
 import org.intermine.model.bio.Gene;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreFactory;
+import org.intermine.objectstore.query.ConstraintSet;
 import org.intermine.objectstore.query.Query;
 import org.intermine.objectstore.query.QueryClass;
 import org.intermine.objectstore.query.QueryField;
@@ -190,6 +191,9 @@ public class MissingGeneXomRetriever {
 					reader.close();
 					
 					geneIds.clear();
+					
+					// To prevent HTTP 429
+					Thread.sleep(2000);
 				}
 			}
 			
@@ -221,10 +225,13 @@ public class MissingGeneXomRetriever {
 		q.addFrom(qc);
 		q.addToSelect(qc);
 
-		SimpleConstraint sc = new SimpleConstraint(new QueryField(qc, "type"),
-				ConstraintOp.IS_NULL);
+		ConstraintSet cs = new ConstraintSet(ConstraintOp.AND);
+		cs.addConstraint(new SimpleConstraint(new QueryField(qc, "type"),
+				ConstraintOp.IS_NULL));
+		cs.addConstraint(new SimpleConstraint(new QueryField(qc, "primaryIdentifier"),
+				ConstraintOp.IS_NOT_NULL));
 
-		q.setConstraint(sc);
+		q.setConstraint(cs);
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<Gene> ret = (List<Gene>) ((List) os.executeSingleton(q));
