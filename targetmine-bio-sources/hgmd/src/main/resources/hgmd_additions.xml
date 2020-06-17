@@ -21,7 +21,7 @@
         <attribute name="briefDescription" type="java.lang.String"/>
         <attribute name="description" type="java.lang.String"/>
         <attribute name="type" type="java.lang.String"/>
-        <attribute name="ncbiGeneId" type="java.lang.String"/>
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
         <collection name="snps" referenced-type="VariationAnnotation" reverse-reference="gene"/>
     </class>
 
