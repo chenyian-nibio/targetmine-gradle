@@ -159,10 +159,12 @@ public class BioexpressConverter extends BioFileConverter
     		resolver = new UMLSResolver(mrConsoFile, mrStyFile);
     	}
     	String primaryDisease = resolver.getIdentifier(entry.get("At Sample Time: Primary  Donor Primary Disease"));
-    	String umlsRef = umlsCreator.createItemRef(primaryDisease);
-    	if(umlsRef!=null) {
+        if(primaryDisease!=null){
+    	    String umlsRef = umlsCreator.createItemRef("UMLS:"+primaryDisease);
+    	    if(umlsRef!=null) {
         	sample.setReference("umls", umlsRef);
-    	}
+    	    }
+        }
     	String atSampleTime = convertToDescription(entry, "At Sample Time:  ");
     	sample.setAttributeIfNotNull("sampleTime", atSampleTime);
     	String cumulative = convertToDescription(entry, "Cumulative  ");
