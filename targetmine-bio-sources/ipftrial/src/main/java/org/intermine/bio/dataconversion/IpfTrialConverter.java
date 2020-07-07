@@ -1,39 +1,31 @@
 package org.intermine.bio.dataconversion;
 
-/*
- * Copyright (C) 2002-2019 FlyMine
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public Licence.  This should
- * be distributed with the code.  See the LICENSE file for more
- * information or http://www.gnu.org/copyleft/lesser.html.
- *
- */
-
 import java.io.File;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
+import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.xml.full.Item;
 
 
 /**
  * 
- * @author
+ * @author mss-uehara-san (create)
+ * @author chenyian (refine)
  */
 public class IpfTrialConverter extends BioFileConverter
 {
     //
     private static final String DATASET_TITLE = "IPF Trial";
-    private static final String DATA_SOURCE_NAME = "IPFTrial";
+    private static final String DATA_SOURCE_NAME = "IPF";
 
     /**
      * Constructor
@@ -43,152 +35,80 @@ public class IpfTrialConverter extends BioFileConverter
     public IpfTrialConverter(ItemWriter writer, Model model) {
         super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
     }
-    private String osAlias = null;
-    public void setOsAlias(String osAlias) {
-        this.osAlias = osAlias;
-    }
 
     private static Map<String, String> trialPropertyNames = new HashMap<String, String>();
     private static Map<String, String> markerPropertyNames = new HashMap<String, String>();
     
     static {
-        Map<String, String> p = new HashMap<>();
-        p.put("referenceType","reference_type");
-        // reference_id
-        //associated_clinical trials
-  		p.put("therapy","drug/therapy");
-  		p.put("referenceTherapy","reference_drug/therapy");
-  		p.put("treatmentDetails","treatment_details (Seperator '\\')");
-  		p.put("dose","dose");
-  		p.put("routeOfAdministration","route of administration");
-  		p.put("duration","duration");
-  		p.put("chembl","ChEMBL");
-  		//CAS id
-        //ChEMBL
-        //drug bank id
-  		p.put("approvedDrug","approved_drug");
-        p.put("approvalAutority","approval_authority");
-        p.put("diseaseName","disease_name");
-   		p.put("diseaseSubCategory","disease_sub_category");
-   		p.put("stage","Stage");
-   		p.put("grade","Grade");
-		p.put("histoparhology","Histopathology");
-        //biomarker_name_as_mentioned_in_reference
-
-		p.put("studyType","study_type (Clinical/PreClinical)");
-		p.put("cellLineName","Cell line/ Model Name");
-		p.put("totalSampleNumber","total_sample_number");
-		p.put("patientNumberInCase","patient_number (case)");
-		p.put("patientNumberInReference","patient_number (reference)");
-		p.put("age","age (case)");
-		p.put("gender","gender (case)");
-		p.put("ethnicity","ethnicity (case)");
-		p.put("trialStatus","trial_status");
-		p.put("sponsor","sponsor & collaborator");
-		p.put("phase","phase");
-		p.put("inclusionCriteria","inclusion_criteria");
-		p.put("exclusionCriteria","exclusion_criteria");
-		p.put("allocation","allocation");
-		p.put("interventionModel","intervention_model");
-		p.put("masking","masking");
-		p.put("primaryPurpose","primary_purpose");
-		trialPropertyNames = p;
+    	// trialPropertyNames
+        trialPropertyNames.put("referenceType","reference_type");
+        trialPropertyNames.put("chembl","ChEMBL");
+  		trialPropertyNames.put("therapy","drug/therapy");
+  		trialPropertyNames.put("referenceTherapy","reference_drug/therapy");
+  		trialPropertyNames.put("treatmentDetails","treatment_details (Seperator '\\\\')");
+  		trialPropertyNames.put("dose","dose");
+  		trialPropertyNames.put("routeOfAdministration","route of administration");
+  		trialPropertyNames.put("duration","duration");
+  		trialPropertyNames.put("approvedDrug","approved_drug");
+        trialPropertyNames.put("approvalAutority","approval_authority");
+        trialPropertyNames.put("diseaseName","disease_name");
+   		trialPropertyNames.put("diseaseSubCategory","disease_sub_category");
+   		trialPropertyNames.put("stage","Stage");
+   		trialPropertyNames.put("grade","Grade");
+		trialPropertyNames.put("histoparhology","Histopathology");
+		trialPropertyNames.put("studyType","study_type (Clinical/PreClinical)");
+		trialPropertyNames.put("cellLineName","Cell line/ Model Name");
+		trialPropertyNames.put("totalSampleNumber","total_sample_number");
+		trialPropertyNames.put("patientNumberInCase","patient_number (case)");
+		trialPropertyNames.put("patientNumberInReference","patient_number (reference)");
+		trialPropertyNames.put("age","age (case)");
+		trialPropertyNames.put("gender","gender (case)");
+		trialPropertyNames.put("ethnicity","ethnicity (case)");
+		trialPropertyNames.put("trialStatus","trial_status");
+		trialPropertyNames.put("sponsor","sponsor & collaborator");
+		trialPropertyNames.put("phase","phase");
+		trialPropertyNames.put("inclusionCriteria","inclusion_criteria");
+		trialPropertyNames.put("exclusionCriteria","exclusion_criteria");
+		trialPropertyNames.put("allocation","allocation");
+		trialPropertyNames.put("interventionModel","intervention_model");
+		trialPropertyNames.put("masking","masking");
+		trialPropertyNames.put("primaryPurpose","primary_purpose");
 		
-		
-		
-        p = new HashMap<>();
-		p.put("name","biomarker_name_STD");
-		p.put("type","marker_type");
-		p.put("nature","marker_nature");
-        p.put("identifier","s_no");
-        //Entrez id
-        //Uniprot id
-		p.put("typeOfVariation","type_of_variation");
-		//"rs_id"
-		p.put("HGVSName","HGVS Name");
-		p.put("association","association");
-		p.put("markerAlteration","marker_alteration");
-		p.put("typeOfAlteration","type of alteration");
-		p.put("phenotype","phenotype");
-		p.put("phenotypeAlteration","phenotype_alteration");
-		p.put("significance","significance");
-		p.put("relationship","relationship_type");
-		p.put("annotation","disease Annotation");
-        //KEGG pathway ID #NODATA
-		p.put("therapy","drug/therapy (Seperator '|'; '+')");
-		p.put("referenceDrug","reference_drug/therapy (Seperator '|'; '+')");
-		p.put("treatmentDetail","treatment_details (Seperator '\\')");
-		p.put("chemblCompound","Chembl_ID");
-		p.put("mechanismOfAction","compound_mechanism_of_action");
-		//"compound_mechanism_of_action_ID
-        //target_name
-        //target_chembl_id
-		p.put("inducer","inducer_details");
-		p.put("inhibitor","Inhibitor");
-		p.put("studyType","study_type (Clinical/Preclinical-In Vitro/Preclinical-In Vivo)");
-		p.put("methodology","methodology/technique (From and To node \"|\" and multiple proteins';' and '/' for multiple methods)");
-		p.put("specimen","specimen");
-		p.put("model_name","cells /cell_line/ model_name");
-		p.put("preclinical","preclinical_details");
-	markerPropertyNames = p;
+		// markerPropertyNames
+		markerPropertyNames.put("identifier","s_no");
+		markerPropertyNames.put("name","biomarker_name_STD");
+		markerPropertyNames.put("type","marker_type");
+		markerPropertyNames.put("nature","marker_nature");
+		markerPropertyNames.put("typeOfVariation","type_of_variation");
+		markerPropertyNames.put("HGVSName","HGVS Name");
+		markerPropertyNames.put("association","association");
+		markerPropertyNames.put("markerAlteration","marker_alteration");
+		markerPropertyNames.put("typeOfAlteration","type of alteration");
+		markerPropertyNames.put("phenotype","phenotype");
+		markerPropertyNames.put("phenotypeAlteration","phenotype_alteration");
+		markerPropertyNames.put("significance","significance");
+		markerPropertyNames.put("pValue","p_value");
+		markerPropertyNames.put("application","application");
     }
-	ItemCreator geneCreator = new ItemCreator(this,"Protein","primaryIdenfitifer");
-	DBIDFinder geneIdFinder;
-    private void addReferenceToGene(Item item,String collectionName,String[] uniportIds) throws Exception {
-	if(geneIdFinder == null){
-		geneIdFinder = new DBIDFinder(osAlias,"Gene","ncbiGeneId","primaryIdentifier");
-	}
-    	for (String uniportId : uniportIds) {
-    		String identifier = geneIdFinder.getIdentifierByValue(uniportId);
-    		if(!Utils.empty(identifier)) {
-    			String proteinRef = proteinCreator.createItemRef(identifier);
-    			item.addToCollection(collectionName, proteinRef);
-    		}
-		}
-    }
-	ItemCreator proteinCreator = new ItemCreator(this,"Protein","primaryIdentifier");
-	DBIDFinder proteinIdFinder;
-    private void addReferenceToProtein(Item item,String collectionName,String[] uniportIds) throws Exception {
-	if(proteinIdFinder==null){
-		proteinIdFinder = new DBIDFinder(osAlias,"Protein","primaryAccession","primaryIdentifier");
-	}
-    	for (String uniportId : uniportIds) {
-    		String identifier = proteinIdFinder.getIdentifierByValue(uniportId);
-    		if(!Utils.empty(identifier)) {
-    			String proteinRef = proteinCreator.createItemRef(identifier);
-    			item.addToCollection(collectionName, proteinRef);
-    		}
-		}
-    }
+    
     private static Pattern chemblIdPat = Pattern.compile("CHEMBL\\d+");
-	ItemCreator chemblCompoundCreator = new ItemCreator(this,"ChemblCompound","identifier");
-	DBIDFinder compoundIdFinder;
-    private void addReferenceToChemblCompound(Item item,String collectionName,String chemblIds) throws Exception {
-	if(compoundIdFinder==null){
-		compoundIdFinder = new DBIDFinder(osAlias,"ChemblCompound","originalId","identifier");
-	}
-    	for (String uniportId : getChemblIds(chemblIds)) {
-    		String identifier = compoundIdFinder.getIdentifierByValue(uniportId);
-    		if(!Utils.empty(identifier)) {
-    			String proteinRef = chemblCompoundCreator.createItemRef(identifier);
-    			item.addToCollection(collectionName, proteinRef);
-    		}
+
+	private static String[] getChemblIds(String chemblIds) {
+		if (chemblIds == null) {
+			return new String[0];
 		}
-    }
-    private static String[] getChemblIds(String chemblIds) {
-	if(chemblIds==null){
-		return new String[0];
+		ArrayList<String> ids = new ArrayList<>();
+		Matcher matcher = chemblIdPat.matcher(chemblIds);
+		while (matcher.find()) {
+			ids.add(matcher.group());
+		}
+		return ids.toArray(new String[ids.size()]);
 	}
-    	ArrayList<String> ids = new ArrayList<>();
-    	Matcher matcher = chemblIdPat.matcher(chemblIds);
-    	while(matcher.find()) {
-    		ids.add(matcher.group());
-    	}
-    	return ids.toArray(new String[ids.size()]);
-    }
+
 	private UMLSResolver resolver;
 	private File mrConsoFile;
 	private File mrStyFile;
+
 	public void setMrConsoFile(File mrConsoFile) {
 		this.mrConsoFile = mrConsoFile;
 	}
@@ -203,13 +123,9 @@ public class IpfTrialConverter extends BioFileConverter
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
-	if(resolver==null){
-		resolver = new UMLSResolver(mrConsoFile, mrStyFile);
-	}
-    	ItemCreator publicationCreator = new ItemCreator(this,"Publication","pubMedId");
-    	ItemCreator diseaseCreator = new ItemCreator(this,"DiseaseConcept","identifier");
-    	DBIDFinder trialGroupFinder = new DBIDFinder(osAlias,"TrialGroup","identifier","identifier");
-    	ItemCreator trialGrouopCreator = new ItemCreator(this,"TrialGroup","identifier");
+		if (resolver == null) {
+			resolver = new UMLSResolver(mrConsoFile, mrStyFile);
+		}
 		try(CSVParser parser = new CSVParser(reader, true)){
 			String prevReferenceId = null;
 			Item item = null;
@@ -219,34 +135,40 @@ public class IpfTrialConverter extends BioFileConverter
 					item = createItem("IPFTrial");
 					item.setAttribute("name", "IPF:"+referenceId);
 					String refType = map.get("reference_type");
-					String trialName = referenceId;
+					
 					if ("PubMed".equals(refType)) {
-						String referenceRef = publicationCreator.createItemRef(referenceId);
-						item.setReference("reference", referenceRef);
-						trialName = map.get("associated_clinical trials");
+						item.setReference("reference", getPublication(referenceId));
 					}
-					String trialIdentifier = trialGroupFinder.getIdentifierByValue(trialName);
-					if(!Utils.empty(trialIdentifier)) {
-						String trialGroupRef = trialGrouopCreator.createItemRef(trialIdentifier);
-						item.setReference("trialGroup",trialGroupRef);
+					
+					String trialId = map.get("associated_clinical trials");
+					if(isNotNull(trialId)) {
+						item.setReference("trialGroup",getTrialGroup(trialId));
 					}
+					
 					for (Entry<String, String> entry : trialPropertyNames.entrySet()) {
 						String value = map.get(entry.getValue());
-						if(!Utils.isEmpty(value) && !"[NA]".equals(value)) {
+						if(isNotNull(value)) {
 							item.setAttribute(entry.getKey(), value);
 						}
 					}
+					
 					String diseaseName = map.get("disease_name");
 					if(diseaseName!=null){
 						String cui = resolver.getIdentifier(map.get("disease_name"));
-						if(!Utils.isEmpty(cui)) {
-							String diseaseRef = diseaseCreator.createItemRef(cui);
-							item.setReference("diseaseUmls", diseaseRef);
+						if(!StringUtils.isEmpty(cui)) {
+							item.setReference("diseaseUmls", getUMLSTerm(cui));
 						}
 					}
-					addReferenceToChemblCompound(item, "chemblCompounds", map.get("ChEMBL"));
+
+					String chemblIds = map.get("ChEMBL");
+			    	for (String chemblId : getChemblIds(chemblIds)) {
+			    		if(!StringUtils.isEmpty(chemblId)) {
+			    			item.addToCollection("chemblCompounds", getChemblCompound(chemblId));
+			    		}
+					}
 					store(item);
 				}
+				
 				prevReferenceId = referenceId;
 				Item biomarkerItem = createItem("IPFBiomarker");
 				biomarkerItem.setReference("trial", item);
@@ -256,10 +178,22 @@ public class IpfTrialConverter extends BioFileConverter
 						biomarkerItem.setAttribute(entry.getKey(), value);
 					}
 				}
-				String[] entrezIds = map.get("Entrez id").split(";\\s*");
-				addReferenceToGene(biomarkerItem, "genes", entrezIds);
-				String[] uniprotIds = map.get("Uniprot id").split(";\\s*");
-				addReferenceToProtein(biomarkerItem, "proteins", uniprotIds);
+				String entrezIdString = map.get("Entrez id");
+				if (isNotNull(entrezIdString)) {
+					String[] entrezIds = entrezIdString.split(";\\s*");
+					for (String geneId: entrezIds) {
+						biomarkerItem.addToCollection("genes", getGene(geneId));
+					}
+				}
+				
+				String uniprotIdString = map.get("Uniprot id");
+				if (isNotNull(uniprotIdString)) {
+					String[] uniprotIds = uniprotIdString.split(";\\s*");
+					for (String accession: uniprotIds) {
+						biomarkerItem.addToCollection("proteins", getProtein(accession));
+					}
+				}
+				
 				store(biomarkerItem);
 				
 			}
@@ -267,4 +201,91 @@ public class IpfTrialConverter extends BioFileConverter
 		}
 
     }
+
+	private Map<String, String> geneMap = new HashMap<String, String>();
+
+	private String getGene(String geneId) throws ObjectStoreException {
+		String ret = geneMap.get(geneId);
+		if (ret == null) {
+			Item item = createItem("Gene");
+			item.setAttribute("primaryIdentifier", geneId);
+			ret = item.getIdentifier();
+			store(item);
+			geneMap.put(geneId, ret);
+		}
+		return ret;
+	}
+	private Map<String, String> publicationMap = new HashMap<String, String>();
+
+	private String getPublication(String pubmedId) throws ObjectStoreException {
+		String ret = publicationMap.get(pubmedId);
+		if (ret == null) {
+			Item item = createItem("Publication");
+			item.setAttribute("pubMedId", pubmedId);
+			store(item);
+			ret = item.getIdentifier();
+			publicationMap.put(pubmedId, ret);
+		}
+		return ret;
+	}
+
+	private Map<String, String> ontologyItemMap = new HashMap<String, String>();
+
+	private String getUMLSTerm(String identifier) throws ObjectStoreException {
+		String ret = ontologyItemMap.get(identifier);
+		if (ret == null) {
+			Item item = createItem("UMLSTerm");
+			item.setAttribute("identifier", identifier);
+			store(item);
+			ret = item.getIdentifier();
+			ontologyItemMap.put(identifier, ret);
+		}
+		return ret;
+	}
+
+	private Map<String, String> proteinMap = new HashMap<String, String>();
+
+	private String getProtein(String primaryAccession) throws ObjectStoreException {
+		String ret = proteinMap.get(primaryAccession);
+		if (ret == null) {
+			Item item = createItem("Protein");
+			item.setAttribute("primaryAccession", primaryAccession);
+			store(item);
+			ret = item.getIdentifier();
+			proteinMap.put(primaryAccession, ret);
+		}
+		return ret;
+	}
+
+	private Map<String, String> trialGroupMap = new HashMap<String, String>();
+	
+	private String getTrialGroup(String identifier) throws ObjectStoreException {
+		String ret = trialGroupMap.get(identifier);
+		if (ret == null) {
+			Item item = createItem("TrialGroup");
+			item.setAttribute("identifier", identifier);
+			store(item);
+			ret = item.getIdentifier();
+			trialGroupMap.put(identifier, ret);
+		}
+		return ret;
+	}
+
+	private Map<String, String> compoundMap = new HashMap<String, String>();
+
+	private String getChemblCompound(String chemblId) throws ObjectStoreException {
+		String ret = compoundMap.get(chemblId);
+		if (ret == null) {
+			Item item = createItem("ChemblCompound");
+			item.setAttribute("originalId", chemblId);
+			store(item);
+			ret = item.getIdentifier();
+			compoundMap.put(chemblId, ret);
+		}
+		return ret;
+	}
+	
+	private static boolean isNotNull(String value) {
+		return !(StringUtils.isEmpty(value) || value.equals("[NA]"));
+	}
 }
