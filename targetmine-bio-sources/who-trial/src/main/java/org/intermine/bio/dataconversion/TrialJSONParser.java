@@ -17,7 +17,6 @@ public class TrialJSONParser implements TrialParser{
 	private static Map<String, String> propertyNames = new HashMap<String, String>();
 	private static int STRING_LIMIT = 10000;
 	static {
-		Map<String, String> p = new HashMap<>();
 		propertyNames.put("name", "Main ID");
 		propertyNames.put("title", "Public title");
 		propertyNames.put("scientificTitle", "Scientific title");
@@ -37,7 +36,8 @@ public class TrialJSONParser implements TrialParser{
 		propertyNames.put("primaryOutcome", "primary_outcome");
 		propertyNames.put("secondaryOutcome", "secondary_outcome");
 		propertyNames.put("result", "result");
-	}	private BufferedReader reader;
+	}
+	private BufferedReader reader;
 
 	public TrialJSONParser(Reader reader) throws IOException {
 		this.reader = new BufferedReader(reader);

@@ -1,14 +1,5 @@
 package org.intermine.bio.dataconversion;
 
-/*
- * Copyright (C) 2002-2019 FlyMine
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public Licence.  This should
- * be distributed with the code.  See the LICENSE file for more
- * information or http://www.gnu.org/copyleft/lesser.html.
- *
- */
 import java.io.File;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -27,7 +18,7 @@ import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.xml.full.Item;
 
 /**
- * @author
+ * @author mss-uehara-san
  */
 public class WhoTrialConverter extends BioFileConverter {
 	private static final Logger LOG = LogManager.getLogger(WhoTrialConverter.class);
@@ -35,8 +26,8 @@ public class WhoTrialConverter extends BioFileConverter {
 	private File mrStyFile;
 
 	//
-	private static final String DATASET_TITLE = "who-trial";
-	private static final String DATA_SOURCE_NAME = "who-trial";
+	private static final String DATASET_TITLE = "WHO ICTRP";
+	private static final String DATA_SOURCE_NAME = "WHO";
 
 	// key is CUI, value is reference to UmlsDisease item
 	private Map<String, Item> umlsTermMap = new HashMap<String, Item>();
@@ -50,12 +41,12 @@ public class WhoTrialConverter extends BioFileConverter {
 	public WhoTrialConverter(ItemWriter writer, Model model) {
 		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
 	}
-	private static Set<String> idSet = new HashSet<>();
 	private static int STRING_LIMIT = 10000;
 	private static int PRIMARY_KEY_STRING_LIMIT = 1000;
 
 	private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 	
+	private Set<String> idSet = new HashSet<>();
 
 	private void storeTrialElements(Map<String,String> trial) throws ObjectStoreException {
 		String name = trial.get("name");
@@ -98,18 +89,18 @@ public class WhoTrialConverter extends BioFileConverter {
 		}
 
 		String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
-		HashSet<String> umlses = new HashSet<String>();
+		Set<String> umlsTerms = new HashSet<String>();
 		for(String diseaseName : diseaseNameSet){
 			LOG.warn("[test]condition = " + diseaseName);
 			if (diseaseName != null && diseaseName.length() > 0) {
 				Item umlsDisease = getUmlsDisease(diseaseName);
 				if(umlsDisease!=null) {
-					umlses.add(umlsDisease.getIdentifier());
+					umlsTerms.add(umlsDisease.getIdentifier());
 				}
 			}
 		}
-		if(!umlses.isEmpty()) {
-			whoTrial.setCollection("umlses", new ArrayList<String>(umlses));
+		if(!umlsTerms.isEmpty()) {
+			whoTrial.setCollection("umlsTerms", new ArrayList<String>(umlsTerms));
 		}
 		try {
 			store(whoTrial);
@@ -120,7 +111,7 @@ public class WhoTrialConverter extends BioFileConverter {
 	}
 
 	private String[] convertConditionToDiseaseNameSet(String condition) {
-		if(condition==null){
+		if (condition == null) {
 			return new String[0];
 		}
 		String[] diseaseNames = condition.split("<[Bb][Rr]>");//condition.split("\n");
@@ -148,7 +139,6 @@ public class WhoTrialConverter extends BioFileConverter {
 		}
 		Item item = umlsTermMap.get(cui);
 		if (item == null) {
-
 			item = createItem("UMLSTerm");
 			item.setAttribute("identifier", "UMLS:" + cui);
 			store(item);
@@ -174,7 +164,7 @@ public class WhoTrialConverter extends BioFileConverter {
 			}
 		}
 		String[] split = diseaseName.split(";");
-		if(split.length>1) {
+		if (split.length > 1) {
 			for (String string : split) {
 				cui = resolver.getIdentifier(string);
 				if(cui!=null) {

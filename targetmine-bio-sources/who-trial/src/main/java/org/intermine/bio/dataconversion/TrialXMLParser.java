@@ -12,7 +12,6 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.ParsingException;
 
 public class TrialXMLParser implements TrialParser {
 	private static final Logger LOG = LogManager.getLogger(TrialXMLParser.class);
@@ -74,17 +73,16 @@ public class TrialXMLParser implements TrialParser {
 	}
 	@Override
 	public Map<String, String> parse() throws IOException {
-		if(trialElements==null) {
+		if (trialElements == null) {
 			init();
 		}
-		if(trialElements!=null && trialIndex < trialElements.size()) {
+		if (trialElements != null && trialIndex < trialElements.size()) {
 			return parse(trialElements.get(trialIndex++));
 		}
 		return null;
 	}
 	public Map<String, String> parse(Element trial) {
 		HashMap<String, String> map = new HashMap<String, String>();
-				;
 
 		whoTrial2XmlPropertyNames.forEach((key, name) -> {
 			Element child = trial.getFirstChildElement(name);
