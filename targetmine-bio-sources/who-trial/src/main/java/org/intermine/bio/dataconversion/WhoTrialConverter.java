@@ -30,7 +30,7 @@ public class WhoTrialConverter extends BioFileConverter {
 	private static final String DATA_SOURCE_NAME = "WHO";
 
 	// key is CUI, value is reference to UmlsDisease item
-	private Map<String, Item> umlsTermMap = new HashMap<String, Item>();
+	private Map<String, String> umlsTermMap = new HashMap<String, String>();
 
 	/**
 	 * Constructor
@@ -62,17 +62,20 @@ public class WhoTrialConverter extends BioFileConverter {
 		Item whoTrial = createItem("WHOTrial");
 		whoTrial.setReference("trialGroup", trialGroup);
 		for (String key : TrialXMLParser.getkeys()) {
-			String child = trial.get(key);
-			if(child == null) {
-				LOG.warn("*****[test]Nothing Element : " + key);
+			String value = trial.get(key);
+			if(value == null) {
 				continue;
 			}
-			String elementValue = child.trim();
+			String elementValue = value.trim();
 			if(elementValue != null && !elementValue.isEmpty()) {
 				if(elementValue.length() > STRING_LIMIT) {
 					LOG.warn("too large string at " + trial.get("Name") + ", " + key + "= " + elementValue);
 				}
-				LOG.warn("[test]key : " + key + ", elementValue : " + elementValue);
+				// slightly pretty the contents
+				elementValue = elementValue.replaceAll("^<br>", " ");
+				elementValue = elementValue.replaceAll("[\n\r]+", " ");
+				elementValue = elementValue.trim();
+
 				whoTrial.setAttribute(key, elementValue);
 
 			}
@@ -82,42 +85,29 @@ public class WhoTrialConverter extends BioFileConverter {
 		String url = String.format(WHO_TRIAL2_URL,name);
 		whoTrial.setAttribute("url", url);
 
-		// add disease.
 		String condition = trial.get("condition");
-		if(condition != null && !condition.isEmpty()){
-			whoTrial.setAttribute("condition", condition);
-		}
-
-		String[] diseaseNameSet = convertConditionToDiseaseNameSet(condition);
-		Set<String> umlsTerms = new HashSet<String>();
-		for(String diseaseName : diseaseNameSet){
-			LOG.warn("[test]condition = " + diseaseName);
-			if (diseaseName != null && diseaseName.length() > 0) {
-				Item umlsDisease = getUmlsDisease(diseaseName);
-				if(umlsDisease!=null) {
-					umlsTerms.add(umlsDisease.getIdentifier());
+		if (condition != null) {
+			Set<String> diseaseNameSet = convertConditionToDiseaseNameSet(condition);
+			Set<String> umlsTerms = new HashSet<String>();
+			for(String diseaseName : diseaseNameSet){
+				if (diseaseName != null && diseaseName.length() > 0) {
+					String umlsTerm = getUMLSTerm(diseaseName);
+					if (umlsTerm != null) {
+						umlsTerms.add(umlsTerm);
+					}
 				}
 			}
+			if(!umlsTerms.isEmpty()) {
+				whoTrial.setCollection("umlsTerms", new ArrayList<String>(umlsTerms));
+			}
 		}
-		if(!umlsTerms.isEmpty()) {
-			whoTrial.setCollection("umlsTerms", new ArrayList<String>(umlsTerms));
-		}
-		try {
-			store(whoTrial);
-		} catch (ObjectStoreException e) {
-			LOG.warn("Cannot store who trials", e);
-		}
-		
+		store(whoTrial);
 	}
 
-	private String[] convertConditionToDiseaseNameSet(String condition) {
-		if (condition == null) {
-			return new String[0];
-		}
-		String[] diseaseNames = condition.split("<[Bb][Rr]>");//condition.split("\n");
+	private Set<String> convertConditionToDiseaseNameSet(String condition) {
+		String[] diseaseNames = condition.split("<[Bb][Rr]>|;");
 
-		ArrayList<String> diseaseNameSet = new ArrayList<>();
-
+		Set<String> diseaseNameSet = new HashSet<>();
 		for(String diseaseName : diseaseNames) {
 			diseaseName = diseaseName.trim();
 			if(diseaseName != null && !diseaseName.isEmpty()) {
@@ -125,26 +115,26 @@ public class WhoTrialConverter extends BioFileConverter {
 					LOG.warn("diseaseName OVER LIMTT 1000, str = " + diseaseName);
 					diseaseName = diseaseName.substring(0, PRIMARY_KEY_STRING_LIMIT);
 				}
-
 				diseaseNameSet.add(diseaseName);
-				LOG.warn("Add disease :  ", diseaseName);
 			}
 		}
-		return diseaseNameSet.toArray(new String[diseaseNameSet.size()]);
+		return diseaseNameSet;
 	}
-	private Item getUmlsDisease(String umlsDiseaseName) throws ObjectStoreException {
-		String cui = getCUI(umlsDiseaseName);
+	
+	private String getUMLSTerm(String diseaseName) throws ObjectStoreException {
+		String cui = getCUI(diseaseName);
 		if (cui == null) {
 			return null;
 		}
-		Item item = umlsTermMap.get(cui);
-		if (item == null) {
-			item = createItem("UMLSTerm");
+		String ret = umlsTermMap.get(cui);
+		if (ret == null) {
+			Item item = createItem("UMLSTerm");
 			item.setAttribute("identifier", "UMLS:" + cui);
 			store(item);
-			umlsTermMap.put(cui, item);
+			ret = item.getIdentifier();
+			umlsTermMap.put(cui, ret);
 		}
-		return item;
+		return ret;
 
 	}
 	private static Pattern meddraPattern = Pattern.compile("Term:\\s+(.*)\\s*");
@@ -158,16 +148,8 @@ public class WhoTrialConverter extends BioFileConverter {
 			for (String line : lines) {
 				Matcher matcher = meddraPattern.matcher(line);
 				if(matcher.matches()) {
-					cui = resolver.getIdentifier(matcher.group(1));
-					return cui;
-				}
-			}
-		}
-		String[] split = diseaseName.split(";");
-		if (split.length > 1) {
-			for (String string : split) {
-				cui = resolver.getIdentifier(string);
-				if(cui!=null) {
+					String term = matcher.group(1);
+					cui = resolver.getIdentifier(term);
 					return cui;
 				}
 			}
@@ -201,4 +183,10 @@ public class WhoTrialConverter extends BioFileConverter {
 		this.mrStyFile = mrStyFile;
 	}
 
+	
+	@Override
+	public void close() throws Exception {
+		super.close();
+		System.out.println(String.format("Create %d UMLSTrems.", umlsTermMap.size()));
+	}
 }

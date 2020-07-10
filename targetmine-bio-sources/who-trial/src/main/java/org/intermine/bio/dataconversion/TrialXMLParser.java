@@ -37,6 +37,7 @@ public class TrialXMLParser implements TrialParser {
 		whoTrial2XmlPropertyNames.put("secondaryOutcome", "Secondary_outcome");
 		whoTrial2XmlPropertyNames.put("criteria", "Inclusion_Criteria");
 		whoTrial2XmlPropertyNames.put("ecriteria", "Exclusion_Criteria");
+		whoTrial2XmlPropertyNames.put("condition", "Condition");
 	}
 	private static final String WHO_TRIAL2_URL = "https://apps.who.int/trialsearch/Trial2.aspx?TrialID=%s";
 	public static String[] getkeys() {
@@ -64,7 +65,7 @@ public class TrialXMLParser implements TrialParser {
 				return;
 			}
 		} catch (Exception e) {
-			LOG.warn("Cannot XML parsing this file. read next file.");
+			LOG.warn("Cannot parse this XML file. read next file.");
 			return;
 		}
 
@@ -87,29 +88,30 @@ public class TrialXMLParser implements TrialParser {
 		whoTrial2XmlPropertyNames.forEach((key, name) -> {
 			Element child = trial.getFirstChildElement(name);
 			if(child == null) {
-				LOG.warn("*****[test]Nothing Element : " + name);
+//				LOG.warn("*****[test] Empty Element : " + name);
 				return;
 			}
 			String elementValue = child.getValue().trim();
 			if(elementValue != null && !elementValue.isEmpty()) {
+				
 				if(elementValue.length() > STRING_LIMIT) {
 					LOG.warn("too large string at " + trial.getFirstChildElement("TrialID").getValue() + ", " + name + "= " + elementValue);
 				}
-				LOG.warn("[test]key : " + key + ", elementValue : " + elementValue);
+//				LOG.warn("[test] key : " + key + ", elementValue : " + elementValue);
 				map.put(key, elementValue);
 
 				if(name.equals("TrialID")) {
-					String url = String.format(WHO_TRIAL2_URL,elementValue);
+					String url = String.format(WHO_TRIAL2_URL, elementValue);
 					map.put("url", url);
 				}
 			}
 		});
 
 		// add disease.
-		Element conditionElement = trial.getFirstChildElement("Condition");
-		if(conditionElement != null) {
-			map.put("condition", conditionElement.getValue());
-		}
+//		Element conditionElement = trial.getFirstChildElement("Condition");
+//		if(conditionElement != null) {
+//			map.put("condition", conditionElement.getValue());
+//		}
 		StringBuilder sb = new StringBuilder();
 		if(map.containsKey("criteria")){
 			sb.append(map.remove("criteria"));
@@ -118,7 +120,8 @@ public class TrialXMLParser implements TrialParser {
 			sb.append(map.remove("ecriteria"));
 		}
 		if(sb.length() > 0 ){
-			map.put("criteria",sb.toString());
+			String criteria = sb.toString();
+			map.put("criteria",criteria);
 		}
 		return map;
 	}

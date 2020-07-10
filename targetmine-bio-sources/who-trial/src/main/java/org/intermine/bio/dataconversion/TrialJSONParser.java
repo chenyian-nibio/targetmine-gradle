@@ -36,6 +36,7 @@ public class TrialJSONParser implements TrialParser{
 		propertyNames.put("primaryOutcome", "primary_outcome");
 		propertyNames.put("secondaryOutcome", "secondary_outcome");
 		propertyNames.put("result", "result");
+		propertyNames.put("criteria", "criteria");
 	}
 	private BufferedReader reader;
 
@@ -81,24 +82,28 @@ public class TrialJSONParser implements TrialParser{
 		return whoTrial;
 	}
 
-    private static String toString(Object obj) {
-        if (obj == null) {
-            return null;
-        } else if (obj instanceof String) {
-            return (String) obj;
-        } else if (obj instanceof JSONArray) {
-            JSONArray array = (JSONArray) obj;
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < array.length(); i++) {
-                if (i > 0) {
-                    sb.append(" ");
-                }
-                sb.append(array.get(i).toString());
-            }
-            return sb.toString();
-        }
-        LOG.warn("unexpected type " + obj.getClass().getName());
-        return null;
-    }
+	private static String toString(Object obj) {
+		if (obj == null) {
+			return null;
+		} else if (obj instanceof String) {
+			return (String) obj;
+		} else if (obj instanceof JSONArray) {
+			JSONArray array = (JSONArray) obj;
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < array.length(); i++) {
+				if (i > 0) {
+					sb.append(" ");
+				}
+				sb.append(array.get(i).toString());
+			}
+			return sb.toString();
+		} else {
+			// no need to output logs if the value is simply null
+			if (obj != JSONObject.NULL) {
+				LOG.warn("unexpected type " + obj.getClass().getName() + ", " + obj.toString());
+			}
+		}
+		return null;
+	}
 
 }

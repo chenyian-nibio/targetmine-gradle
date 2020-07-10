@@ -30,7 +30,6 @@
         <attribute name="primaryOutcome" type="java.lang.String"/>
         <attribute name="secondaryOutcome" type="java.lang.String"/>
         <attribute name="criteria" type="java.lang.String"/>
-        <attribute name="result" type="java.lang.String"/>
         <attribute name="condition" type="java.lang.String"/>
         <collection name="umlsTerms" referenced-type="UMLSTerm"/>
     </class>
