@@ -91,29 +91,37 @@ public class IpfConverter extends BioFileConverter
 
 				String fromEntrezGeneId = map.get("from_node_Entrez id");
 				if (isNotNull(fromEntrezGeneId)) {
-					for (String id : fromEntrezGeneId.split("\\||;\\s")) {
-						item.addToCollection("fromNodeGenes", getGene(id));
+					for (String id : fromEntrezGeneId.split("\\||;\\s|,\\s|\\s")) {
+						if (isNotNull(id)) {
+							item.addToCollection("fromNodeGenes", getGene(id));
+						}
 					}
 				}
 
 				String toEntrezGeneId = map.get("to_node_Entrez ID");
 				if (isNotNull(toEntrezGeneId)) {
-					for (String id : toEntrezGeneId.split("\\||;\\s")) {
-						item.addToCollection("toNodeGenes", getGene(id));
+					for (String id : toEntrezGeneId.split("\\||;\\s|,\\s|\\s")) {
+						if (isNotNull(id)) {
+							item.addToCollection("toNodeGenes", getGene(id));
+						}
 					}
 				}
 
 				String fromUniportIds = map.get("from_node_Uniprot id");
 				if (isNotNull(fromUniportIds)) {
-					for (String id : fromUniportIds.split("\\||;\\s")) {
-						item.addToCollection("fromNodeProteins", getProtein(id));
+					for (String id : fromUniportIds.split("\\||;\\s|,\\s|\\s")) {
+						if (isNotNull(id)) {
+							item.addToCollection("fromNodeProteins", getProtein(id));
+						}
 					}
 				}
 
 				String toUniportIds = map.get("to_node_Uniprot id");
 				if (isNotNull(toUniportIds)) {
-					for (String id : toUniportIds.split("\\||;\\s")) {
-						item.addToCollection("toNodeProteins", getProtein(id));
+					for (String id : toUniportIds.split("\\||;\\s|,\\s|\\s")) {
+						if (isNotNull(id)) {
+							item.addToCollection("toNodeProteins", getProtein(id));
+						}
 					}
 				}
 

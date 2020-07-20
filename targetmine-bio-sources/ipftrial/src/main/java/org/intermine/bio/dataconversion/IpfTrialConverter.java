@@ -180,17 +180,21 @@ public class IpfTrialConverter extends BioFileConverter
 				}
 				String entrezIdString = map.get("Entrez id");
 				if (isNotNull(entrezIdString)) {
-					String[] entrezIds = entrezIdString.split(";\\s*");
+					String[] entrezIds = entrezIdString.split("\\||;\\s|,\\s|\\s");
 					for (String geneId: entrezIds) {
-						biomarkerItem.addToCollection("genes", getGene(geneId));
+						if (isNotNull(geneId)) {
+							biomarkerItem.addToCollection("genes", getGene(geneId));
+						}
 					}
 				}
 				
 				String uniprotIdString = map.get("Uniprot id");
 				if (isNotNull(uniprotIdString)) {
-					String[] uniprotIds = uniprotIdString.split(";\\s*");
+					String[] uniprotIds = uniprotIdString.split("\\||;\\s|,\\s|\\s");
 					for (String accession: uniprotIds) {
-						biomarkerItem.addToCollection("proteins", getProtein(accession));
+						if (isNotNull(accession)) {
+							biomarkerItem.addToCollection("proteins", getProtein(accession));
+						}
 					}
 				}
 				
