@@ -161,7 +161,9 @@ public class DbsnpTxtConverter extends BioFileConverter
 				if (!StringUtils.isEmpty(pubmedIdString)) {
 					String[] ids = pubmedIdString.split(";");
 					for (String id : ids) {
-						item.addToCollection("publications", getPublication(id));
+						if (isValidId(id)) {
+							item.addToCollection("publications", getPublication(id));
+						}
 					}
 				}
 				store(item);
@@ -398,6 +400,19 @@ public class DbsnpTxtConverter extends BioFileConverter
 			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
 			snpIdSet.add(rr.get(0));
 		}
+	}
+
+	public static boolean isValidId(String s) {
+		if (s == null || s.isEmpty())
+			return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (i == 0 && s.charAt(i) == '0') {
+				return false;
+			}
+			if (Character.digit(s.charAt(i), 10) < 0)
+				return false;
+		}
+		return true;
 	}
 
 }
