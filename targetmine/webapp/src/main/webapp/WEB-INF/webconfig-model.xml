@@ -1131,7 +1131,7 @@
                                  constraintsForView="goAnnotation.evidence.code.code != IEA"
                                  externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
 
-      <enrichmentwidgetdisplayer id="gene_goagos_enrichment"
+      <enrichmentwidgetdisplayer id="gene_goslim_enrichment"
                                  title="GOSlim Enrichment"
                                  description="GOSlim terms enriched for genes in this list. (IEA annotations are excluded)"
                                  label="GOSlim Term"
@@ -1217,7 +1217,7 @@
                                  constraintsForView="goAnnotation.evidence.code.code != IEA" 
                                  externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
 
-      <enrichmentwidgetdisplayer id="protein_goagos_enrichment"
+      <enrichmentwidgetdisplayer id="protein_goslim_enrichment"
                                  title="GOSlim Enrichment"
                                  description="GOSlim terms enriched for proteins in this list. (IEA annotations are excluded)"
                                  label="GOSlim Term"
