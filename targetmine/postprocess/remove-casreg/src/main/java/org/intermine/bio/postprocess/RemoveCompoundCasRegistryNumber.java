@@ -37,7 +37,7 @@ public class RemoveCompoundCasRegistryNumber extends PostProcessor {
 				Statement statement = connection.createStatement();
 
 				statement.execute("UPDATE compound SET casregistrynumber=null");
-				statement.execute("UPDATE chebicompound SET casregistrynumber=null");
+//				statement.execute("UPDATE chebicompound SET casregistrynumber=null");
 //				statement.execute("UPDATE chemblcompound SET casregistrynumber=null");
 				statement.execute("UPDATE drugcompound SET casregistrynumber=null");
 				statement.execute("UPDATE keggcompound SET casregistrynumber=null");

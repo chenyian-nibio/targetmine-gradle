@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<classes>
+    <class name="Publication" is-interface="true">
+        <attribute name="pubMedId" type="java.lang.String"/>
+    </class>
+    <class name="UMLSTerm" extends="OntologyTerm" is-interface="true"/>
+    
+    <class name="Protein" is-interface="true">
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
+    </class>
+    <class name="Gene" is-interface="true">
+        <attribute name="primaryIdentifier" type="java.lang.String"/>
+    </class>
+    <class name="IPF" is-interface="true">
+        <attribute name="identifier" type="java.lang.String"/>
+        <reference name="reference" referenced-type="Publication"/>
+        <reference name="diseaseUmls" referenced-type="UMLSTerm"/>
+        
+       	<!-- From Node -->
+        <attribute name="fromNodeName" type="java.lang.String"/>
+        <attribute name="fromNodeType" type="java.lang.String"/>
+        <attribute name="fromNodeNature" type="java.lang.String"/>
+        <collection name="fromNodeGenes" referenced-type="Gene"/>
+        <collection name="fromNodeProteins" referenced-type="Protein"/>
+        <attribute name="fromNodeAnalysis" type="java.lang.String"/>
+        <attribute name="fromNodeAlteration" type="java.lang.String"/>
+        <attribute name="fromNodeEffect" type="java.lang.String"/>
+       	<!-- To Node -->
+        <attribute name="toNodeName" type="java.lang.String"/>
+        <attribute name="toNodeType" type="java.lang.String"/>
+        <attribute name="toNodeNature" type="java.lang.String"/>
+        <collection name="toNodeGenes" referenced-type="Gene"/>
+        <collection name="toNodeProteins" referenced-type="Protein"/>
+        <attribute name="toNodeAnalysis" type="java.lang.String"/>
+        <attribute name="toNodeAlteration" type="java.lang.String"/>
+       	<!-- Phenotype Details -->
+        <attribute name="phenotype" type="java.lang.String"/>
+        <attribute name="go" type="java.lang.String"/>
+        <attribute name="phenotypeAlteration" type="java.lang.String"/>
+        <attribute name="significance" type="java.lang.String"/>
+        <attribute name="relationship" type="java.lang.String"/>
+        <attribute name="annotation" type="java.lang.String"/>
+        <attribute name="therapy" type="java.lang.String"/>
+        <attribute name="referenceDrug" type="java.lang.String"/>
+        <attribute name="treatmentDetail" type="java.lang.String"/>
+        <attribute name="chemblCompound" type="java.lang.String"/>
+        <attribute name="mechanismOfAction" type="java.lang.String"/>
+        <attribute name="inducer" type="java.lang.String"/>
+        <attribute name="inhibitor" type="java.lang.String"/>
+        <attribute name="studyType" type="java.lang.String"/>
+        <attribute name="methodology" type="java.lang.String"/>
+        <attribute name="specimen" type="java.lang.String"/>
+        <attribute name="model_name" type="java.lang.String"/>
+        <attribute name="preclinical" type="java.lang.String"/>
+    </class>
+
+</classes>

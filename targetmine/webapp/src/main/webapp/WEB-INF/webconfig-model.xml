@@ -69,6 +69,18 @@
       <fieldconfig fieldExpr="strand"/>
     </fields>
   </class>
+ <class className="org.intermine.model.bio.WHOTrial">
+    <fields>
+      <fieldconfig fieldExpr="name"/>
+      <fieldconfig fieldExpr="scientificTitle"/>
+    </fields>
+  </class>
+ <class className="org.intermine.model.bio.PharmaProject">
+    <fields>
+      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="overview"/>
+    </fields>
+  </class>
 
 
   <class className="org.intermine.model.bio.SequenceFeature">
@@ -1129,7 +1141,7 @@
                                  constraintsForView="goAnnotation.evidence.code.code != IEA"
                                  externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
 
-      <enrichmentwidgetdisplayer id="gene_goagos_enrichment"
+      <enrichmentwidgetdisplayer id="gene_goslim_enrichment"
                                  title="GOSlim Enrichment"
                                  description="GOSlim terms enriched for genes in this list. (IEA annotations are excluded)"
                                  label="GOSlim Term"
@@ -1215,7 +1227,7 @@
                                  constraintsForView="goAnnotation.evidence.code.code != IEA"
                                  externalLink="/targetmine/portal.do?class=GOTerm&amp;externalids="/>
 
-      <enrichmentwidgetdisplayer id="protein_goagos_enrichment"
+      <enrichmentwidgetdisplayer id="protein_goslim_enrichment"
                                  title="GOSlim Enrichment"
                                  description="GOSlim terms enriched for proteins in this list. (IEA annotations are excluded)"
                                  label="GOSlim Term"

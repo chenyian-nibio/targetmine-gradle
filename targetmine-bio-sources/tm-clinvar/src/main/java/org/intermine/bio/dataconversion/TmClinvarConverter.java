@@ -201,11 +201,10 @@ public class TmClinvarConverter extends BioFileConverter {
 					String[] pubmedIds = accPubmedIdMap.get(accession).split(",");
 					int count = 0;
 					for (String pubmedId : pubmedIds) {
-						try {
-							Integer.parseInt(pubmedId);
+						if (isValidId(pubmedId)) {
 							item.addToCollection("publications", getPublication(pubmedId));
 							count++;
-						} catch (NumberFormatException e) {
+						} else {
 							LOG.warn(String.format("Not a valid pubmed ID: %s", pubmedId));
 						}
 					}
@@ -284,7 +283,9 @@ public class TmClinvarConverter extends BioFileConverter {
 					continue;
 				}
 				for (String pubmedId : varPubMap.get(varId)) {
-					item.addToCollection("publications", getPublication(pubmedId));
+					if (isValidId(pubmedId)) {
+						item.addToCollection("publications", getPublication(pubmedId));
+					}
 				}
 				String type = variationTypeMap.get(varId);
 				if (type != null) {
@@ -526,6 +527,19 @@ public class TmClinvarConverter extends BioFileConverter {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static boolean isValidId(String s) {
+		if (s == null || s.isEmpty())
+			return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (i == 0 && s.charAt(i) == '0') {
+				return false;
+			}
+			if (Character.digit(s.charAt(i), 10) < 0)
+				return false;
+		}
+		return true;
 	}
 
 }

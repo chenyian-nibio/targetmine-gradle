@@ -1,15 +1,5 @@
 package org.intermine.bio.dataconversion;
 
-/*
- * Copyright (C) 2002-2016 FlyMine
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public Licence.  This should
- * be distributed with the code.  See the LICENSE file for more
- * information or http://www.gnu.org/copyleft/lesser.html.
- *
- */
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -26,7 +16,7 @@ import org.intermine.xml.full.Item;
 
 /**
  * 
- * @author
+ * @author chenyian
  */
 public class ChemblHierarchyConverter extends BioDBConverter
 {
@@ -117,4 +107,10 @@ public class ChemblHierarchyConverter extends BioDBConverter
     public String getDataSetTitle(String taxonId) {
         return DATASET_TITLE;
     }
+
+
+	@Override
+	public String getLicence() {
+		return "https://creativecommons.org/licenses/by-sa/3.0/";
+	}
 }

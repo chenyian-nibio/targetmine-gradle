@@ -6,21 +6,25 @@
 		<collection name="snps" referenced-type="VariationAnnotation" reverse-reference="gene"/>
 	</class>
 
-	<class name="SNP" is-interface="true">
+	<class name="Variant" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="description" type="java.lang.String"/>
+		<collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="SNP" extends="Variant" is-interface="true">
 		<attribute name="refSnpAllele" type="java.lang.String"/>
 		<attribute name="orientation" type="java.lang.String"/>
 		<attribute name="chromosome" type="java.lang.String"/>
 		<attribute name="location" type="java.lang.String"/>
-		<collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
 		<collection name="publications" referenced-type="Publication"/>
-		<collection name="dataSets" referenced-type="DataSet"/>
 	</class>
 
 	<class name="VariationAnnotation" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
 		<reference name="gene" referenced-type="Gene" reverse-reference="snps"/>
-		<reference name="snp" referenced-type="SNP" reverse-reference="relatedGenes"/>
+		<reference name="snp" referenced-type="Variant" reverse-reference="relatedGenes"/>
 		<collection name="references" referenced-type="SNPReference" reverse-reference="annotation"/>
 		<reference name="function" referenced-type="SNPFunction"/>
 	</class>

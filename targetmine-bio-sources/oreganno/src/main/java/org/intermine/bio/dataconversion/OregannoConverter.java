@@ -72,7 +72,11 @@ public class OregannoConverter extends BioFileConverter {
 				Item location = createItem("Location");
 				location.setAttribute("start", cols[3]);
 				location.setAttribute("end", cols[4]);
-				location.setAttribute("strand", cols[6]);
+				String strand = "+";
+				if (cols[6].startsWith("-")) {
+					strand = "-";
+				}
+				location.setAttribute("strand", strand);
 				// TODO this part is not clear, comment out temporary...
 //				location.setReference("feature", getGene(targetId));
 				location.setReference("locatedOn", chromosomeRefId);
