@@ -87,6 +87,10 @@ public class GeneExpressionGraphDisplayer extends ReportDisplayer{
           String category = (String) tissue.getFieldValue("category");
           String organ = (String) tissue.getFieldValue("organ");
           String name = (String) tissue.getFieldValue("name");
+          // the char '/' cant be part of css selectors, so we replace it for '-'
+          category = category.replaceAll("/","-");
+          organ = organ.replaceAll("/","-");
+          name = name.replaceAll("/","-");
 
           String call = (String) exp.getFieldValue("call");
           float value = (Float) exp.getFieldValue("value");

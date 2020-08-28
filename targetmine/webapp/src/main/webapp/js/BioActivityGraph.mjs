@@ -24,7 +24,8 @@ export class BioActivityGraph extends TargetMineGraph{
 
     /* initial variables for X and Y axis */
     this._x = 'Activity Type';
-    this._y = 'Activity Concentration';
+    // this._y = 'Activity Concentration';
+    this._y = 'Concentration (nM)';
   }
 
   /**

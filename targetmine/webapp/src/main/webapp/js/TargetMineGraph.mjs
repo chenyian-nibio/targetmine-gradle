@@ -80,12 +80,15 @@ export class TargetMineGraph {
    * Indiviudual values are required to construct the categorical scales used
    * for color and shape, later used to map distinctive points at the time of
    * display.
+   *
+   * @param {string} column The data column from the data object that is used to
+   * construct the list of labels for the X axis. If no value is provided, the
+   * default _x value is used.
    */
-  initXLabels(column){
-    let self = this;
+  initXLabels(column = this._x){
     this._xLabels = this._data.reduce(function(prev, current){
-      if( ! prev.includes(current[self._x]) )
-        prev.push( current[self._x] );
+      if( ! prev.includes(current[column]) )
+        prev.push( current[column] );
       return prev;
     }, ['']);
     this._xLabels = this._xLabels.concat(['']);
@@ -330,14 +333,18 @@ export class TargetMineGraph {
       .call(this._yAxis)
     ;
 
-    d3.selectAll('svg#canvas_'+this._type+' > text#left-axis-label').remove();
-    let label = canvas.append('text')
-      .attr('id', 'left-axis-label')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', -this._margin.left/3)
-      .attr('x', -this._height/2)
-      .attr('dy', '1em')
-      .style('text-anchor', 'middle')
-      .text('Concentration (nM)')
+    /* if defined, add a title to the axis */
+    if( this._y !== undefined ){
+      d3.selectAll('svg#canvas_'+this._type+' > text#left-axis-label').remove();
+      let label = canvas.append('text')
+        .attr('id', 'left-axis-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', -this._margin.left/3)
+        .attr('x', -this._height/2)
+        .attr('dy', '1em')
+        .style('text-anchor', 'middle')
+        .text(this._y)
+      ;
+    }
   }
 }

@@ -38,6 +38,7 @@
           .then((module) => {
             window.geneExpressionGraph = new module.GeneExpressionGraph('${gene}', <%= width %>, <%= height %>);
             window.geneExpressionGraph.loadData('${data}');
+            window.geneExpressionGraph.initDisplayTree();
             window.geneExpressionGraph.initXLabels();
             window.geneExpressionGraph.initXAxis();
             window.geneExpressionGraph.initYAxis();
