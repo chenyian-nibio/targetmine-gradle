@@ -66,13 +66,14 @@
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
-<!-- incompatible with who-trial, maybe -->
+<!-- incompatible with who-trial, maybe 
     <source name="who-trial2" type="who-trial">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials2" />
       <property name="src.data.dir.includes" value="*/*.xml" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
+-->
 
 <!-- internal use only -->
     <source name="trialtrove" type="trialtrove">
@@ -127,6 +128,13 @@
       <property name="src.data.dir.includes" value="chainType_pdbj.csv"/>
       <property name="mapFile" value="/data/bio/db/Targetmine/pdbj/type_mapping.csv"/>
     </source>
+
+    <source name="possum" type="possum">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/possum"/>
+      <property name="src.data.dir.includes" value="possum_binding_sites_*_similarity.csv"/>
+      <property name="ligandFile" value="/data/bio/db/Targetmine/possum/possum_ligand_list.csv"/>
+    </source>
+
     <source name="scop" type="scop">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/scop"/>
       <property name="src.data.dir.includes" value="dir.des.scop.txt_1.75"/>
