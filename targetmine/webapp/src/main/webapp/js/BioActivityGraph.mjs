@@ -7,7 +7,7 @@ import { TargetMineGraph } from "./TargetMineGraph.mjs";
  * @classdesc Used to display the bioactivity levels of a given compound in their
  * corresponding report page
  * @author Rodolfo Allendes
- * @version 1.0
+ * @version 1.1 Adapted to use a scaleBand
  */
 export class BioActivityGraph extends TargetMineGraph{
 
@@ -25,7 +25,7 @@ export class BioActivityGraph extends TargetMineGraph{
     /* initial variables for X and Y axis */
     this._x = 'Activity Type';
     // this._y = 'Activity Concentration';
-    this._y = 'Concentration (nM)';
+    this._y = 'Activity Concentration';
   }
 
   /**
@@ -241,65 +241,52 @@ export class BioActivityGraph extends TargetMineGraph{
   }
 
   /**
-   * Initialize a graph display
-   * Whenever a new data file is loaded, a graph display is initialized using a
-   * default Y-axis.
-   * Notice that the first step required to display a graph is to clear whatever
-   * content the display area might have already have.
+   * Plot a BioActivity Graph
    */
   plot(){
-    let self = this;
+    /* plot the axis of the graph */
     this.plotXAxis();
     this.plotYAxis();
-
-    /* Generate an array of data points positions and colors based on the scale
-     * defined for each axis */
-    let xscale = this._xAxis.scale();
-    let yscale = this._yAxis.scale();
-    let points = this._data.reduce(function(prev, current){
-      /* filter out the points that are hidden from the visualization */
-      prev.push(
-        {
-          x: xscale(current[self._x]),
-          y: yscale(current[self._y]),
-          'color': current['color'],
-          'shape': current['shape'],
-          'organism': current['Organism name'],
-          'symbol': current['Gene Symbol'],
-          'label': current[self._yPlot],
-        }
-      );
-      return prev;
-    }, []);
-
-    /* redraw the points, using the updated positions and colors */
+    /* retrieve the scale of the axis for quick plotting of the data points */
+    let x = this._xAxis.scale();
+    let dx = x.bandwidth()/2; // needed to position points at the middle of the band
+    let y = this._yAxis.scale();
+    /* remove the previous points from the graph */
     let canvas = d3.select('svg#canvas_bioActivity > g#graph');
     canvas.selectAll('#points').remove();
-
+    /* (re)draw the points, grouped in a single graphics element  */
     canvas.append('g')
       .attr('id', 'points')
-      ;
+      .attr('transform', 'translate('+this._margin.left+', 0)')
+    ;
 
-    /* for each data point, generate a group where we can add multiple svg
-     * elements */
+    /* Each data point will be d3 symbol (represented using svg paths) */
     let pts = d3.select('#points').selectAll('g')
-      .data(points)
-    let point = pts.enter().append('g')
-      .attr('class', 'data-point')
+      .data(this._data)
+      // append the path for each data point
+      .enter()
       .append('path')
-        .attr('transform', function(d){ return 'translate('+d.x+','+d.y+')'; })
-        .attr('fill', function(d){return d.color;})
+        // and the properties of each point
+        .attr('class', 'data-point')
+        .attr('transform', (d) => {
+          return 'translate('+(x(d[this._x])+dx)+','+y(d[this._y])+')';
+        })
+        .attr('fill', function(d){ return d.color; })
         .attr('d', function(d){
           let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
           let symbol = d3.symbol()
             .size(50)
             .type(d3.symbols[s.indexOf(d.shape)])
-          ;
+            ;
           return symbol();
         })
-    ;
-    let tooltip = point.append('svg:title')
-      .text(function(d){ return 'Organism: '+d.organism+'\nGene: '+d.symbol+'\nConcentation: '+d.label+'nM'; })
+        // each point will also have an associated svg title (tooltip)
+        .append('svg:title')
+          .text(function(d){
+            return 'Organism: '+d.organism+
+              '\nGene: '+d.symbol+
+              '\nConcentation: '+d.label+'nM';
+          })
     ;
   }
 }

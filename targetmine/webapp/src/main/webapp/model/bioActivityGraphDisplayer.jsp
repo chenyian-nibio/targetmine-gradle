@@ -75,15 +75,19 @@
         .then((module) => {
           window.bioActivityGraph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
           window.bioActivityGraph.loadData('${data}');
-          window.bioActivityGraph.initModal();
+          // window.bioActivityGraph.initModal();
+          // initialize the bands to display on the x Axis
           window.bioActivityGraph.initXLabels();
           window.bioActivityGraph.initXAxis();
+          // initialize the Y axis using a log scale
           window.bioActivityGraph.initYAxis(true);
+          // set the default color and shape for data points and assign the
+          // corresponding value to each data point
           window.bioActivityGraph.initColorsAndShapes(false);
           window.bioActivityGraph.assignColors();
           window.bioActivityGraph.assignShapes();
-          window.bioActivityGraph.initColorTable();
-          window.bioActivityGraph.initShapeTable();
+          // window.bioActivityGraph.initColorTable();
+          // window.bioActivityGraph.initShapeTable();
           window.bioActivityGraph.plot();
         });
     </script>

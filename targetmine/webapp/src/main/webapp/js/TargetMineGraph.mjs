@@ -25,9 +25,12 @@ export class TargetMineGraph {
     this._type = type;
     /* the title of the graph */
     this._name = name;
-    /* dimensions of the canvas and margins for display */
+    /* the dimensions of the canvas are defined in user coordinates and NOT
+     * pixel values */
     this._width = width;
     this._height = height;
+    /* margins are defined as blank space, in user coordinates, destined to
+     * contain extra annotations to the graph */
     this._margin = {top: 40, right: 40, bottom: 40, left: 40};
 
     /* data used for the generation of the graph */
@@ -77,40 +80,35 @@ export class TargetMineGraph {
 
   /**
    * Initialize the labels of the X axis of the Graph.
-   * Indiviudual values are required to construct the categorical scales used
-   * for color and shape, later used to map distinctive points at the time of
-   * display.
+   * Initialize a list of the values used as ordinal categories across the X
+   * axis of the graph.
    *
    * @param {string} column The data column from the data object that is used to
    * construct the list of labels for the X axis. If no value is provided, the
    * default _x value is used.
    */
   initXLabels(column = this._x){
-    this._xLabels = this._data.reduce(function(prev, current){
-      if( ! prev.includes(current[column]) )
-        prev.push( current[column] );
-      return prev;
-    }, ['']);
-    this._xLabels = this._xLabels.concat(['']);
+    this._xLabels = [];
+    this._data.forEach( (item,i) => {
+      if( !this._xLabels.includes(item[column]) )
+        this._xLabels.push(item[column]);
+    }, this);
   }
 
   /**
    * Initialize the X axis of the graph
-   * The X axis will always be ordinal, so in order to generate the
-   * corresponding list of ticks in the axis, we use the list of this._xLabels
-   * currently available.
+   * The X axis will always be ordinal, so in order to generate the corresponding
+   * list of ticks in the axis, we use the list of this._xLabels currently available.
    */
   initXAxis(){
     /* The bottom axis will map to a series of discrete pixel values, evenly
-     * distributed along the drawing area, we use startx and dx to define the
-     * starting and step that define the ticks in the axis */
-    let startx = this._margin.left;
-    let dx = (this._width-this._margin.left-this._margin.right)/(this._xLabels.length-1);
-    /* define an ordinal scale */
-    let scale = d3.scaleOrdinal()
+     * distributed along the drawing area, for this, we use the scaleBand scale
+     * provided by D3 */
+    let scale = d3.scaleBand()
       .domain(this._xLabels)
-      .range(this._xLabels.map(function(k,i){ return startx+i*dx; }))
-      ;
+      .range( [0, this._width-this._margin.left-this._margin.right] )
+      .padding(0.05)
+    ;
     /* create the corresponding axis */
     this._xAxis = d3.axisBottom(scale);
   }
@@ -126,31 +124,18 @@ export class TargetMineGraph {
    * using a logarithmic scale or not. Default value: false.
    */
   initYAxis(logScale=false){
-    let self = this;
-    /* find min and max */
+    /* find the minimum and maximum values for _y */
     let min = +Infinity;
     let max = -Infinity;
     this._data.forEach( x => {
-      max = Math.max( +x[self._y], max );
-      min = Math.min( +x[self._y], min );
-    });
-    let scale = undefined;
-    /* define a linear scale */
-    /* and change it to logarithmic if required */
-    if( logScale == true ){
-      scale = d3.scaleLog()
-        .domain([min, max])
-        .range( [this._height-this._margin.bottom, this._margin.top] )
-        .nice()
-        ;
-    }
-    else{
-      scale = d3.scaleLinear()
-        .domain([0, max])
-        .range( [this._height-this._margin.bottom, this._margin.top] )
-        .nice()
-      ;
-    }
+      max = Math.max( +x[this._y], max );
+      min = Math.min( +x[this._y], min );
+    }, this);
+    /* initialize the correct type of scale */
+    console.log('yaxis',min,max);
+    let scale = logScale == true ? d3.scaleLog().domain([min,max]) : d3.scaleLinear().domain([0,max]);
+    scale.range( [this._height-this._margin.bottom, this._margin.top] )
+    scale.nice()
     /* create the corresponding axis */
     this._yAxis = d3.axisLeft(scale);
     this._yAxis.ticks(10, '~g');
@@ -167,23 +152,20 @@ export class TargetMineGraph {
    * X axis of the graph. Default value: true.
    */
   initColorsAndShapes(addXLabels=true){
-    let self = this;
-    // include default color and shape for the graph
+    /* init the default color and shape of data elements */
     this._colors = [ {'key': 'Default', 'value': '#C0C0C0' } ];
     this._shapes = [ {'key': 'Default', 'value': 'Circle' } ];
 
-    // and if specified, add also color for each X-axis category
+    /* upon request, add individual color for each _xLabel */
     if( addXLabels == true ){
-      /* exclude the tips of the axis that do not represent any value */
-      let labels = this._xLabels.slice(1, this._xLabels.length-1);
-      labels.map( (label,i) => {
+      this._xLabels.map( (label, i) => {
         this._colors.push( { 'key': label, 'value': d3.schemeCategory10[i%d3.schemeCategory10.length] });
       });
     }
   }
 
   /**
-   * Add color information to all points in the dataset
+   * Assing color to data points
    * Each point in the dataset can be drawn using a specific color. The match
    * between property and color is stored in the _colors array. Here, we update
    * the display color of each point in the dataset, according to the current
@@ -279,21 +261,22 @@ export class TargetMineGraph {
   }
 
   /**
-   * Re-draw the X-axis of the Graph
+   * Add the X axis to the graph
    *
-   * @param {int} labelAngle Rotation angle that can be used for the label ticks
-   * @param {function} clickCallback
-   * @param {function} contextCallback
+   * @param {int} labelAngle If a value is given, the labels displayed for every
+   * tick in the axis will be rotated clock-wise accordingly
+   * @param {boolean} showTitle Display a title for the axis
    */
-  plotXAxis(labelAngle=0){
+  plotXAxis(labelAngle=0, showTitle=false){
     /* remove previous axis components */
     let canvas = d3.select('svg#canvas_'+this._type+' > g#graph');
     canvas.selectAll('#bottom-axis').remove();
 
-    /* add the axis to the display */
+    /* add the axis to the display, making sure it is positioned only within the
+     * area of the graph allocated for that */
     let g = canvas.append('g')
       .attr('id', 'bottom-axis')
-      .attr('transform', 'translate(0,'+(this._height-this._margin.bottom)+')')
+      .attr('transform', 'translate('+this._margin.left+', '+(this._height-this._margin.bottom)+')')
       .call(this._xAxis)
     ;
 
@@ -310,7 +293,7 @@ export class TargetMineGraph {
     /* add title to the axis, if defined
      * The title is always positioned anchored to the mid-point of the bottom
      * margin */
-    if( this._x != undefined ){
+    if( showTitle ){
       d3.selectAll('svg#canvas_'+this._type+' > text#bottom-axis-label').remove();
       let label = canvas.append('text')
         .attr('id', 'bottom-axis-label')

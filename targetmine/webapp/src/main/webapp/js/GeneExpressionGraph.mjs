@@ -1,4 +1,8 @@
 'use strict';
+/**
+ * Violin and jitter display based on the code from:
+ * https://www.d3-graph-gallery.com/graph/violin_jitter.html
+ */
 
 import { TargetMineGraph } from './TargetMineGraph.mjs';
 
@@ -41,23 +45,17 @@ export class GeneExpressionGraph extends TargetMineGraph{
 
   /**
    * Initialize the labels of the X axis of the Graph.
-   * Using the super-class method, not only set the text for the labels of the X
-   * axis of the graph, but also initialize the list of levels associated to each
-   * label.
+   * As the _displayTree contains a list of all the different labels across the
+   * different levels of the structure, we can simply copy that information as
+   * the initial labels for the graph.
+   * We also initialize the list of levels associated to each label.
    */
   initXLabels(){
-    /* we init the labels of the X axis (this._xLabels) with the individual values
-      of the 'category' column */
-    // super.initXLabels(this._levels[0]); // column = category
-    // /* to keep track of the category to which the labels belong, we initialize
-    //   an extra array of references to the _level of the label */
-    // // this._xLabelLevels = Array(this._xLabels.length).fill(0);
-    // this.initXDisplayLabels();
-
-    this._xLabels = [undefined];
+    /* copy labels from the _displayTree */
+    this._xLabels = [];
     this._xLabels.push(Object.keys(this._displayTree[0]));
     this._xLabels = this._xLabels.flat();
-
+    /* and initialize the level of each of the labels */
     this._xLevels = Array(this._xLabels.length).fill(0);
   }
 
@@ -277,57 +275,58 @@ export class GeneExpressionGraph extends TargetMineGraph{
         self.collapseXLabels(d);
       })
       ;
-
-
-    /*  TEST DRAW A SECOND BOTTOM AXIS FOR LABEL CATEGORIES */
-    // let canvas = d3.select('svg#canvas_'+this._type+' > g#graph');
-    // let g = canvas.append('g')
-    //   .attr('id', 'bottom-axis-category')
-    //   .attr('transform', 'translate(0,'+(this._height-this._margin.bottom/2)+')')
-    //   .call(this._xAxis)
   }
 
   /**
    * Plot a Gene Expression Graph
+   *
+   * @param {boolean} jitter Should points be slightly jittered in order to avoid
+   * overlapping
+   * @param {boolean} violinStrip Should a violin style strip be drawn together
+   * with the points in the graph
    */
-  plot(){
+  plot(jitter=true, violinStrip = true){
     /* Display the X axis of the graph */
-    this.plotXAxis(45);
+    this.plotXAxis();
     /* display the Y axis of the graph */
     this.plotYAxis();
 
     /* Generate an array of data points positions and colors based on the scale
      * defined for each axis */
     let xscale = this._xAxis.scale();
+    let dx = xscale.bandwidth()/2; // distance to the midpoint of the scale band
     let yscale = this._yAxis.scale();
     let points = [];
-
     this._xLabels.forEach( (label, i) => {
-      if( label != undefined ){
-        let level = this._levels[this._xLevels[i]];
-        let current = this._data.reduce( function(prev, curr){
-          if( curr[level] === label ){
-            prev.push(
-              {
-                x: xscale(label),
-                y: yscale(curr['value']),
-                color: curr['color'],
-                value: curr['value'],
-              }
-            );
-          }
-          return prev;
-        },[]);
-        points = points.concat(current);
-      }
+      let level = this._levels[this._xLevels[i]];
+      let current = this._data.reduce( function(prev, curr){
+        let x = xscale(label)+dx;
+
+        /* jitter the position of the points if requested */
+        // if( jitter ) x -= dx/2*Math.random();
+
+        if( curr[level] === label ){
+          prev.push(
+            {
+              x: x,
+              y: yscale(curr['value']),
+              color: curr['color'],
+              value: curr['value'],
+            }
+          );
+        }
+        return prev;
+      },[]);
+      points = points.concat(current);
+
     },this);
 
     /* redraw the points, using the updated positions and colors */
     let canvas = d3.select('svg#canvas_geneExpression > g#graph');
     canvas.selectAll('#points').remove();
-
     canvas.append('g')
       .attr('id', 'points')
+      .attr('transform', 'translate('+this._margin.left+',0)')
     ;
 
     /* for each data point, generate a group where we can add multiple svg
@@ -337,11 +336,34 @@ export class GeneExpressionGraph extends TargetMineGraph{
     let point = pts.enter().append('circle')
       .attr('cx', function(d){ return d.x; })
       .attr('cy', function(d){ return d.y; })
-      .attr('r', '4')
+      .attr('r', '3')
       .style('fill', function(d){ return d.color; })
     ;
     let tooltip = point.append('svg:title')
       .text(function(d){ return 'Value: '+d.value; })
+
+    /* add violin strips if requested */
+    // if( violinStrip ){
+    //   canvas.selectAll("#violins").remove();
+    //   canvas.append('g')
+    //     .attr('id', '#violins')
+    //   ;
+    //
+    //   let vls = d3.select('#violins').selectAll('g')
+    //     .data(sumstat)
+    //   let violin = vls.enter().append('g')        // So now we are working group per group
+    //   .attr("transform", function(d){ return("translate(" + x(d.key) +" ,0)") } ) // Translation on the right to be at the group position
+    //     .append("path")
+    //       .datum(function(d){ return(d.value)})     // So now we are working bin per bin
+    //       .style("stroke", "none")
+    //       .style("fill","grey")
+    //       .attr("d", d3.area()
+    //         .x0( xNum(0) )
+    //         .x1(function(d){ return(xNum(d.length)) } )
+    //         .y(function(d){ return(y(d.x0)) } )
+    //         .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
+    //       )
+    // }
   }
 
 }
