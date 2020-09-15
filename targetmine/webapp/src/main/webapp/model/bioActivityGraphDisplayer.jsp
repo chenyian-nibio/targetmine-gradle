@@ -48,34 +48,37 @@
           <button id='shape-add'>Add</button>
         </div>
       </div>
+
+      <!-- The Modal -->
+      <div id="modal" class="modal">
+        <!-- Modal content -->
+        <div id='modal-content' class="modal-content">
+          <h3 id='modal-title'></h3>
+          <select id='column-select'>
+            <option value=undefined>Select...</option>
+          </select>
+          <select id='value-select'>
+            <option value=undefined>Select...</option>
+          </select>
+          <br />
+          <div id="modal-input">
+          </div>
+          <br />
+          <button id='modal-ok'>OK</button>
+          <button id='modal-cancel'>Cancel</button>
+        </div>
+      </div>
+
+
     </div>
 
-    <!-- The Modal -->
-    <div id="modal" class="modal">
-      <!-- Modal content -->
-      <div id='modal-content' class="modal-content">
-        <h3 id='modal-title'></h3>
-        <select id='column-select'>
-          <option value=undefined>Select...</option>
-        </select>
-        <select id='value-select'>
-          <option value=undefined>Select...</option>
-        </select>
-        <br />
-        <div id="modal-input">
-        </div>
-        <br />
-        <button id='modal-ok'>OK</button>
-        <button id='modal-cancel'>Cancel</button>
-      </div>
-    </div>
 
     <script type="text/javascript">
       import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
         .then((module) => {
           window.bioActivityGraph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
+          // trasfer data to javascript object
           window.bioActivityGraph.loadData('${data}');
-          // window.bioActivityGraph.initModal();
           // initialize the bands to display on the x Axis
           window.bioActivityGraph.initXLabels();
           window.bioActivityGraph.initXAxis();
@@ -86,9 +89,12 @@
           window.bioActivityGraph.initColorsAndShapes(false);
           window.bioActivityGraph.assignColors();
           window.bioActivityGraph.assignShapes();
-          // window.bioActivityGraph.initColorTable();
-          // window.bioActivityGraph.initShapeTable();
+          // plot the graph
           window.bioActivityGraph.plot();
+          // initialize controls used for user interaction
+          window.bioActivityGraph._initModal();
+          window.bioActivityGraph.initColorTable();
+          window.bioActivityGraph.initShapeTable();
         });
     </script>
   </c:otherwise>

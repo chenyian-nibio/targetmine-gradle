@@ -153,111 +153,94 @@ export class TargetMineGraph {
    */
   initColorsAndShapes(addXLabels=true){
     /* init the default color and shape of data elements */
-    this._colors = [ {'key': 'Default', 'value': '#C0C0C0' } ];
-    this._shapes = [ {'key': 'Default', 'value': 'Circle' } ];
-
+    // this._colors = [ {'key': 'Default', 'value': '#C0C0C0' } ];
+    this._colors = { 'Default': '#C0C0C0' };
+    this._shapes = { 'Default': 'Circle', 'Kd': 'Wye'  };
     /* upon request, add individual color for each _xLabel */
     if( addXLabels == true ){
       this._xLabels.map( (label, i) => {
-        this._colors.push( { 'key': label, 'value': d3.schemeCategory10[i%d3.schemeCategory10.length] });
+        // this._colors.push( { 'key': label, 'value': d3.schemeCategory10[i%d3.schemeCategory10.length] });
+        this._colors[label] = d3.schemeCategory10[i%d3.schemeCategory10.length];
       });
     }
   }
 
   /**
-   * Assing color to data points
-   * Each point in the dataset can be drawn using a specific color. The match
-   * between property and color is stored in the _colors array. Here, we update
-   * the display color of each point in the dataset, according to the current
-   * color mapping
+   * Assing color to data points.
+   * The list of current colors is stored in the _colors object. Each item in
+   * the data-set has its VALUES matched to the KEYS of the _colors list, in
+   * order to find a match.
    */
   assignColors(){
-    /* make a list of all the individual values that have an associated color */
-    let keys = this._colors.reduce(function(prev, curr){
-      prev.push(curr.key);
-      return prev;
-    },[]);
-    /* for each data point, check if there is any color associated to its values
-     * and use it for its display. In the case of multiple values having an
-     * assigned color, the last one in the list is used */
-    this._data.map(data =>{
-      data.color = this._colors[0].value;
-      let values = Object.values(data);
-      for( let i=keys.length; i>0; --i ){
-        if(values.includes(keys[i])){
-          data.color = this._colors[i].value;
-          return data;
+    /* extract the list of values with a color code (keys from the _colors list) */
+    let colorkeys = Object.keys(this._colors);
+    /* for each data point, check if any of its values is part of this list, and
+     * assign a color accordingly. Default color is assigned otherwise. */
+    this._data.forEach( (item,i) => {
+      for(let j=colorkeys.length-1; j>0; --j){
+        if( Object.values(item).includes(colorkeys[j]) ){
+          item.color = this._colors[colorkeys[j]];
+          return;
         }
       }
-      return data;
-    });
+      item.color = this._colors.Default;
+    }, this);
   }
 
   /**
-   * Add shape information to all points in the dataset
-   * Each point in the dataset can be drawn using a specific shape. The match
-   * between property and shape is stored in the _shapes array. Here, we update
-   * the display shape of each point in the dataset, according to the current
-   * shapes mapping
+   * Assign shape to data points.
+   * The list of current shapes is stored in the _shapes object. Each item in
+   * the data-set has its VALUES matched to the KEYS of the _shapes list, in
+   * order to find a match.
    */
   assignShapes(){
-    /* get a list of the values associated to a specific shape for display */
-    let keys = this._shapes.reduce(function(prev, curr){
-      prev.push(curr.key);
-      return prev;
-    },[]);
-    /* for each data point, check if there is any shape associated to its values
-     * and use it for its display. In the case of multiple values having an
-     * assigned shape, the last one in teh list is used */
-    this._data.map(data=>{
-      data.shape = this._shapes[0].value; // use default as first case
-      let values = Object.values(data);
-      for( let i=keys.length; i>0; --i ){
-        if( values.includes(keys[i]) ){
-          data.shape = this._shapes[i].value; // change if a match is found
-          return data; // stop searching
+    /* extract the list of the values with a shape code (keys from _shapes) */
+    let shapekeys = Object.keys(this._shapes);
+    /* for each data point, check if any of its values is part of the list, and
+     * assing a shape accordingly. Default shape is assigned otherwise */
+    this._data.forEach( (item,i) => {
+      for( let j=shapekeys.length-1; j>0; --j){
+        if( Object.values(item).includes(shapekeys[j]) ){
+          item.shape = this._shapes[shapekeys[j]];
+          return;
         }
       }
-      return data; // return default if nothing found
-    });
+      item.shape = this._shapes.Default;
+    }, this);
   }
 
   /**
    * Initialize the DOM elements of a table
+   * Tables are used to incorporate elements of user interaction to the graph.
    *
-   * @param {String} type The type of table that needs to be initialized.
-   * @param {Array} data The array of objects used as data for the definition of
-   * the values in the table
+   * @param {String} id The id used to identify the table being defined.
+   * @param {Array} labels An array of labels used to identify each of the rows
+   * that the table will contain
    */
-  initTable(type, data){
-    let self = this;
+  initTable(id, labels){
     /* remove previous table elements */
-    let table = d3.select('#'+type+'-table')
-      .selectAll('div').remove()
-    ;
-    table = d3.select('#'+type+'-table').selectAll('div')
-      .data(data)
-    ;
-    /* create each row */
-    let row = table.enter().append('div')
-      .attr('class', 'flex-row')
-      .attr('id', function(d){ return type+'-'+d.key; })
-      ;
-    /* first cell: a simple color background or an svg element with a symbol */
-    let cell = row.append('div')
+    d3.select('#'+id+'-table > tbody').selectAll('div').remove();
+    /* recreate each row of the table, based on the labels array */
+    let rows = d3.select('#'+id+'-table > tbody').selectAll('div')
+      .data(labels)
+      // first, each individual row
+      .enter()
+      .append('div')
+        .attr('class', 'flex-row')
+        .attr('id', (d) => { return id+'-'+d; })
+    // first cell of the row: a div for thumbnail display
+    rows.append('div')
       .attr('class', 'flex-cell display')
-      ;
-    /* second cell: label */
-    row.append('div')
+    // second cell: the label of the row
+    rows.append('div')
       .attr('class', 'flex-cell label')
-      .text( function(d){ return d.key; } )
-      ;
-    /* third cell */
-    row.append('span')
+      .text( (d) => { return d; } )
+    // third cell: a 'remove element' button
+    rows.insert('span')
       .attr('class', 'flex-cell small-close')
-      .attr('data-index', function(d,i){ return i; })
+      .attr('data-key', (d) => {return d;} )
+      .attr('data-index', (d,i) => { return i; })
       .html('&times;')
-    ;
   }
 
   /**

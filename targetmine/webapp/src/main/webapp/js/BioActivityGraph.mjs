@@ -29,9 +29,10 @@ export class BioActivityGraph extends TargetMineGraph{
   }
 
   /**
-   * Init modal components and its listeners
+   * Init modal components and listeners
+   * Modals are used to control user interaction
    */
-  initModal(){
+  _initModal(){
     let self = this;
     /* filter only categories within the data values */
     let options = this._data.columns.reduce(function(prev, curr){
@@ -171,11 +172,13 @@ export class BioActivityGraph extends TargetMineGraph{
 
     /* update the corresponding table */
     if( type === 'color'){
-      this._colors.push( {'key': val, 'value': upd} );
+      // this._colors.push( {'key': val, 'value': upd} );
+      this._colors[val] = upd;
       this.initColorTable();
     }
     else{
-      this._shapes.push( {'key': val, 'value': upd} );
+      // this._shapes.push( {'key': val, 'value': upd} );
+      this._shapes[val] = upd;
       this.initShapeTable();
     }
     /* redraw the graph */
@@ -187,17 +190,17 @@ export class BioActivityGraph extends TargetMineGraph{
    */
   initColorTable(){
     let self = this;
-    super.initTable('color', this._colors);
+    super.initTable('color', Object.keys(this._colors));
     /* update the color backgroud of components */
-    let displays = d3.select('#color-table').selectAll('.display')
-      .data(this._colors)
-      .style('background-color', function(d){ return d.value; })
+    d3.select('#color-table').selectAll('.display')
+      .data(Object.values(this._colors))
+      .style('background-color', (d) => { return d; })
     ;
-    /* update the contents of the remove button */
+    // /* update the contents of the remove button */
     let close = d3.select('#color-table').selectAll('.small-close')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
-        self._colors.splice(this.dataset.index, 1);
+        delete( self._colors[this.dataset.key] );
         self.assignColors();
         self.initColorTable();
         self.plot();
@@ -210,29 +213,22 @@ export class BioActivityGraph extends TargetMineGraph{
    */
   initShapeTable(){
     let self = this;
-    super.initTable('shape', this._shapes);
+    super.initTable('shape', Object.keys(this._shapes));
     /* update the display of the corresponding shapes */
-    let displays = d3.select('#shape-table').selectAll('.display')
-      .data(this._shapes)
+    d3.select('#shape-table').selectAll('.display')
+      .data(Object.values(this._shapes))
       .append('svg')
         .attr('viewBox', '-5 -5 10 10')
         .style('height', 'inherit')
         .append('path')
           .attr('fill', 'black')
-          .attr('d', function(d){
-            let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
-            let symbol = d3.symbol()
-              .size(10)
-              .type(d3.symbols[s.indexOf(d.value)])
-            ;
-            return symbol();
-          })
+          .attr('d', (d) => { return d3.symbol().type(d3['symbol'+d]).size(10)(); })
     ;
     /* update the contents of the remove button */
     let close = d3.select("#shape-table").selectAll('.small-close')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
-        self._shapes.splice(this.dataset.index, 1);
+        delete( self._shapes[this.dataset.key] );
         self.assignShapes();
         self.initShapeTable();
         self.plot();
