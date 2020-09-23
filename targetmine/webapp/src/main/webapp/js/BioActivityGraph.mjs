@@ -278,10 +278,10 @@ export class BioActivityGraph extends TargetMineGraph{
         })
         // each point will also have an associated svg title (tooltip)
         .append('svg:title')
-          .text(function(d){
-            return 'Organism: '+d.organism+
-              '\nGene: '+d.symbol+
-              '\nConcentation: '+d.label+'nM';
+          .text((d) => {
+            return 'Organism: '+d['Organism Name']+
+              '\nGene: '+d['Gene Symbol']+
+              '\nConcentation: '+d['Activity Concentration']+'nM';
           })
     ;
   }
