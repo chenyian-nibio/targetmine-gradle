@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<classes>
+	<class name="Gene" is-interface="true">
+		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<collection name="snps" referenced-type="VariationAnnotation" reverse-reference="gene"/>
+	</class>
+
+	<class name="Variant" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="description" type="java.lang.String"/>
+		<attribute name="chromosome" type="java.lang.String"/>
+		<attribute name="location" type="java.lang.String"/>
+		<collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
+		<collection name="mgends" referenced-type="Mgend" reverse-reference="variant"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="SNP" extends="Variant" is-interface="true"/>
+
+	<class name="VariationAnnotation" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<reference name="gene" referenced-type="Gene" reverse-reference="snps"/>
+		<reference name="snp" referenced-type="Variant" reverse-reference="relatedGenes"/>
+	</class>
+
+	<class name="Mgend" is-interface="true">
+		<reference name="variant" referenced-type="Variant" reverse-reference="mgends"/>
+		<attribute name="alleleChange" type="java.lang.String"/>
+		<attribute name="aminoAcidChange" type="java.lang.String"/>
+		<attribute name="clinicalSignificance" type="java.lang.String"/>
+		<attribute name="diseaseType" type="java.lang.String"/> <!-- disease_area1 -->
+		<attribute name="cellType" type="java.lang.String"/> <!-- disease_area2 -->
+		<attribute name="diseaseName" type="java.lang.String"/>
+		<reference name="diseaseTerm" referenced-type="OntologyTerm"/> <!-- MeSH or MedGen -->
+		<collection name="caseNumbers" referenced-type="CaseNumber" reverse-reference="mgend"/>
+	</class>
+	
+	<class name="CaseNumber" is-interface="true">
+		<attribute name="type" type="java.lang.String"/> <!-- Gender or Age -->
+		<attribute name="title" type="java.lang.String"/>
+		<attribute name="number" type="java.lang.Integer"/>
+		<reference name="mgend" referenced-type="Mgend" reverse-reference="caseNumbers"/>
+	</class>
+
+</classes>

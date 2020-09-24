@@ -316,6 +316,15 @@
       <property name="osAlias" value="os.production"/>
     </source>
 
+    <source name="mgend" type="mgend">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/mgend"/>
+      <property name="src.data.dir.includes" value="processed_MGeND_*.tsv"/>
+      <property name="mimMedgenFile" value="/data/bio/db/Targetmine/gene_info/mim2gene_medgen"/>
+      <property name="medgenUidFile" value="/data/bio/db/Targetmine/medgen/MedGen_UID_CUI_history.txt"/>
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+    </source>
+
     <source name="dbsnp-info" type="dbsnp-txt">
       <property name="tableType" value="info"/>
       <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp"/>
