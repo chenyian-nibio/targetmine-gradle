@@ -267,11 +267,10 @@ export class GeneExpressionGraph extends TargetMineGraph{
     /* assign click function to axis labels if required */
     labels = d3.selectAll('g#bottom-axis > g.tick > text')
       /* on left click, expand the current level */
-      .on('click', function(d){ console.log('Clicked Expand',d); self.expandXLabels(d); })
+      .on('click', (d) => {  self.expandXLabels(d); })
       /* on right click, collapse the current level */
-      .on('contextmenu', function(d){
+      .on('contextmenu', (d) => {
         d3.event.preventDefault();
-        console.log('Clicked Collapse', d);
         self.collapseXLabels(d);
       })
       ;
@@ -279,16 +278,10 @@ export class GeneExpressionGraph extends TargetMineGraph{
 
   /**
    * Plot a Gene Expression Graph
-   *
-   * @param {boolean} jitter Should points be slightly jittered in order to avoid
-   * overlapping
-   * @param {boolean} violinStrip Should a violin style strip be drawn together
-   * with the points in the graph
    */
-  plot(jitter=true, violinStrip = true){
-    /* Display the X axis of the graph */
+  plot(){
+    /* Display the X and Y axis of the graph */
     this.plotXAxis();
-    /* display the Y axis of the graph */
     this.plotYAxis();
 
     /* Generate an array of data points positions and colors based on the scale
@@ -303,7 +296,8 @@ export class GeneExpressionGraph extends TargetMineGraph{
         let x = xscale(label)+dx;
 
         /* jitter the position of the points if requested */
-        // if( jitter ) x -= dx/2*Math.random();
+        if( d3.select('#cb-jitter').property('checked') )
+          x -= dx/2*Math.random();
 
         if( curr[level] === label ){
           prev.push(
@@ -340,17 +334,18 @@ export class GeneExpressionGraph extends TargetMineGraph{
       .style('fill', function(d){ return d.color; })
     ;
     let tooltip = point.append('svg:title')
-      .text(function(d){ return 'Value: '+d.value; })
+      .text( (d) => { return 'Value: '+d.value; } )
 
     /* add violin strips if requested */
-    // if( violinStrip ){
+    if( d3.select('#cb-violin').property('checked') ){
+      console.log('violin checked')
     //   canvas.selectAll("#violins").remove();
     //   canvas.append('g')
     //     .attr('id', '#violins')
     //   ;
     //
     //   let vls = d3.select('#violins').selectAll('g')
-    //     .data(sumstat)
+    //     .data(this._bins)
     //   let violin = vls.enter().append('g')        // So now we are working group per group
     //   .attr("transform", function(d){ return("translate(" + x(d.key) +" ,0)") } ) // Translation on the right to be at the group position
     //     .append("path")
@@ -363,7 +358,7 @@ export class GeneExpressionGraph extends TargetMineGraph{
     //         .y(function(d){ return(y(d.x0)) } )
     //         .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
     //       )
-    // }
+    }
   }
 
 }

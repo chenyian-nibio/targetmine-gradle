@@ -56,6 +56,11 @@ export class TargetMineGraph {
     let graph = d3.select('svg#canvas_'+this._type).append('g')
       .attr('id', 'graph')
     ;
+
+    /* re-plot the image when checkbox are clicked */
+    let self = this;
+    d3.selectAll('input[type=checkbox]')
+      .on('change', () => { self.plot();} )
   }
 
   /**
@@ -153,15 +158,34 @@ export class TargetMineGraph {
    */
   initColorsAndShapes(addXLabels=true){
     /* init the default color and shape of data elements */
-    // this._colors = [ {'key': 'Default', 'value': '#C0C0C0' } ];
     this._colors = { 'Default': '#C0C0C0' };
-    this._shapes = { 'Default': 'Circle', 'Kd': 'Wye'  };
+    this._shapes = { 'Default': 'Circle' };
     /* upon request, add individual color for each _xLabel */
     if( addXLabels == true ){
       this._xLabels.map( (label, i) => {
-        // this._colors.push( { 'key': label, 'value': d3.schemeCategory10[i%d3.schemeCategory10.length] });
         this._colors[label] = d3.schemeCategory10[i%d3.schemeCategory10.length];
       });
+    }
+  }
+
+  initHistogram(){
+    let self = this;
+    // ESTO ESTA MAL, TENGO QUE ARREGLARLO
+    let histogram = d3.histogram()
+  //   .domain([-3,3])
+  // .thresholds([-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3])
+  // .value(d => d) 
+      .domain(self._yAxis.scale().domain)// y.domain())
+      .thresholds(self._yAxis.ticks(20))    // Important: how many bins approx are going to be made? It is the 'resolution' of the violin plot
+      .value(d => d)
+
+      // What is the biggest number of value in a bin? We need it cause this value will have a width of 100% of the bandwidth.
+    var maxNum = 0
+    for ( i in sumstat ){
+      allBins = sumstat[i].value
+      lengths = allBins.map(function(a){return a.length;})
+      longuest = d3.max(lengths)
+      if (longuest > maxNum) { maxNum = longuest }
     }
   }
 
@@ -301,7 +325,7 @@ export class TargetMineGraph {
 
     /* if defined, add a title to the axis */
     if( this._y !== undefined ){
-      d3.selectAll('svg#canvas_'+this._type+' > text#left-axis-label').remove();
+      canvas.selectAll('text#left-axis-label').remove();
       let label = canvas.append('text')
         .attr('id', 'left-axis-label')
         .attr('transform', 'rotate(-90)')

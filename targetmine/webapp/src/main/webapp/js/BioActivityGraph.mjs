@@ -218,8 +218,8 @@ export class BioActivityGraph extends TargetMineGraph{
     d3.select('#shape-table').selectAll('.display')
       .data(Object.values(this._shapes))
       .append('svg')
+        .attr('class', 'display-cell')
         .attr('viewBox', '-5 -5 10 10')
-        .style('height', 'inherit')
         .append('path')
           .attr('fill', 'black')
           .attr('d', (d) => { return d3.symbol().type(d3['symbol'+d]).size(10)(); })
@@ -240,17 +240,18 @@ export class BioActivityGraph extends TargetMineGraph{
    * Plot a BioActivity Graph
    */
   plot(){
-    /* plot the axis of the graph */
+    /* plot the X and Y axis of the graph */
     this.plotXAxis();
     this.plotYAxis();
+
     /* retrieve the scale of the axis for quick plotting of the data points */
-    let x = this._xAxis.scale();
-    let dx = x.bandwidth()/2; // needed to position points at the middle of the band
-    let y = this._yAxis.scale();
-    /* remove the previous points from the graph */
+    let xscale = this._xAxis.scale();
+    let dx = xscale.bandwidth()/2; // needed to position points at the middle of the band
+    let yscale = this._yAxis.scale();
+
+    /* (re)draw the points, grouped in a single graphics element  */
     let canvas = d3.select('svg#canvas_bioActivity > g#graph');
     canvas.selectAll('#points').remove();
-    /* (re)draw the points, grouped in a single graphics element  */
     canvas.append('g')
       .attr('id', 'points')
       .attr('transform', 'translate('+this._margin.left+', 0)')
@@ -259,30 +260,60 @@ export class BioActivityGraph extends TargetMineGraph{
     /* Each data point will be d3 symbol (represented using svg paths) */
     let pts = d3.select('#points').selectAll('g')
       .data(this._data)
-      // append the path for each data point
-      .enter()
-      .append('path')
-        // and the properties of each point
-        .attr('class', 'data-point')
-        .attr('transform', (d) => {
-          return 'translate('+(x(d[this._x])+dx)+','+y(d[this._y])+')';
-        })
-        .attr('fill', function(d){ return d.color; })
-        .attr('d', function(d){
-          let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
-          let symbol = d3.symbol()
-            .size(50)
-            .type(d3.symbols[s.indexOf(d.shape)])
-            ;
-          return symbol();
-        })
-        // each point will also have an associated svg title (tooltip)
-        .append('svg:title')
-          .text((d) => {
-            return 'Organism: '+d['Organism Name']+
-              '\nGene: '+d['Gene Symbol']+
-              '\nConcentation: '+d['Activity Concentration']+'nM';
-          })
+    let point = pts.enter().append('path')
+      // each point belongs to the 'data-point' class
+      .attr('class', 'data-point')
+      // its positioned in the graph according to its values
+      .attr('transform', (d) => {
+        /* jitter the position of the points if requested */
+        let x = xscale(d[this._x])+dx;
+        if( d3.select('#cb-jitter').property('checked') )
+          x -= dx/2*Math.random();
+        return 'translate('+x+','+yscale(d[this._y])+')';
+      })
+      // with its corresponding color
+      .attr('fill', function(d){ return d.color; })
+      // and shape
+      .attr('d', function(d){
+        let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
+        let symbol = d3.symbol()
+          .size(50)
+          .type(d3.symbols[s.indexOf(d.shape)])
+          ;
+        return symbol();
+      })
+    // each point will also have an associated svg title (tooltip)
+    let tooltip = point.append('svg:title')
+      .text((d) => {
+        return 'Organism: '+d['Organism Name']+
+          '\nGene: '+d['Gene Symbol']+
+          '\nConcentation: '+d['Activity Concentration']+'nM';
+      })
     ;
+
+    /* add violin strips if requested */
+    if( d3.select('#cb-violin').property('checked') ){
+      console.log('violin checked')
+      // canvas.selectAll("violins").remove();
+      // canvas.append('g')
+      //   .attr('id', 'violins')
+      //   .attr('transform', 'translate('+this._margin.left+', 0)')
+      // ;
+      //
+      // let vls = d3.select('violins').selectAll('g')
+      //   .data(this._xLabels)
+      // let violin = vls.enter().append('g')        // So now we are working group per group
+      //   .attr("transform", (d) => { return("translate(" + xscale(d) +" ,0)") } )
+      //   .append("path")
+      //     .datum(function(d){ return(d.value)})     // So now we are working bin per bin
+      //     .style("stroke", "none")
+      //     .style("fill","grey")
+      //     .attr("d", d3.area()
+      //       .x0( xNum(0) )
+      //       .x1(function(d){ return(xNum(d.length)) } )
+      //       .y(function(d){ return(y(d.x0)) } )
+      //       .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
+      //     )
+    }
   }
 }

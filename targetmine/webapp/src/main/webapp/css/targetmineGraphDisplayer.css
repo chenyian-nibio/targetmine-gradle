@@ -1,59 +1,55 @@
+/* Overall CSS for the entire Graph Area */
 div.targetmineGraphDisplayer{
   display: flex;
-  /* background-color: lightyellow; */
   flex-direction: row;
   flex-grow: 1;
   width: 100%;
   height: 400px;
 }
-
+/* Definitions for the SVG (left) area of the graph */
 svg.targetmineGraphSVG{
-  /* background-color: lightcyan; */
-  /* border: 1px solid #84c754; */
   flex-grow: 1;
   width: 100%;
   height: auto;
 }
 
-svg.flex-cell{
-  /* background-color: lightcoral; */
-  width: 100%;
-  height: 25px;
-}
-
+/* Definitions for the Controls (right) area of the graph */
 div.rightColumn{
   flex-direction: column;
-  /* background-color: lightsteelblue */
   width: 20%;
 }
-
 div.flex-table{
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
 }
-
 div.flex-row{
   display: flex;
   box-sizing: border-box;
   flex-direction: row;
+  height: 20px;
 }
-
+svg.display-cell{
+  height: inherit;
+}
 div.flex-cell{
   display: flex;
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
   width: 10%;
-  height: 20px;
+  height: inherit;
 }
-
 div.label{
   justify-content: left;
   width: 80%;
 }
 
-/* The Modal (background) */
+input[type=checkbox]{
+  height: inherit;
+}
+
+/* Definitions for Modal components */
 div.modal {
   display: none; /* Hidden by default */
   position: absolute; /* Stay in place */

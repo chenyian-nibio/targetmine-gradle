@@ -25,10 +25,24 @@
 
         <!-- Right Column, reserved for visualization controls -->
         <div class='rightColumn'>
-          <table id='category-table'>
-            <tbody>
-            </tbody>
-          </table>
+          <!-- Provide user control for the use of violin diplsays and jitter
+          effects  -->
+          <div id='visuals-div' style='flex-direction: column;'>
+            <label for='visuals-table'>Display Options:</label>
+            <br />
+            <table id='visuals-table'>
+              <tbody>
+                <div class='flex-row' id='visuals-violin'>
+                  <input type='checkbox' id='cb-violin'></input>
+                  <div class='flex-cell label'>Add violin</div>
+                </div>
+                <div class='flex-row' id='visuals-jitter'>
+                  <input type="checkbox" id='cb-jitter'></input>
+                  <div class='flex-cell label'>Add jitter</div>
+                </div>
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
