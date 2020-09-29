@@ -267,10 +267,10 @@ export class GeneExpressionGraph extends TargetMineGraph{
     /* assign click function to axis labels if required */
     labels = d3.selectAll('g#bottom-axis > g.tick > text')
       /* on left click, expand the current level */
-      .on('click', (d) => {  self.expandXLabels(d); })
+      .on('click', (ev,d) => { self.expandXLabels(d); })
       /* on right click, collapse the current level */
-      .on('contextmenu', (d) => {
-        d3.event.preventDefault();
+      .on('contextmenu', (ev,d) => {
+        ev.preventDefault();
         self.collapseXLabels(d);
       })
       ;

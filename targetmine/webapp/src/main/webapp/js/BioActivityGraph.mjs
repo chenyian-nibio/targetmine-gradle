@@ -52,8 +52,8 @@ export class BioActivityGraph extends TargetMineGraph{
     ;
     /* init listeners for the different modal components */
     let cols = d3.select('#column-select')
-      .on('change', function(){
-        let values = [...new Set(self._data.map(pa => pa[d3.event.target.value]))];
+      .on('change', e => {
+        let values = [...new Set(self._data.map(pa => pa[e.target.value]))];
         self._updateSelectOptions('#value-select', values);
       })
     ;
