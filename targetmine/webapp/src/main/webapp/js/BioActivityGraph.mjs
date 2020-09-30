@@ -291,29 +291,9 @@ export class BioActivityGraph extends TargetMineGraph{
       })
     ;
 
-    /* add violin strips if requested */
-    if( d3.select('#cb-violin').property('checked') ){
-      console.log('violin checked')
-      // canvas.selectAll("violins").remove();
-      // canvas.append('g')
-      //   .attr('id', 'violins')
-      //   .attr('transform', 'translate('+this._margin.left+', 0)')
-      // ;
-      //
-      // let vls = d3.select('violins').selectAll('g')
-      //   .data(this._xLabels)
-      // let violin = vls.enter().append('g')        // So now we are working group per group
-      //   .attr("transform", (d) => { return("translate(" + xscale(d) +" ,0)") } )
-      //   .append("path")
-      //     .datum(function(d){ return(d.value)})     // So now we are working bin per bin
-      //     .style("stroke", "none")
-      //     .style("fill","grey")
-      //     .attr("d", d3.area()
-      //       .x0( xNum(0) )
-      //       .x1(function(d){ return(xNum(d.length)) } )
-      //       .y(function(d){ return(y(d.x0)) } )
-      //       .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
-      //     )
-    }
+    /* plot violins if requested by the user */
+    let cbViolin = d3.select('#cb-violin');
+    if( cbViolin.size() > 0 && cbViolin.property('checked') )
+      super.plotViolins();
   }
 }

@@ -107,6 +107,8 @@
           window.bioActivityGraph.initColorsAndShapes(false);
           window.bioActivityGraph.assignColors();
           window.bioActivityGraph.assignShapes();
+          // init bins for the case of violin display */
+          window.bioActivityGraph.initHistogramBins();
           // plot the graph
           window.bioActivityGraph.plot();
           // initialize controls used for user interaction

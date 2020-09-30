@@ -49,6 +49,11 @@ input[type=checkbox]{
   height: inherit;
 }
 
+path.violin{
+  stroke: none;
+  fill: #C0C0C0;
+}
+
 /* Definitions for Modal components */
 div.modal {
   display: none; /* Hidden by default */

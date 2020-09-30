@@ -36,6 +36,9 @@ export class TargetMineGraph {
     /* data used for the generation of the graph */
     this._data = undefined;
 
+    /* used for the display of violin plots associated to the data points */
+    this._bins = undefined;
+
     /* d3 axis used in the graph */
     this._xAxis = undefined;
     this._yAxis = undefined;
@@ -168,25 +171,33 @@ export class TargetMineGraph {
     }
   }
 
-  initHistogram(){
+  /**
+   * Initialize the graph's data distribution bins
+   * Histogram bins are used for the display of violin of the data. A single
+   * violin plot is associated to each tick along the xAxis of the graph.
+   * tic
+   *
+   * @param {number} nBins The number of bins to use. Default value 10
+   */
+  initHistogramBins(nBins=10){
     let self = this;
-    // ESTO ESTA MAL, TENGO QUE ARREGLARLO
-    let histogram = d3.histogram()
-  //   .domain([-3,3])
-  // .thresholds([-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3])
-  // .value(d => d) 
-      .domain(self._yAxis.scale().domain)// y.domain())
-      .thresholds(self._yAxis.ticks(20))    // Important: how many bins approx are going to be made? It is the 'resolution' of the violin plot
+    /* function used to define the number of bins and the bounds for each of
+     * them */
+    let histogram = d3.bin()
+      .domain(self._yAxis.scale().domain())
+      .thresholds(self._yAxis.scale().ticks(nBins))
       .value(d => d)
-
-      // What is the biggest number of value in a bin? We need it cause this value will have a width of 100% of the bandwidth.
-    var maxNum = 0
-    for ( i in sumstat ){
-      allBins = sumstat[i].value
-      lengths = allBins.map(function(a){return a.length;})
-      longuest = d3.max(lengths)
-      if (longuest > maxNum) { maxNum = longuest }
-    }
+      ;
+    /* actually bin the data points */
+    this._bins = d3.rollup(
+      self._data,
+      d => {
+        let input = d.map( g => g['Activity Concentration']);
+        let bins = histogram(input);
+        return bins;
+      },
+      d => d['Activity Type']
+    );
   }
 
   /**
