@@ -266,10 +266,9 @@
 <!-- internal use only -->
    <source name="gobiom" type="gobiom">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gobiom"/>
-      <property name="src.data.dir.includes" value="BIOM_STRUCTURE_MASTER.csv"/>
-      <property name="locusMasterFile" value="/data/bio/db/Targetmine/gobiom/BIOM_LOCUS_MASTER.csv" />
+      <property name="src.data.dir.includes" value="BIOM_STRUCTURE_MASTER.fixed.csv"/>
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="humanIdMappingFile" value="/data/bio/db/Targetmine/gobiom/HUMAN_9606_idmapping.dat" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
    </source>
 
     <source name="orphanet" type="orphanet">
