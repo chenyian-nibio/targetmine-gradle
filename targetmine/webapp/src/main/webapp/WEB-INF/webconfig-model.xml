@@ -915,15 +915,16 @@
     </fields>
   </class>
 
-<!-- Start: Added by Ishikawa.Motokazu 
+<!-- Start: Added by Ishikawa.Motokazu -->
   <class className="org.intermine.model.bio.Biomarker">
     <fields>
       <fieldconfig fieldExpr="name"/>
       <fieldconfig fieldExpr="biomarkerType"/>
       <fieldconfig fieldExpr="chemicalNature"/>
+      <fieldconfig fieldExpr="diseaseType"/>
+      <fieldconfig fieldExpr="diseaseName"/>
     </fields>
   </class>
--->
 
 <!-- End: Added by Ishikawa.Motokazu -->
 

@@ -117,11 +117,11 @@ public class PossumConverter extends BioFileConverter
 	
 	private Map<String, String> proteinChainMap = new HashMap<String, String>();
 	private String getProteinChain(String pdbId, String chainId) throws ObjectStoreException {
-		String identifier = pdbId + chainId;
+		String identifier = pdbId.toLowerCase() + chainId;
 		String ret = proteinChainMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("ProteinChain");
-			item.setAttribute("pdbId", pdbId);
+			item.setAttribute("pdbId", pdbId.toLowerCase());
 			item.setAttribute("chain", chainId);
 			item.setAttribute("identifier", identifier);
 			store(item);

@@ -193,7 +193,6 @@ public class MgendConverter extends BioFileConverter {
 					num.setAttribute("number", cols[index]);
 					num.setReference("mgend", item);
 					store(num);
-					item.addToCollection("caseNumbers", num);
 				}
 			}
     		
@@ -201,7 +200,7 @@ public class MgendConverter extends BioFileConverter {
 				int index = genderGroupMap.get(key).intValue();
 				if (!cols[index].equals("0")) {
 					Item num = createItem("CaseNumber");
-					num.setAttribute("type", "age");
+					num.setAttribute("type", "gender");
 					num.setAttribute("title", key);
 					num.setAttribute("number", cols[index]);
 					num.setReference("mgend", item);
