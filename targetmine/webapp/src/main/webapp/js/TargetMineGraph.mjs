@@ -53,17 +53,6 @@ export class TargetMineGraph {
     /* the list of colors and shapes used to display data points */
     this._colors = undefined;
     this._shapes = undefined;
-
-    /* Add a base component to the SVG element. The drawing of each element in
-     * the svg will be nested to this basic component */
-    let graph = d3.select('svg#canvas_'+this._type).append('g')
-      .attr('id', 'graph')
-    ;
-
-    /* re-plot the image when checkbox are clicked */
-    let self = this;
-    d3.selectAll('input[type=checkbox]')
-      .on('change', () => { self.plot();} )
   }
 
   /**
@@ -84,6 +73,56 @@ export class TargetMineGraph {
     data = data.replace(/, /g, '\n');
     /* local storage of the data */
     this._data = d3.tsvParse(data, d3.autoType);
+  }
+
+  /**
+   * Initialize Visualization Handling elements
+   * A panel with controls is added to the right side of each graph. These
+   * controls are grouped in tables, each of which has a Title and an optional
+   * 'Add' button (that allows the user to add elements during execution).
+   *
+   * @param {Object} columnElements The list of tables that will be added to the
+   * right column of the container
+   */
+  initDOM(columnElements){
+    let container = d3.select('.targetmineGraphDisplayer');
+    // Left Column of the Visualization (main display)
+    container.append('svg')
+      .attr('id', 'canvas_'+this._type)
+      .attr('class', 'targetmineGraphSVG')
+      .attr('viewbox', '0 0 '+this._width+' '+this._height)
+      .append('g')
+        .attr('id', 'graph')
+    ;
+    // Right Column, reserved for visualization controls
+    container.append('div')
+      .attr('class', 'rightColumn')
+    ;
+
+    // Add individual right column elements
+    d3.select('.rightColumn').selectAll('div')
+      .data(columnElements)
+      .enter().append('div')
+      .attr('id', d => d.name+'-div')
+      .each(function(d) {
+        d3.select(this).append('br');
+        d3.select(this).append('label')
+          .attr('for', d.name+'-table')
+          .text(d.text)
+        ;
+        d3.select(this).append('table')
+          .attr('id', d.name+'-table')
+          .append('tbody')
+          ;
+        if( d.button ){
+          d3.select(this).append('button')
+            .attr('id', d.name+'-add' )
+            .text('Add')
+          ;
+        }
+      })
+      .exit().remove()
+    ;
   }
 
   /**
@@ -140,7 +179,6 @@ export class TargetMineGraph {
       min = Math.min( +x[this._y], min );
     }, this);
     /* initialize the correct type of scale */
-    console.log('yaxis',min,max);
     let scale = logScale == true ? d3.scaleLog().domain([min,max]) : d3.scaleLinear().domain([0,max]);
     scale.range( [this._height-this._margin.bottom, this._margin.top] )
     scale.nice()
@@ -245,37 +283,92 @@ export class TargetMineGraph {
   }
 
   /**
-   * Initialize the DOM elements of a table
-   * Tables are used to incorporate elements of user interaction to the graph.
+   * Initialize table components
    *
-   * @param {String} id The id used to identify the table being defined.
-   * @param {Array} labels An array of labels used to identify each of the rows
-   * that the table will contain
+   * @param {string} tableid The id of the table whose elements we are going to
+   * modify
+   * @param {string} type A string that describes the visual elemets for which
+   * the table is used
+   * @param {array} rowElements List of identifiers for each row of the table
+   * @param {object} rowComponents List of elements to be added to each row
    */
-  initTable(id, labels){
-    /* remove previous table elements */
-    d3.select('#'+id+'-table > tbody').selectAll('div').remove();
-    /* recreate each row of the table, based on the labels array */
-    let rows = d3.select('#'+id+'-table > tbody').selectAll('div')
-      .data(labels)
-      // first, each individual row
-      .enter()
-      .append('div')
+  initTableRows(tableid, type, rowElements, rowComponents){
+    d3.select(tableid+' > tbody').selectAll('div').remove();
+    d3.select(tableid+' > tbody').selectAll('div')
+      .data(rowElements)
+      .enter().append('div')
         .attr('class', 'flex-row')
-        .attr('id', (d) => { return id+'-'+d; })
-    // first cell of the row: a div for thumbnail display
-    rows.append('div')
-      .attr('class', 'flex-cell display')
-    // second cell: the label of the row
-    rows.append('div')
-      .attr('class', 'flex-cell label')
-      .text( (d) => { return d; } )
-    // third cell: a 'remove element' button
-    rows.insert('span')
-      .attr('class', 'flex-cell small-close')
-      .attr('data-key', (d) => {return d;} )
-      .attr('data-index', (d,i) => { return i; })
-      .html('&times;')
+        .attr('id', d => type+'-'+d)
+        .each(function(d,i){
+          rowComponents.forEach(g => {
+            let ele = d3.select(this).append(g.type);
+            g.attr.forEach( h => {
+              ele.attr(h[0], h[1]);
+            });
+          });
+        })
+  }
+
+  /**
+   * Set the position (in display coordinates) of each point in the data
+   *
+   * @param {boolean} jitter Should the position of the point be randomly
+   * jittered along the X axis or not.
+   */
+  setPointPositions(jitter=false){
+    let X = this._xAxis.scale();
+    let dx = X.bandwidth()/2;
+    let Y = this._yAxis.scale();
+    this._data.forEach(d => {
+      d.x = X(d[this._x])+dx;
+      if( jitter ) dx -= dx/2*Math.random();
+      d.y = Y(d[this._y]);
+    },this);
+  }
+
+  /**
+   *
+   */
+  plotViolins(){
+    /* add violin strips if requested */
+    let canvas = d3.select('svg#canvas_'+this._type+' > g#graph');
+    let X = this._xAxis.scale();
+    let Y = this._yAxis.scale();
+    canvas.selectAll("#violins").remove();
+    // if( d3.select('#cb-violin').property('checked') ){
+
+        // What is the biggest number of value in a bin? We need it cause this value will have a width of 100% of the bandwidth.
+      let maxNum = 0
+      this._bins.forEach(d => {
+          let lengths = d.map(g => g.length);
+          let longest = d3.max(lengths);
+          maxNum = longest > maxNum ? longest : maxNum;
+        });
+      let xNum = d3.scaleLinear()
+        .range([0, X.bandwidth()])
+        .domain([-maxNum, maxNum])
+
+
+      canvas.append('g')
+        .attr('id', 'violins')
+        .attr('transform', 'translate('+this._margin.left+', 0)')
+      ;
+
+      let vls = d3.select('#violins').selectAll('g')
+        .data(this._bins)
+      let violin = vls.enter().append('g')        // So now we are working group per group
+        .attr('class', 'violin')
+        .attr("transform", d => "translate(" + (X(d[0])+(X.bandwidth()/10)) +" ,0)")
+        .append("path")
+          .datum(d => d[1]) //extract only the bins
+          .attr("class", "violin")
+          .attr("d", d3.area()
+            .x0( xNum(0) )
+            .x1(function(d){ return(xNum(d.length)) } )
+            .y(function(d){ return(Y(d.x0)) } )
+            .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
+          )
+    // }
   }
 
   /**

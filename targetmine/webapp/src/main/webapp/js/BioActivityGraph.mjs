@@ -15,81 +15,134 @@ export class BioActivityGraph extends TargetMineGraph{
    * Initialize an instance of BioActivityGraph
    *
    * @param {string} name The title for the graph
+   * @param {string} data The Java ArrayList string representation of the data
+   * retrieved from the database for the construction of the graph
    * @param {int} width The width of the viewBox in the svg element
    * @param {int} height The height of the viewBox in the svg element
    */
-  constructor(name, width, height){
+  constructor(name, data, width, height){
     /* initialize super class attributes */
     super('bioActivity', name, width, height);
-
     /* initial variables for X and Y axis */
     this._x = 'Activity Type';
-    // this._y = 'Activity Concentration';
     this._y = 'Activity Concentration';
+
+    /* parse data to local storage */
+    super.loadData(data);
+    if( this._data.length === 0 ){
+      d3.select('.targetmineGraphDisplayer')
+        .text('No BioActivity Data to Display.')
+      ;
+      return;
+    }
+    /* Initialize the Axis of the graph */
+    super.initXLabels();
+    super.initXAxis();
+    super.initYAxis(true);
+    /* Initialize data points, position, color and shape */
+    super.setPointPositions();
+    super.initColorsAndShapes(false);
+    super.assignColors();
+    super.assignShapes();
+    /* Initialize histogram for violin plots display */
+    super.initHistogramBins();
+
+    /* init common DOM elements */
+    let columnElements = [
+      { 'name': 'color', 'text': 'Color Table', 'button': true },
+      { 'name': 'shape', 'text': 'Shape Table', 'button': true },
+      { 'name': 'visuals', 'text': 'Other Visuals', 'button': false },
+    ];
+    super.initDOM(columnElements);
+    this.initDOM();
+    /* assign functionality to different interface components */
+    let self = this;
+    d3.select('#input[type=checkbox]')
+      .on('change', () => { self.plot();} )
+    /* Plot the graph */
+    this.plot();
   }
 
   /**
-   * Init modal components and listeners
-   * Modals are used to control user interaction
+   * Initialize BioActivityGraph specific DOM elements
    */
-  _initModal(){
+  initDOM(){
     let self = this;
-    /* filter only categories within the data values */
-    let options = this._data.columns.reduce(function(prev, curr){
+
+    /* First, we update the three tables used for visualization handling within
+     * the graph */
+    this.updateColorTable();
+    this.updateShapeTable();
+    this.updateVisualsTable();
+
+    /* A modal component is used by the user to select colors and shapes used
+     * for the display of points */
+    let container = d3.select('.targetmineGraphDisplayer')
+      .append('div')
+        .attr('id', 'modal')
+        .attr('class', 'modal')
+        .append('div')
+          .attr('id', 'modal-content')
+          .attr('class', 'modal-content')
+    ;
+    /* add title to the modal */
+    let content = d3.select('.targetmineGraphDisplayer').select('#modal-content');
+    content.append('h3')
+      .attr('id', 'modal-title')
+      .attr('class', 'modal-title')
+      ;
+    /* In order to a color/shape to be applied, two different levels of selection
+     * have to be specified. These are refered to as 'column' and 'value'. Here
+     * we add the components required for user selection */
+    let colSelect = content.append('select')
+      .attr('id','modal-column-select')
+      .attr('class', 'modal-select')
+      ;
+    content.append('select')
+      .attr('id', 'modal-value-select')
+      .attr('class', 'modal-select')
+      ;
+    /* 'column' options are fixed */
+    let opts = this._data.columns.reduce((prev, curr, i) => {
       if( typeof(self._data[0][curr]) === 'string' ) prev.push(curr);
       return prev;
-    }, []);
-    /* add options based on the previous filtering */
-    let opts = d3.select('#column-select').selectAll('option')
-      .data(options)
-    opts.enter()
-      .append('option')
-      .attr('value', function(d){ return d; })
-      .text(function(d){ return d; })
-    ;
-    opts.attr('value', function(d){ return d; })
-      .text(function(d){ return d; })
-    ;
-    /* init listeners for the different modal components */
-    let cols = d3.select('#column-select')
-      .on('change', e => {
+    },[]);
+    colSelect.selectAll('option')
+      .data(opts)
+      .enter().append('option')
+        .attr('value', d => d)
+        .text(d => d)
+      ;
+    /* but each time a new column is selected, the options in the 'value' select
+     * need to be updated */
+    d3.select('#modal-column-select')//.selectAll('option')
+      .on('change', function(e){
         let values = [...new Set(self._data.map(pa => pa[e.target.value]))];
-        self._updateSelectOptions('#value-select', values);
+        self.updateSelectOptions('#modal-value-select', values);
       })
-    ;
-    d3.select('#column-select').dispatch('change');
+      .dispatch('change') // make sure to initially update the values
+      ;
 
-    d3.select('#color-add').on('click', function(){ self._displayModal('color'); });
-    d3.select('#shape-add').on('click', function(){ self._displayModal('shape'); });
-    d3.select('#modal-ok').on('click', function(){ self._okModal(); });
+    /* The space for the color/shape input elements */
+    content.append('div')
+      .attr('id', 'modal-input')
+      .attr('class', 'modal-input')
+    ;
+    /* OK and Cancel buttons */
+    content.append('button')
+      .attr('id','modal-ok')
+      .text('OK')
+    ;
+    content.append('button')
+      .attr('id', 'modal-cancel')
+      .text('Cancel')
+    ;
+
+    /* bind functionality to Righ-column interface elements */
+    d3.select('#color-add').on('click', function(){ self.modalDisplay('color') });
+    d3.select('#shape-add').on('click', function(){ self.modalDisplay('shape'); });
+    d3.select('#modal-ok').on('click', function(){ self.modalOK(); });
     d3.select('#modal-cancel').on('click', function(){ d3.select('#modal').style('display', 'none'); });
-  }
-
-  /**
-   * Update the options available for a given Select DOM element.
-   * Given the id of a select element, it updates the options available based on
-   * the list of values provided
-   *
-   * @param {string} id The id of the select component that should be updated
-   * @param {string} values The list of values to use for the definition of
-   * options
-   */
-  _updateSelectOptions(id, values){
-    /* select all the elements */
-    let opts = d3.select(id).selectAll('option')
-      .data(values)
-    /* add options according to the amount required */
-    opts.enter()
-      .append('option')
-      .attr('value', function(d){ return d; })
-      .text(function(d){ return d; })
-    ;
-    /* remove unnecesary options */
-    opts.exit().remove();
-    /* update values of re-used options */
-    opts.attr('value', function(d){ return d; })
-      .text(function(d){ return d; })
-    ;
   }
 
   /**
@@ -98,50 +151,40 @@ export class BioActivityGraph extends TargetMineGraph{
    * @param {string} type An identifier of the type of modal to be shown, either
    * 'color' or 'shape'.
    */
-  _displayModal(type){
+  modalDisplay(type){
     let self = this;
+    /* Set display to True */
     let content = d3.select('#modal')
       .style('display', 'flex')
       .attr('data-type', type)
     ;
-    /* Define the type of input: color input for color scale, or radio buttons
-     * for shape selection */
-    let inp = d3.selectAll('#modal-input > *').remove();
+    /* define the title for the window */
+    d3.select('#modal-title')
+      .text('Select '+type+' to apply:')
 
+    /* remove previous input elements */
+    d3.selectAll('#modal-input > *').remove();
+    /* If adding a color element, define a new color input  */
     if( type === 'color' ){
-      let title = d3.select('#modal-title')
-        .text('Select color to apply:')
-      ;
-      inp = d3.select('#modal-input')
+      d3.select('#modal-input')
         .append('input')
           .property('type', 'color')
           .property('value', '#000000')
       ;
     }
+    /* else, incorporate the input required for shape elements */
     else{
-      let title = d3.select('#modal-title')
-        .text('Select shape to apply:')
-      ;
-
-      let opts = d3.select('#modal-input').selectAll('label')
+      let opts = d3.select('#modal-input').selectAll('input')
         .data(['Circle','Cross','Diamond','Square','Star','Triangle','Wye'])
-      ;
-      let opt = opts.enter().append('label')
-        .text(function(d){ return d; })
-      ;
-
-      d3.select('#modal-input').selectAll('label')
-        .insert('input')
-          .attr('id', function(d){ return 'symbol-'+d; })
-          .attr('value', function(d){ return d; })
+        .enter()
+        .append('input')
+          .attr('id', d => 'symbol-'+d)
+          .attr('value', d => d)
           .attr('type', 'radio')
           .attr('name', 'shape')
-      ;
-
-      d3.select('#modal-input').selectAll('label')
-        .append('br')
-      ;
-
+        .append('label')
+          .text(d => d)
+        ;
       d3.select('#symbol-Circle').property('checked', true);
     }
   }
@@ -152,13 +195,13 @@ export class BioActivityGraph extends TargetMineGraph{
    * data, here we handle the update of the color or shape list, and apply the
    * corresponding change to the dataset.
    */
-  _okModal(){
+  modalOK(){
     /* hide the modal from view */
     let modal = d3.select('#modal').style('display', 'none');
     /* capture the type of modal and the values that the user selected */
     let type = modal.attr('data-type');
-    let col = d3.select('#column-select').property('value');
-    let val = d3.select('#value-select').property('value');
+    let col = d3.select('#modal-column-select').property('value');
+    let val = d3.select('#modal-value-select').property('value');
     let upd = type === 'color' ?
       d3.select('#modal-input > input').property('value') :
       d3.select('input[name="shape"]:checked').property('value')
@@ -171,52 +214,94 @@ export class BioActivityGraph extends TargetMineGraph{
     });
 
     /* update the corresponding table */
-    if( type === 'color'){
-      // this._colors.push( {'key': val, 'value': upd} );
+    if( type === 'color' ){
       this._colors[val] = upd;
-      this.initColorTable();
+      this.updateColorTable();
     }
     else{
-      // this._shapes.push( {'key': val, 'value': upd} );
       this._shapes[val] = upd;
-      this.initShapeTable();
+      this.updateShapeTable();
     }
     /* redraw the graph */
     this.plot();
   }
 
   /**
-   * Initialize the display of the color table
+   * Update the options available for a given Select DOM element.
+   * Given the id of a select element, it updates the options available based on
+   * the list of values provided
+   *
+   * @param {string} id The id of the select component that should be updated
+   * @param {string} values The list of values to use for the definition of
+   * options
    */
-  initColorTable(){
+  updateSelectOptions(id, values){
+    /* select all the elements */
+    d3.select(id).selectAll('option').remove();
+    d3.select(id).selectAll('option')
+      .data(values)
+      .enter().append('option')
+        .attr('value', function(d){ return d; })
+        .text(function(d){ return d; })
+      ;
+  }
+
+  /**
+   * Initialize the display of the color table
+   *
+   */
+  updateColorTable(){
     let self = this;
-    super.initTable('color', Object.keys(this._colors));
-    /* update the color backgroud of components */
+    let keys = Object.keys(this._colors);
+    let values = Object.values(this._colors);
+    /* these are the DOM elements in each row of the table */
+    let rowComponents = [
+      { 'type': 'div', 'attr':[['class', 'flex-cell display']] },
+      { 'type': 'div', 'attr':[['class', 'flex-cell label']] },
+      { 'type': 'span', 'attr':[['class', 'flex-cell small-close']] },
+    ];
+    super.initTableRows('#color-table', 'color', keys, rowComponents);
+    /* update the color backgroud of the display are of each row */
     d3.select('#color-table').selectAll('.display')
-      .data(Object.values(this._colors))
-      .style('background-color', (d) => { return d; })
+      .data(values)
+      .style('background-color', d => d )
     ;
-    // /* update the contents of the remove button */
-    let close = d3.select('#color-table').selectAll('.small-close')
+    /* set the labels for each row */
+    d3.select('#color-table').selectAll('.label')
+      .data(keys)
+      .text(d => d)
+    ;
+    /* update the small close span element */
+    d3.select('#color-table').selectAll('.small-close')
+      .html('&times;')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
         delete( self._colors[this.dataset.key] );
         self.assignColors();
-        self.initColorTable();
+        self.updateColorTable();
         self.plot();
       })
     ;
   }
 
+
   /**
    * Initialize the display of the shape table
    */
-  initShapeTable(){
+  updateShapeTable(){
     let self = this;
-    super.initTable('shape', Object.keys(this._shapes));
-    /* update the display of the corresponding shapes */
+    let keys = Object.keys(this._shapes);
+    let values = Object.values(this._shapes);
+    /* these are the DOM elements in each row of the table */
+    let rowComponents = [
+      { 'type': 'div', 'attr':[['class', 'flex-cell display']] },
+      { 'type': 'div', 'attr':[['class', 'flex-cell label']] },
+      { 'type': 'span', 'attr':[['class', 'flex-cell small-close']] },
+    ];
+    super.initTableRows('#shape-table', 'shape', keys, rowComponents);
+    /* we customize the DOM elements according to the values of the shapes list */
     d3.select('#shape-table').selectAll('.display')
-      .data(Object.values(this._shapes))
+      .data(values)
       .append('svg')
         .attr('class', 'display-cell')
         .attr('viewBox', '-5 -5 10 10')
@@ -224,30 +309,65 @@ export class BioActivityGraph extends TargetMineGraph{
           .attr('fill', 'black')
           .attr('d', (d) => { return d3.symbol().type(d3['symbol'+d]).size(10)(); })
     ;
-    /* update the contents of the remove button */
+    /* set the label for each row */
+    d3.select('#shape-table').selectAll('.label')
+      .data(keys)
+      .text(d => d)
+    ;
+    /* update the small-close span element */
     let close = d3.select("#shape-table").selectAll('.small-close')
+      .html('&times;')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
         delete( self._shapes[this.dataset.key] );
         self.assignShapes();
-        self.initShapeTable();
+        self.updateShapeTable();
         self.plot();
       })
     ;
   }
 
   /**
+  *
+  */
+  updateVisualsTable(){
+    let self = this;
+    /* these are the DOM elements in each row of the table */
+    let rowElements =[ 'violin', 'jitter' ];
+    let rowComponents = [
+      { 'type': 'input', 'attr': [['type', 'checkbox'], ['class','flex-cell display']] },
+      { 'type': 'div', 'attr':[['class', 'flex-cell label']] },
+    ];
+    super.initTableRows('#visuals-table', 'visual', rowElements, rowComponents);
+    /* Customization of DOM elements */
+    d3.select('#visuals-table').selectAll('.label')
+      .data(rowElements)
+      .text( d => 'Add '+d )
+    d3.select('#visuals-table').selectAll('input')
+      .data(rowElements)
+      .attr('id', d => 'cb-'+d)
+    /* Event handlers association */
+    d3.select('#cb-violin').on('change', function(){
+      if( this.checked )
+        self.plotViolins(); 
+      else{
+        d3.selectAll("#violins").remove();
+      }
+    });
+    d3.select('#cb-jitter').on('change', function(){
+      self.setPointPositions(this.checked);
+      self.plot();
+    });
+  }
+
+  /**
    * Plot a BioActivity Graph
+   *
    */
   plot(){
     /* plot the X and Y axis of the graph */
-    this.plotXAxis();
-    this.plotYAxis();
-
-    /* retrieve the scale of the axis for quick plotting of the data points */
-    let xscale = this._xAxis.scale();
-    let dx = xscale.bandwidth()/2; // needed to position points at the middle of the band
-    let yscale = this._yAxis.scale();
+    super.plotXAxis();
+    super.plotYAxis();
 
     /* (re)draw the points, grouped in a single graphics element  */
     let canvas = d3.select('svg#canvas_bioActivity > g#graph');
@@ -256,24 +376,16 @@ export class BioActivityGraph extends TargetMineGraph{
       .attr('id', 'points')
       .attr('transform', 'translate('+this._margin.left+', 0)')
     ;
-
     /* Each data point will be d3 symbol (represented using svg paths) */
     let pts = d3.select('#points').selectAll('g')
       .data(this._data)
+    /* each point belongs to the 'data-point' class its positioned in the graph
+     * according to the associated (x,y) coordinates and its drawn using its
+     * color and shape */
     let point = pts.enter().append('path')
-      // each point belongs to the 'data-point' class
       .attr('class', 'data-point')
-      // its positioned in the graph according to its values
-      .attr('transform', (d) => {
-        /* jitter the position of the points if requested */
-        let x = xscale(d[this._x])+dx;
-        if( d3.select('#cb-jitter').property('checked') )
-          x -= dx/2*Math.random();
-        return 'translate('+x+','+yscale(d[this._y])+')';
-      })
-      // with its corresponding color
-      .attr('fill', function(d){ return d.color; })
-      // and shape
+      .attr('transform', d => 'translate('+d.x+' '+d.y+')')
+      .attr('fill', d => d.color )
       .attr('d', function(d){
         let s = ['Circle','Cross','Diamond','Square','Star','Triangle','Wye']
         let symbol = d3.symbol()
@@ -282,18 +394,21 @@ export class BioActivityGraph extends TargetMineGraph{
           ;
         return symbol();
       })
-    // each point will also have an associated svg title (tooltip)
-    let tooltip = point.append('svg:title')
+      ;
+    /* each point will also have an associated svg title (tooltip) */
+    point.append('svg:title')
       .text((d) => {
         return 'Organism: '+d['Organism Name']+
           '\nGene: '+d['Gene Symbol']+
           '\nConcentation: '+d['Activity Concentration']+'nM';
       })
-    ;
+      ;
 
     /* plot violins if requested by the user */
-    let cbViolin = d3.select('#cb-violin');
-    if( cbViolin.size() > 0 && cbViolin.property('checked') )
-      super.plotViolins();
+    // canvas.selectAll("#violins").remove();
+    // let cbViolin = d3.select('#cb-violin');
+    // if( cbViolin.size() > 0 && cbViolin.property('checked') )
+    //   super.plotViolins();
+    // else
   }
 }

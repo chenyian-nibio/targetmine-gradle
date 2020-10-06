@@ -8,116 +8,20 @@
 <%! int height = 400; %>
 
 <div class="collection-table">
+<h3>Bio-Activities Graph</h3>
 
-<!-- Verify that there isnt an empty collection of data -->
-<c:choose>
-  <c:when test="${empty data}">
-    <h3>No BioActivity Data to Display</h3>
-  </c:when>
+<!-- Visualization Container -->
+<div class='targetmineGraphDisplayer'></div>
 
-  <c:otherwise>
-    <h3>Bio-Activities Graph</h3>
-    <!-- Visualization Container -->
-    <div class='targetmineGraphDisplayer'>
-
-      <!-- Left Column of the Visualization (main display) -->
-      <svg class='targetmineGraphSVG' id='canvas_bioActivity' viewbox="0 0 <%= width %> <%= ' ' %> <%= height%>"></svg>
-
-      <!-- Right Column, reserved for visualization controls -->
-      <div class='rightColumn'>
-        <!-- Choose the property used to display color, and to make (in)visible
-        data points associated to specific colors in the scale -->
-        <div id='color-div' style='flex-direction: column;'>
-          <label for='color-table'>Color Scale:</label>
-          <br />
-          <table id='color-table'>
-            <tbody>
-            </tbody>
-          </table>
-          <button id='color-add'>Add</button>
-        </div>
-        <!-- Choose the property used to map display shape, and to make (in)visible
-        data points associated to specific shapes in the scale -->
-        <div id='shape-div' style='flex-direction: column;'>
-          <label for='shape-select'>Shape Scale:</label>
-          <br />
-          <table id='shape-table'>
-            <tbody>
-            </tbody>
-          </table>
-          <button id='shape-add'>Add</button>
-        </div>
-        <!-- Provide user control for the use of violin diplsays and jitter
-        effects  -->
-        <div id='visuals-div' style='flex-direction: column;'>
-          <label for='visuals-table'>Display Options:</label>
-          <br />
-          <table id='visuals-table'>
-            <tbody>
-              <div class='flex-row' id='visuals-violin'>
-                <input type='checkbox' id='cb-violin'></input>
-                <div class='flex-cell label'>Add violin</div>
-              </div>
-              <div class='flex-row' id='visuals-jitter'>
-                <input type="checkbox" id='cb-jitter'></input>
-                <div class='flex-cell label'>Add jitter</div>
-              </div>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- The Modal -->
-      <div id="modal" class="modal">
-        <!-- Modal content -->
-        <div id='modal-content' class="modal-content">
-          <h3 id='modal-title'></h3>
-          <select id='column-select'>
-            <option value=undefined>Select...</option>
-          </select>
-          <select id='value-select'>
-            <option value=undefined>Select...</option>
-          </select>
-          <br />
-          <div id="modal-input">
-          </div>
-          <br />
-          <button id='modal-ok'>OK</button>
-          <button id='modal-cancel'>Cancel</button>
-        </div>
-      </div>
-
-
-    </div>
-
-
-    <script type="text/javascript">
-      import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
-        .then((module) => {
-          window.bioActivityGraph = new module.BioActivityGraph('${compound}', <%= width %>, <%= height %>);
-          // trasfer data to javascript object
-          window.bioActivityGraph.loadData('${data}');
-          // initialize the bands to display on the x Axis
-          window.bioActivityGraph.initXLabels();
-          window.bioActivityGraph.initXAxis();
-          // initialize the Y axis using a log scale
-          window.bioActivityGraph.initYAxis(true);
-          // set the default color and shape for data points and assign the
-          // corresponding value to each data point
-          window.bioActivityGraph.initColorsAndShapes(false);
-          window.bioActivityGraph.assignColors();
-          window.bioActivityGraph.assignShapes();
-          // init bins for the case of violin display */
-          window.bioActivityGraph.initHistogramBins();
-          // plot the graph
-          window.bioActivityGraph.plot();
-          // initialize controls used for user interaction
-          window.bioActivityGraph._initModal();
-          window.bioActivityGraph.initColorTable();
-          window.bioActivityGraph.initShapeTable();
-        });
-    </script>
-  </c:otherwise>
-</c:choose>
-
+<%-- Visualization Definition --%>
+<script type="text/javascript">
+  import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
+    .then((module) => {
+      window.bioActivityGraph = new module.BioActivityGraph('${compound}',
+        '${data}',
+        <%= width %>,
+        <%= height %>
+      );
+    });
+</script>
 </div>
