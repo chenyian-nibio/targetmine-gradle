@@ -13,11 +13,12 @@
 <!-- Visualization Container -->
 <div class='targetmineGraphDisplayer'></div>
 
-<%-- Visualization Definition --%>
+<!-- Visualization Definition -->
 <script type="text/javascript">
   import(window.location.origin+'/targetmine/js/BioActivityGraph.mjs')
     .then((module) => {
-      window.bioActivityGraph = new module.BioActivityGraph('${compound}',
+      window.bioActivityGraph = new module.BioActivityGraph(
+        '${compound}',
         '${data}',
         <%= width %>,
         <%= height %>

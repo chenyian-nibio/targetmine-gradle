@@ -19,17 +19,18 @@ export class GeneExpressionGraph extends TargetMineGraph{
    * Initialize a new instance of GeneExpressionGraph
    *
    * @param {string} name The title for the graph
+   * @param {data} data The Java ArrayList string representation of the data
+   * retrieved from the database for the construction of the graph
    * @param {int} width The width of the viewBox in the svg element
    * @param {int} height The height of the viewBox in the svg element
    */
-  constructor(name, width, height){
+  constructor(name, data, width, height){
     /* initialize super-class attributes */
     super('geneExpression', name, width, height);
 
     /* Title for each axis in the graph */
     this._x = undefined;
     this._y = 'value';
-
     /* Different levels of specificity at which we can look gene expression */
     this._levels = {
       0: 'category',
@@ -39,24 +40,64 @@ export class GeneExpressionGraph extends TargetMineGraph{
     Object.freeze(this._levels);
 
     /* The display tree contains the information required for the correct display
-     of data points along the X axis */
+    of data points along the X axis */
     this._displayTree = undefined;
+
+    /* parse data to local storage */
+    this.loadData(data);
+    if( this._data.length === 0 ){
+      d3.select('.targetmineGraphDisplayer').text('No Gene Expression Data to Display');
+      return;
+    }
+    /* Initialize the tree structure of levels for the graph */
+    this.initDisplayTree();
+    /* Initialize the Axis of the graph */
+    this.initXLabels();
+    this.initXAxis();
+    this.initYAxis();
+    /* Initialize data points position and color */
+    this.setPointPositions();
+    this.initColorsAndShapes();
+    this.assignColors();
+    /* Initialize histogram for violin plots display */
+    this.initHistogramBins();
+
+    this.initDOM();
+
+    this.updateVisualsTable();
+
+    this.plot();
+
   }
 
   /**
-   * Initialize the labels of the X axis of the Graph.
-   * As the _displayTree contains a list of all the different labels across the
-   * different levels of the structure, we can simply copy that information as
-   * the initial labels for the graph.
-   * We also initialize the list of levels associated to each label.
+   * Assert if two elements belong to the same branch of the displayTree
+   *
+   * @param {string} source
+   * @param {string} target
+   * @param {int} sourceLevel
+   * @return {boolean} whether the source element belongs to the same branch in
+   * the display tree as the target element.
    */
-  initXLabels(){
-    /* copy labels from the _displayTree */
-    this._xLabels = [];
-    this._xLabels.push(Object.keys(this._displayTree[0]));
-    this._xLabels = this._xLabels.flat();
-    /* and initialize the level of each of the labels */
-    this._xLevels = Array(this._xLabels.length).fill(0);
+  belongToSameBranch(source, target, sourceLevel, targetLevel){
+    /* if both are on the same lvl and share the parent, they are on the same branch */
+    if(
+      sourceLevel === targetLevel &&
+      this._displayTree[sourceLevel][source].parent === this._displayTree[targetLevel][target].parent
+    ){
+      return true;
+    }
+
+    /* if source is below target, then they are on the same branch only if target
+      and source share a common ancestor */
+    if( sourceLevel > targetLevel ){
+      return this.belongToSameBranch(this._displayTree[sourceLevel][source].parent, target, sourceLevel-1, targetLevel);
+    }
+
+    /* if source is above target, then they will only be displayed together if
+      they are on different branches, thus always false.
+      Same applies for all other cases. */
+    return false;
   }
 
   /**
@@ -126,34 +167,121 @@ export class GeneExpressionGraph extends TargetMineGraph{
   }
 
   /**
-   * Assert if two elements belong to the same branch of the displayTree
-   *
-   * @param {string} source
-   * @param {string} target
-   * @param {int} sourceLevel
-   * @return {boolean} whether the source element belongs to the same branch in
-   * the display tree as the target element.
+   * Initialize DOM elements
    */
-  belongToSameBranch(source, target, sourceLevel, targetLevel){
-    /* if both are on the same lvl and share the parent, they are on the same branch */
-    if(
-      sourceLevel === targetLevel &&
-      this._displayTree[sourceLevel][source].parent === this._displayTree[targetLevel][target].parent
-    ){
-      return true;
-    }
-
-    /* if source is below target, then they are on the same branch only if target
-      and source share a common ancestor */
-    if( sourceLevel > targetLevel ){
-      return this.belongToSameBranch(this._displayTree[sourceLevel][source].parent, target, sourceLevel-1, targetLevel);
-    }
-
-    /* if source is above target, then they will only be displayed together if
-      they are on different branches, thus always false.
-      Same applies for all other cases. */
-    return false;
+  initDOM(){
+    /* init common DOM elements */
+    let columnElements = [
+      { 'name': 'visuals', 'text': 'Other Visuals', 'button': false },
+    ];
+    super.initDOM(columnElements);
   }
+
+  /**
+   *
+   */
+  initHistogramBins(nBins=10){
+    let self = this;
+    /* function used to define the number of bins and the bounds for each of
+     * them */
+    let histogram = d3.bin()
+      .domain(self._yAxis.scale().domain())
+      .thresholds(self._yAxis.scale().ticks(nBins))
+      .value(d => d)
+      ;
+    /* pre-process the data array to extract the label and values only */
+    let filteredData = this._data.map( d => {
+      if( self._xLabels.indexOf(d['category']) !== -1 )
+        return {label: d['category'], value: d['value']};
+      else if ( self._xLabels.indexOf(d['organ']) !== -1 )
+        return {label: d['organ'], value: d['value']};
+      return {label: d['name'], value: d['value']};
+    });
+
+    this._bins = d3.rollup(
+      filteredData, //self._data,
+      d => {
+        let input = d.map(g => g.value);
+        let bins = histogram(input);
+        return bins;
+      },
+      d => d.label
+    );
+  }
+
+  /**
+   * Initialize the labels of the X axis of the Graph.
+   * As the _displayTree contains a list of all the different labels across the
+   * different levels of the structure, we can simply copy that information as
+   * the initial labels for the graph.
+   * We also initialize the list of levels associated to each label.
+   */
+  initXLabels(){
+    /* copy labels from the _displayTree */
+    this._xLabels = [];
+    this._xLabels.push(Object.keys(this._displayTree[0]));
+    this._xLabels = this._xLabels.flat();
+    /* and initialize the level of each of the labels */
+    this._xLevels = Array(this._xLabels.length).fill(0);
+  }
+
+  /**
+  *
+  */
+  updateVisualsTable(){
+    let self = this;
+    /* these are the DOM elements in each row of the table */
+    let rowElements =[ 'violin', 'jitter' ];
+    let rowComponents = [
+      { 'type': 'input', 'attr': [['type', 'checkbox'], ['class','flex-cell display']] },
+      { 'type': 'div', 'attr':[['class', 'flex-cell label']] },
+    ];
+    this.initTableRows('#visuals-table', 'visual', rowElements, rowComponents);
+    /* Customization of DOM elements */
+    d3.select('#visuals-table').selectAll('.label')
+      .data(rowElements)
+      .text( d => 'Add '+d )
+    d3.select('#visuals-table').selectAll('input')
+      .data(rowElements)
+      .attr('id', d => 'cb-'+d)
+    /* Event handlers association */
+    d3.select('#cb-violin').on('change', function(){
+      if( this.checked )
+        self.plotViolins();
+      else{
+        d3.selectAll("#violins").remove();
+      }
+    });
+    d3.select('#cb-jitter').on('change', function(){
+      self.setPointPositions(this.checked);
+      self.plot();
+    });
+  }
+
+  /**
+   * Set the position (in display coordinates) of each point in the data
+   *
+   * @param {boolean} jitter Should the position of the point be randomly
+   * jittered along the X axis or not.
+   */
+  setPointPositions(jitter=false){
+    let self = this;
+    let X = this._xAxis.scale();
+    let dx = X.bandwidth()/2;
+    let Y = this._yAxis.scale();
+
+    this._xLabels.forEach((item,i)=>{
+      let key = self._levels[self._xLevels[i]]; //one of [category, organ, name]
+      self._data.forEach(d=>{
+        if( d[key] === self._xLabels[i] ){
+          d.x = X(d[key])+dx;
+          if( jitter ) d.x -= (dx/2)*Math.random();
+          d.y = Y(d[this._y]);
+        }
+      });
+    });
+  }
+
 
   /**
    * Collapse the labels associated to the X axis
@@ -196,7 +324,9 @@ export class GeneExpressionGraph extends TargetMineGraph{
       // simply copy them and recreate the axis and plot
       this._xLabels = newLabels;
       this._xLevels = newLevels;
-      super.initXAxis();
+      this.initXAxis();
+      this.setPointPositions(d3.select('#cb-jitter').property('checked'));
+      this.initHistogramBins();
       this.plot();
       return true;
     }
@@ -227,7 +357,9 @@ export class GeneExpressionGraph extends TargetMineGraph{
       this._xLevels = this._xLevels.flat();
 
       /* redefine the x Axis with the new list of labels */
-      super.initXAxis();
+      this.initXAxis();
+      this.setPointPositions(d3.select('#cb-jitter').property('checked'));
+      this.initHistogramBins();
       /* re-plot the graph */
       this.plot();
       return true;
@@ -284,37 +416,6 @@ export class GeneExpressionGraph extends TargetMineGraph{
     this.plotXAxis();
     this.plotYAxis();
 
-    /* Generate an array of data points positions and colors based on the scale
-     * defined for each axis */
-    let xscale = this._xAxis.scale();
-    let dx = xscale.bandwidth()/2; // distance to the midpoint of the scale band
-    let yscale = this._yAxis.scale();
-    let points = [];
-    this._xLabels.forEach( (label, i) => {
-      let level = this._levels[this._xLevels[i]];
-      let current = this._data.reduce( function(prev, curr){
-        let x = xscale(label)+dx;
-
-        /* jitter the position of the points if requested */
-        if( d3.select('#cb-jitter').property('checked') )
-          x -= dx/2*Math.random();
-
-        if( curr[level] === label ){
-          prev.push(
-            {
-              x: x,
-              y: yscale(curr['value']),
-              color: curr['color'],
-              value: curr['value'],
-            }
-          );
-        }
-        return prev;
-      },[]);
-      points = points.concat(current);
-
-    },this);
-
     /* redraw the points, using the updated positions and colors */
     let canvas = d3.select('svg#canvas_geneExpression > g#graph');
     canvas.selectAll('#points').remove();
@@ -326,39 +427,25 @@ export class GeneExpressionGraph extends TargetMineGraph{
     /* for each data point, generate a group where we can add multiple svg
      * elements */
     let pts = d3.select('#points').selectAll('g')
-      .data(points)
+      .data(this._data)
     let point = pts.enter().append('circle')
-      .attr('cx', function(d){ return d.x; })
-      .attr('cy', function(d){ return d.y; })
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
       .attr('r', '3')
-      .style('fill', function(d){ return d.color; })
-    ;
-    let tooltip = point.append('svg:title')
-      .text( (d) => { return 'Value: '+d.value; } )
+      .style('fill', d => d.color)
+      // let tooltip = point.append('svg:title')
+      .append('svg:title').text( d => {
+        return 'Category: '+d.category+
+          '\nOrgan: '+d.organ+
+          '\nName: '+d.name+
+          '\nValue: '+d.value;
+        })
+      ;
 
-    /* add violin strips if requested */
-    if( d3.select('#cb-violin').property('checked') ){
-      console.log('violin checked')
-    //   canvas.selectAll("#violins").remove();
-    //   canvas.append('g')
-    //     .attr('id', '#violins')
-    //   ;
-    //
-    //   let vls = d3.select('#violins').selectAll('g')
-    //     .data(this._bins)
-    //   let violin = vls.enter().append('g')        // So now we are working group per group
-    //   .attr("transform", function(d){ return("translate(" + x(d.key) +" ,0)") } ) // Translation on the right to be at the group position
-    //     .append("path")
-    //       .datum(function(d){ return(d.value)})     // So now we are working bin per bin
-    //       .style("stroke", "none")
-    //       .style("fill","grey")
-    //       .attr("d", d3.area()
-    //         .x0( xNum(0) )
-    //         .x1(function(d){ return(xNum(d.length)) } )
-    //         .y(function(d){ return(y(d.x0)) } )
-    //         .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
-    //       )
-    }
+      /* add violin plots if selected by the user */
+      if( d3.select('#cb-violin').property('checked') )
+        this.plotViolins();
+
   }
 
 }

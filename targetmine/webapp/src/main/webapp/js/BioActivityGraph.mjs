@@ -30,9 +30,7 @@ export class BioActivityGraph extends TargetMineGraph{
     /* parse data to local storage */
     super.loadData(data);
     if( this._data.length === 0 ){
-      d3.select('.targetmineGraphDisplayer')
-        .text('No BioActivity Data to Display.')
-      ;
+      d3.select('.targetmineGraphDisplayer').text('No BioActivity Data to Display.');
       return;
     }
     /* Initialize the Axis of the graph */
@@ -47,13 +45,7 @@ export class BioActivityGraph extends TargetMineGraph{
     /* Initialize histogram for violin plots display */
     super.initHistogramBins();
 
-    /* init common DOM elements */
-    let columnElements = [
-      { 'name': 'color', 'text': 'Color Table', 'button': true },
-      { 'name': 'shape', 'text': 'Shape Table', 'button': true },
-      { 'name': 'visuals', 'text': 'Other Visuals', 'button': false },
-    ];
-    super.initDOM(columnElements);
+    /* init DOM elements */
     this.initDOM();
     /* assign functionality to different interface components */
     let self = this;
@@ -67,8 +59,15 @@ export class BioActivityGraph extends TargetMineGraph{
    * Initialize BioActivityGraph specific DOM elements
    */
   initDOM(){
-    let self = this;
+    /* init Common DOM elements */
+    let columnElements = [
+      { 'name': 'color', 'text': 'Color Table', 'button': true },
+      { 'name': 'shape', 'text': 'Shape Table', 'button': true },
+      { 'name': 'visuals', 'text': 'Other Visuals', 'button': false },
+    ];
+    super.initDOM(columnElements);
 
+    let self = this;
     /* First, we update the three tables used for visualization handling within
      * the graph */
     this.updateColorTable();
@@ -349,7 +348,7 @@ export class BioActivityGraph extends TargetMineGraph{
     /* Event handlers association */
     d3.select('#cb-violin').on('change', function(){
       if( this.checked )
-        self.plotViolins(); 
+        self.plotViolins();
       else{
         d3.selectAll("#violins").remove();
       }
@@ -403,12 +402,5 @@ export class BioActivityGraph extends TargetMineGraph{
           '\nConcentation: '+d['Activity Concentration']+'nM';
       })
       ;
-
-    /* plot violins if requested by the user */
-    // canvas.selectAll("#violins").remove();
-    // let cbViolin = d3.select('#cb-violin');
-    // if( cbViolin.size() > 0 && cbViolin.property('checked') )
-    //   super.plotViolins();
-    // else
   }
 }

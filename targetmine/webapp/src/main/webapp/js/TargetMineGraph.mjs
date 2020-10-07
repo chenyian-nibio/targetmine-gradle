@@ -90,7 +90,7 @@ export class TargetMineGraph {
     container.append('svg')
       .attr('id', 'canvas_'+this._type)
       .attr('class', 'targetmineGraphSVG')
-      .attr('viewbox', '0 0 '+this._width+' '+this._height)
+      .attr('viewBox', '0 0 '+this._width+' '+this._height)
       .append('g')
         .attr('id', 'graph')
     ;
@@ -321,7 +321,7 @@ export class TargetMineGraph {
     let Y = this._yAxis.scale();
     this._data.forEach(d => {
       d.x = X(d[this._x])+dx;
-      if( jitter ) dx -= dx/2*Math.random();
+      if( jitter ) dx -= (dx/2)*Math.random();
       d.y = Y(d[this._y]);
     },this);
   }
@@ -335,30 +335,29 @@ export class TargetMineGraph {
     let X = this._xAxis.scale();
     let Y = this._yAxis.scale();
     canvas.selectAll("#violins").remove();
-    // if( d3.select('#cb-violin').property('checked') ){
 
-        // What is the biggest number of value in a bin? We need it cause this value will have a width of 100% of the bandwidth.
-      let maxNum = 0
-      this._bins.forEach(d => {
-          let lengths = d.map(g => g.length);
-          let longest = d3.max(lengths);
-          maxNum = longest > maxNum ? longest : maxNum;
-        });
-      let xNum = d3.scaleLinear()
-        .range([0, X.bandwidth()])
-        .domain([-maxNum, maxNum])
+    // What is the biggest number of value in a bin? We need it cause this value
+    // will have a width of 100% of the bandwidth.
+    let maxNum = 0
+    this._bins.forEach(d => {
+      let lengths = d.map(g => g.length);
+      let longest = d3.max(lengths);
+      maxNum = longest > maxNum ? longest : maxNum;
+    });
+    let xNum = d3.scaleLinear()
+      .range([0, X.bandwidth()])
+      .domain([-maxNum, maxNum])
 
+    canvas.append('g')
+      .attr('id', 'violins')
+      .attr('transform', 'translate('+this._margin.left+', 0)')
+    ;
 
-      canvas.append('g')
-        .attr('id', 'violins')
-        .attr('transform', 'translate('+this._margin.left+', 0)')
-      ;
-
-      let vls = d3.select('#violins').selectAll('g')
-        .data(this._bins)
-      let violin = vls.enter().append('g')        // So now we are working group per group
-        .attr('class', 'violin')
-        .attr("transform", d => "translate(" + (X(d[0])+(X.bandwidth()/10)) +" ,0)")
+    let vls = d3.select('#violins').selectAll('g')
+      .data(this._bins)
+    let violin = vls.enter().append('g')        // So now we are working group per group
+      .attr('class', 'violin')
+      .attr("transform", d => "translate(" + (X(d[0])+(X.bandwidth()/10)) +" ,0)")
         .append("path")
           .datum(d => d[1]) //extract only the bins
           .attr("class", "violin")
