@@ -164,17 +164,19 @@ public class GobiomConverter extends BioFileConverter {
 						try {
 							// if conversion from SMILES to InChIkey fails, skip this entry
 							mol = sp.parseSmiles(smiles);
+							InChIGenerator generator = factory.getInChIGenerator(mol);
+							
+							if (generator.getReturnStatus() == INCHI_RET.OKAY) {
+								inchikey = generator.getInchiKey();
+							} else {
+								inchikey = "";
+							}
+							
 						} catch (InvalidSmilesException e) {
 							numberOfConversionFailure += 1;
-							continue;
+							inchikey = "";
 						}
-						InChIGenerator generator = factory.getInChIGenerator(mol);
-						
-						if (generator.getReturnStatus() != INCHI_RET.OKAY) {
-							continue;
-						}
-						
-						inchikey = generator.getInchiKey();
+						inchiKeyMap.put(smiles, inchikey);
 					}
 					
 					compound = getCompound(biomarkerName, inchikey, CasNo);
@@ -219,9 +221,11 @@ public class GobiomConverter extends BioFileConverter {
 		Item item = createItem("GobiomCompound");
 		item.setAttribute("identifier", name);
 		item.setAttribute("name", name);
-		item.setAttribute("inchiKey", inchiKey);
-		String compoundGroupId = inchiKey.substring(0, inchiKey.indexOf("-"));
-		item.setReference("compoundGroup", getCompoundGroup(compoundGroupId, name));
+		if (!StringUtils.isEmpty(inchiKey)) {
+			item.setAttribute("inchiKey", inchiKey);
+			String compoundGroupId = inchiKey.substring(0, inchiKey.indexOf("-"));
+			item.setReference("compoundGroup", getCompoundGroup(compoundGroupId, name));
+		}
 		if (!"".equals(casRegistryNumber))
 			item.setAttribute("casRegistryNumber", casRegistryNumber);
 		store(item);
