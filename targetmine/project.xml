@@ -252,16 +252,15 @@
 <!-- internal use only -->
     <source name="gostar" type="gostar">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gostar"/>
-      <property name="src.data.dir.includes" value="ACTIVITY_ASSAY.csv"/>
-      <property name="activityAssayFile" value="/data/bio/db/Targetmine/gostar/ACTIVITY_ASSAY.csv" />
-      <property name="allActivityGostarFile" value="/data/bio/db/Targetmine/gostar/ALL_ACTIVITY_GOSTAR.csv" />
+      <property name="src.data.dir.includes" value="filtered/filtered_ACTIVITY_ASSAY.csv"/>
+      <property name="allActivityGostarFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_ALL_ACTIVITY_GOSTAR.csv" />
       <property name="bindingSiteFile" value="/data/bio/db/Targetmine/gostar/BINDING_SITE.csv" />
       <property name="casFile" value="/data/bio/db/Targetmine/gostar/CAS.csv" />
       <property name="compoundSynonymsFile" value="/data/bio/db/Targetmine/gostar/COMPOUND_SYNONYMS.csv" />
       <property name="referenceMasterFile" value="/data/bio/db/Targetmine/gostar/REFERENCE_MASTER.csv" />
-      <property name="structureDetailsFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS.csv" />
-      <property name="structureDetailsInchiInfoFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS_INCHI_INFO.csv" />
-      <property name="targetProteinMasterFile" value="/data/bio/db/Targetmine/gostar/TARGET_PROTEIN_MASTER.csv" />
+      <property name="structureDetailsFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_STRUCTURE_DETAILS.csv" />
+      <property name="structureDetailsInchiInfoFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_STRUCTURE_DETAILS_INCHI_INFO.csv" />
+      <property name="targetProteinMasterFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_TARGET_PROTEIN.csv" />
    </source>
 <!-- internal use only -->
    <source name="gobiom" type="gobiom">

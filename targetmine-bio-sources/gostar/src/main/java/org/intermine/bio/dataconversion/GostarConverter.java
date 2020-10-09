@@ -1,6 +1,5 @@
 package org.intermine.bio.dataconversion;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,9 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import org.intermine.bio.dataconversion.GostarFileParser;
+import org.apache.logging.log4j.Logger;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -22,6 +21,8 @@ import org.intermine.xml.full.Item;
 /**
  * 
  * @author Ishikawa.Motokazu
+ * 
+ * (refinded by chenyian)
  */
 public class GostarConverter extends BioFileConverter {
 	private static final Logger LOG = LogManager.getLogger(GostarConverter.class);
@@ -29,7 +30,6 @@ public class GostarConverter extends BioFileConverter {
 	private static final String DATASET_TITLE = "GOSTAR";
 	private static final String DATA_SOURCE_NAME = "GOSTAR";
 	
-	private File activityAssayFile;
 	private File allActivityGostarFile;
 	private File bindingSiteFile;
 	private File casFile;
@@ -40,7 +40,7 @@ public class GostarConverter extends BioFileConverter {
 	private File targetProteinMasterFile;
 	
 	// key is assay_id, value is a list of Activity
-	private Map<String, List<Item>> assayActivityMap = new HashMap<String, List<Item>>();
+	private Map<String, List<String>> assayActivityMap = new HashMap<String, List<String>>();
 	// key is assay_id, value is PubMed Ids
 	private Map<String, List<String>> assayPublicationMap = new HashMap<String, List<String>>();
 	// key is gvk_id, value is binding site
@@ -78,6 +78,7 @@ public class GostarConverter extends BioFileConverter {
 		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
 	}
 
+	private int countInteration = 0;
 	
 	/**
 	 * {@inheritDoc}
@@ -93,6 +94,7 @@ public class GostarConverter extends BioFileConverter {
 		int countCompound = 0;
 		
 		LOG.info( "GOSTAR: Processing CAS.csv to collect cas number" );
+		System.out.println("GOSTAR: Processing CAS.csv to collect cas number");
 		
 		/**
 		 * Processing CAS.csv to collect cas number
@@ -107,6 +109,7 @@ public class GostarConverter extends BioFileConverter {
 		}
 		
 		LOG.info( "GOSTAR: Processing COMPOUND_SYNONYMS.csv to collect synonyms" );
+		System.out.println("GOSTAR: Processing COMPOUND_SYNONYMS.csv to collect synonyms");
 		
 		/**
 		 * Processing COMPOUND_SYNONYMS.csv to collect synonyms
@@ -122,6 +125,7 @@ public class GostarConverter extends BioFileConverter {
 		}
 		
 		LOG.info( "GOSTAR: Processing REFERENCE_MASTER.csv to collect ref_id-pubmed_id relationship" );
+		System.out.println("GOSTAR: Processing REFERENCE_MASTER.csv to collect ref_id-pubmed_id relationship");
 		
 		/**
 		 * Processing REFERENCE_MASTER.csv to collect ref_id-pubmed_id relationship
@@ -137,62 +141,74 @@ public class GostarConverter extends BioFileConverter {
 		}
 		
 		LOG.info( "GOSTAR: Processing TARGET_PROTEIN_MASTER.csv to collect protein information" );
+		System.out.println("GOSTAR: Processing TARGET_PROTEIN_MASTER.csv to collect protein information");
 		
 		/**
 		 * Processing TARGET_PROTEIN_MASTER.csv to collect protein information
 		 */
 		Iterator<String[]> targetProteinMasterIterator = getTargetProteinMasterIterator();
-		targetProteinMasterIterator.next(); // Skip header
+//		targetProteinMasterIterator.next(); // Skip header
 		while( targetProteinMasterIterator.hasNext() ) {
 			
 			String[] targetProteinMasterRow = targetProteinMasterIterator.next();
-			String targetId = targetProteinMasterRow[4];
-			String uniprotId = targetProteinMasterRow[9];
+			String targetId = targetProteinMasterRow[0];
+			String uniprotId = targetProteinMasterRow[1];
 			registerTarget( targetId, uniprotId );
 			
 		}
 		
 		LOG.info( "GOSTAR: Processing STRUCTURE_DETAILS_INCHI_INFO.csv to collect compound inchikey information" );
+		System.out.println("GOSTAR: Processing STRUCTURE_DETAILS_INCHI_INFO.csv to collect compound inchikey information");
 		
 		/**
 		 * Processing STRUCTURE_DETAILS_INCHI_INFO.csv to collect compound inchikey information
 		 */
 		Iterator<String[]> structureDetailsInchiInfoIterator = getStructureDetailsInchiInfoIterator();
-		structureDetailsInchiInfoIterator.hasNext(); // Skip header
+//		structureDetailsInchiInfoIterator.hasNext(); // Skip header
 		while( structureDetailsInchiInfoIterator.hasNext() ) {
 			
 			String[] structureDetailsInchiInfoRow = structureDetailsInchiInfoIterator.next();
-			if( structureDetailsInchiInfoRow.length < 4 ) {
+			if( structureDetailsInchiInfoRow.length != 4 ) {
+				LOG.info(String.format("Invalid number of columns (%d), skip! ", structureDetailsInchiInfoRow.length) + StringUtils.join(structureDetailsInchiInfoRow, ","));
 				continue;
 			}
 			String gvkId = structureDetailsInchiInfoRow[0];
+			if (!isValidId(gvkId)) {
+				LOG.info("In valid gvkId: " + gvkId);
+				continue;
+			}
+
 			String iupacInchiKey = structureDetailsInchiInfoRow[3].replace( "InChIKey=", "" );
 			
 			inchikeyMap.put( gvkId, iupacInchiKey);
 		}
 		
 		LOG.info( "GOSTAR: Processing STRUCTURE_DETAILS.csv to collect compound information" );
+		System.out.println("GOSTAR: Processing STRUCTURE_DETAILS.csv to collect compound information");
 		
 		/**
 		 * Processing STRUCTURE_DETAILS.csv to collect compound information
 		 */
 		Iterator<String[]> structureDetailsIterator = getStructureDetailsIterator();
-		structureDetailsIterator.next(); // Skip header
+//		structureDetailsIterator.next(); // Skip header
 		while( structureDetailsIterator.hasNext() ) {
 			String[] structureDetailsRow = structureDetailsIterator.next();
 
-			if( structureDetailsRow.length < 12 ){
+			if( structureDetailsRow.length != 13 ){
+				LOG.info(String.format("Invalid number of columns (%d), skip! ", structureDetailsRow.length) + StringUtils.join(structureDetailsRow, ","));
 				continue;
 			}
 			
 			String compoundName = structureDetailsRow[0];
 			String gvkId = structureDetailsRow[2];
-			String iupacName = structureDetailsRow[3];
-			String subSmiles = structureDetailsRow[7];
-			if( ! inchikeyMap.containsKey( gvkId ) ) {
+			
+			if (!isValidId(gvkId)) {
+				LOG.info("In valid gvkId: " + gvkId + "; " + StringUtils.join(structureDetailsRow, ","));
 				continue;
 			}
-			String inchikey = inchikeyMap.get( gvkId );
+			
+			String iupacName = structureDetailsRow[3];
+			String subSmiles = structureDetailsRow[7];
 			String strId = structureDetailsRow[11];
 			
 			String casRegistryNumber = null;
@@ -206,13 +222,16 @@ public class GostarConverter extends BioFileConverter {
 				casRegistryNumber = casMap.get(gvkId);
 			}
 			String compoundGroupRef = null;
-			int indexof = inchikey.indexOf("-");
-			if( 0 <= indexof ){
-				String compoundGroupId = inchikey.substring(0, indexof );
-				if (compoundGroupId.length() == 14) {
-					compoundGroupRef = getCompoundGroup(compoundGroupId, compoundName);
-				} else {
-					LOG.error(String.format("Bad InChIKey value: %s .", inchikey));
+			String inchikey = inchikeyMap.get( gvkId );
+			if (inchikey != null) {
+				int indexof = inchikey.indexOf("-");
+				if( 0 <= indexof ){
+					String compoundGroupId = inchikey.substring(0, indexof );
+					if (compoundGroupId.length() == 14) {
+						compoundGroupRef = getCompoundGroup(compoundGroupId, compoundName);
+					} else {
+						LOG.error(String.format("Bad InChIKey value: %s .", inchikey));
+					}
 				}
 			}
 			setCompound( gvkId, compoundName, inchikey, casRegistryNumber, iupacName, compoundStructureRef, compoundSynonymMap.get( strId ), compoundGroupRef );
@@ -220,6 +239,7 @@ public class GostarConverter extends BioFileConverter {
 		}
 		
 		LOG.info( "GOSTAR: Processing BINDING_SITE.csv to collect activity information" );
+		System.out.println("GOSTAR: Processing BINDING_SITE.csv to collect activity information");
 		
 		/**
 		 * Processing BINDING_SITE.csv to collect activity information
@@ -236,15 +256,17 @@ public class GostarConverter extends BioFileConverter {
 		
 		
 		LOG.info( "GOSTAR: Processing ALL_ACTIVITY_GOSTAR.csv to collect activity information" );
+		System.out.println("GOSTAR: Processing ALL_ACTIVITY_GOSTAR.csv to collect activity information");
 		
 		/**
 		 * Processing ALL_ACTIVITY_GOSTAR.csv to collect activity information
 		 */
 		Iterator<String[]> allActivityGostarIterator = getAllActivityGostarIterator();
-		allActivityGostarIterator.next(); // Skip header
+//		allActivityGostarIterator.next(); // Skip header
 		while( allActivityGostarIterator.hasNext() ) {
 			String[] allActivityGostarRow = allActivityGostarIterator.next();
-			if( allActivityGostarRow.length < 34 ){
+			if( allActivityGostarRow.length != 36 ){
+				LOG.info(String.format("Invalid number of columns should be 36 but %d, skip! ", allActivityGostarRow.length) + StringUtils.join(allActivityGostarRow, ","));
 				continue;
 			}
 			String type = allActivityGostarRow[3];
@@ -260,19 +282,20 @@ public class GostarConverter extends BioFileConverter {
 			if( ! compoundMap.containsKey( gvkId ) ) {
 				
 				// Skip this interaction because no GostarCompound found
-				LOG.info( "It has no GostarCompound:"+gvkId );
+				LOG.info( "It has no GostarCompound; gvkId: " + gvkId );
 				continue;
 				
 			}if( ! targetProteinMap.containsKey(targetId) ){
 				
 				// Skip this interaction because no uniprot id for this target
-				LOG.info( "It has no UniProt Acc" );
+				LOG.info( "It has no UniProt Acc; targetId: " + targetId );
 				continue;
 				
-			}else if( ! "IC50".equals( type ) && ! "Kd".equals( type ) && ! "Ki".equals( type ) && ! "EC50".equals( type ) && ! "AC50".equals( type ) ){
+			}
+			if( ! "IC50".equals( type ) && ! "Kd".equals( type ) && ! "Ki".equals( type ) && ! "EC50".equals( type ) && ! "AC50".equals( type ) ){
 				
 				// Skip this interaction because measurement type is not what we want
-				LOG.info( "It has no adequate type"+type );
+				LOG.info( "It has no adequate type: " + type );
 				continue;
 				
 			}//else if( unit != "nM" ) {
@@ -287,16 +310,18 @@ public class GostarConverter extends BioFileConverter {
 		}
 		
 		LOG.info( "GOSTAR: Processing ACTIVITY_ASSAY.csv to collect assay information" );
+		System.out.println("GOSTAR: Processing ACTIVITY_ASSAY.csv to collect assay information");
 		
 		/**
 		 * Processing ACTIVITY_ASSAY.csv to collect assay information
 		 */
-		Iterator<String[]> activityAssayIterator = getActivityAssayIterator();
-		activityAssayIterator.next(); // Skip header
+		Iterator<String[]> activityAssayIterator = FormattedTextParser.parseCsvDelimitedReader(reader);
+//		activityAssayIterator.next(); // Skip header
 		while( activityAssayIterator.hasNext() ) {
 			
 			String[] activityAssayRow = activityAssayIterator.next();
-			if( activityAssayRow.length < 11 ){
+			if( activityAssayRow.length != 41 ){
+				LOG.info(String.format("Invalid number of columns should be 41 but %d, skip! ", activityAssayRow.length) + StringUtils.join(activityAssayRow, ","));
 				continue;
 			}
 			String enzymeCellAssay = activityAssayRow[4];
@@ -328,6 +353,7 @@ public class GostarConverter extends BioFileConverter {
 		LOG.info( "GOSTAR: number of assay imported="+countAssay );
 		LOG.info( "GOSTAR: number of synonym imported="+countSynonym );
 		LOG.info( "GOSTAR: number of compound imported="+countCompound );
+		LOG.info( "GOSTAR: number of interaction imported="+countInteration);
 		
 	}
 
@@ -365,9 +391,9 @@ public class GostarConverter extends BioFileConverter {
 		store( item );
 		
 		if ( ! assayActivityMap.containsKey( assayId ) ) {
-			assayActivityMap.put( assayId, new ArrayList<Item>() );
+			assayActivityMap.put( assayId, new ArrayList<String>() );
 		}
-		assayActivityMap.get( assayId ).add( item );
+		assayActivityMap.get( assayId ).add( item.getIdentifier() );
 		//assayMap.get( assayId ).addToCollection( "activities", item );
 		
 	}
@@ -405,8 +431,8 @@ public class GostarConverter extends BioFileConverter {
 			item.setAttribute( "assayType", activity );
 		item.setAttribute( "source", "GOSTAR" );
 		
-		for ( Item activityItem : assayActivityMap.get( assayId ) ) {
-			item.addToCollection( "activities", activityItem );
+		for ( String activityRef : assayActivityMap.get( assayId ) ) {
+			item.addToCollection( "activities", activityRef );
 		}
 		
 		for ( String pubmedId : assayPublicationMap.get( assayId ) ) {
@@ -436,6 +462,8 @@ public class GostarConverter extends BioFileConverter {
 			item.setAttribute( "originalId", String.format("GOSTAR_GVK:%s", gvkId) );
 			if( null != compoundName && ! "".equals( compoundName ) ){
 				item.setAttribute( "name", compoundName );
+			} else {
+				item.setAttribute( "name", String.format("GVK%s", gvkId) );
 			}
 			if( null != inchikey && !"".equals( inchikey ) ){
 				item.setAttribute( "inchiKey", inchikey );
@@ -544,7 +572,8 @@ public class GostarConverter extends BioFileConverter {
 			store(item);
 			interactionRef = item.getIdentifier();
 			interactionMap.put( intId, interactionRef );
-			
+
+			countInteration++;
 		}
 		return interactionRef;
 		
@@ -552,14 +581,6 @@ public class GostarConverter extends BioFileConverter {
 	
 	public String getDataSetTitle(String taxonId) {
 		return DATASET_TITLE;
-	}
-	
-	private Iterator<String[]> getActivityAssayIterator() throws IOException {
-		return FormattedTextParser.parseCsvDelimitedReader( new FileReader( this.activityAssayFile ) );
-	}
-	
-	public void setActivityAssayFile(File activityAssayFile) {
-		this.activityAssayFile = activityAssayFile;
 	}
 	
 	private Iterator<String[]> getAllActivityGostarIterator() throws IOException {
@@ -603,7 +624,8 @@ public class GostarConverter extends BioFileConverter {
 	}
 	
 	private Iterator<String[]> getStructureDetailsIterator() throws IOException {
-		return GostarFileParser.parseCsvDelimitedReader( new BufferedReader( new FileReader( this.structureDetailsFile ) ) );
+//		return GostarFileParser.parseCsvDelimitedReader( new BufferedReader( new FileReader( this.structureDetailsFile ) ) );
+		return FormattedTextParser.parseCsvDelimitedReader( new FileReader( this.structureDetailsFile ) );
 	}
 	
 	public void setStructureDetailsFile(File structureDetailsFile) {
@@ -619,10 +641,24 @@ public class GostarConverter extends BioFileConverter {
 	}
 	
 	private Iterator<String[]> getTargetProteinMasterIterator() throws IOException {
-		return FormattedTextParser.parseCsvDelimitedReader( new FileReader( this.targetProteinMasterFile ) );
+		return FormattedTextParser.parseTabDelimitedReader( new FileReader( this.targetProteinMasterFile ) );
 	}
 	
 	public void setTargetProteinMasterFile(File targetProteinMasterFile) {
 		this.targetProteinMasterFile = targetProteinMasterFile;
 	}
+	
+	public static boolean isValidId(String s) {
+		if (s == null || s.isEmpty())
+			return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (i == 0 && s.charAt(i) == '0') {
+				return false;
+			}
+			if (Character.digit(s.charAt(i), 10) < 0)
+				return false;
+		}
+		return true;
+	}
+
 }
