@@ -191,10 +191,14 @@ export class GeneExpressionGraph extends TargetMineGraph{
       ;
     /* pre-process the data array to extract the label and values only */
     let filteredData = this._data.map( d => {
-      if( self._xLabels.indexOf(d['category']) !== -1 )
+      let idx = self._xLabels.indexOf(d['category'])
+      if( idx !== -1 && self._xLevels[idx] == 0)
         return {label: d['category'], value: d['value']};
-      else if ( self._xLabels.indexOf(d['organ']) !== -1 )
-        return {label: d['organ'], value: d['value']};
+      else{
+        idx = self._xLabels.indexOf(d['organ'])
+        if ( idx !== -1 && self._xLevels[idx] == 1)
+          return {label: d['organ'], value: d['value']};
+      }
       return {label: d['name'], value: d['value']};
     });
 
