@@ -93,13 +93,21 @@ export class BioActivityGraph extends TargetMineGraph{
     /* In order to a color/shape to be applied, two different levels of selection
      * have to be specified. These are refered to as 'column' and 'value'. Here
      * we add the components required for user selection */
+    content.append('label')
+      .attr('class', 'modal-item modal-label')
+      .text('Category:')
+      ;
     let colSelect = content.append('select')
+      .attr('class', 'modal-item modal-select')
       .attr('id','modal-column-select')
-      .attr('class', 'modal-select')
+      ;
+    content.append('label')
+      .attr('class', 'modal-item modal-label')
+      .text('Value:')
       ;
     content.append('select')
+      .attr('class', 'modal-item modal-select')
       .attr('id', 'modal-value-select')
-      .attr('class', 'modal-select')
       ;
     /* 'column' options are fixed */
     let opts = this._data.columns.reduce((prev, curr, i) => {
@@ -122,18 +130,22 @@ export class BioActivityGraph extends TargetMineGraph{
       .dispatch('change') // make sure to initially update the values
       ;
 
-    /* The space for the color/shape input elements */
+    // /* The space for the color/shape input elements */
     content.append('div')
       .attr('id', 'modal-input')
-      .attr('class', 'modal-input')
+      .attr('class', 'modal-content')
+      .style('grid-column', 'span 3')
     ;
     /* OK and Cancel buttons */
     content.append('button')
+      .attr('class', 'modal-item modal-button')
       .attr('id','modal-ok')
       .text('OK')
     ;
     content.append('button')
+      .attr('class', 'modal-item modal-button')
       .attr('id', 'modal-cancel')
+      .style('grid-column', '3')
       .text('Cancel')
     ;
 
@@ -167,6 +179,7 @@ export class BioActivityGraph extends TargetMineGraph{
     if( type === 'color' ){
       d3.select('#modal-input')
         .append('input')
+          .attr('class', 'modal-item')
           .property('type', 'color')
           .property('value', '#000000')
       ;
@@ -176,14 +189,16 @@ export class BioActivityGraph extends TargetMineGraph{
       let opts = d3.select('#modal-input').selectAll('input')
         .data(['Circle','Cross','Diamond','Square','Star','Triangle','Wye'])
         .enter()
-        .append('input')
-          .attr('id', d => 'symbol-'+d)
-          .attr('value', d => d)
+
+      opts.append('input')
+          .attr('id', (d,i) => 'symbol-'+d)
+          .attr('value', (d,i) => d)
           .attr('type', 'radio')
           .attr('name', 'shape')
-        .append('label')
-          .text(d => d)
-        ;
+      opts.insert('label', 'input:nth-child(odd)')
+          .attr('class', 'modal-item modal-label')
+          .text((d,i) => d)
+      ;
       d3.select('#symbol-Circle').property('checked', true);
     }
   }
@@ -274,6 +289,7 @@ export class BioActivityGraph extends TargetMineGraph{
     d3.select('#color-table').selectAll('.small-close')
       .html('&times;')
       .on('click', function(){
+        console.log(this.dataset.key);
         if( this.dataset.key === 'Default' ) return;
         delete( self._colors[this.dataset.key] );
         self.assignColors();
