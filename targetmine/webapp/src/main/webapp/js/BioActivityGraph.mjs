@@ -287,9 +287,10 @@ export class BioActivityGraph extends TargetMineGraph{
     ;
     /* update the small close span element */
     d3.select('#color-table').selectAll('.small-close')
+      .data(keys)
+      .attr('data-key', d => d)
       .html('&times;')
-      .on('click', function(){
-        console.log(this.dataset.key);
+      .on('click', function(d){
         if( this.dataset.key === 'Default' ) return;
         delete( self._colors[this.dataset.key] );
         self.assignColors();
@@ -331,6 +332,8 @@ export class BioActivityGraph extends TargetMineGraph{
     ;
     /* update the small-close span element */
     let close = d3.select("#shape-table").selectAll('.small-close')
+      .data(keys)
+      .attr('data-key', d => d)
       .html('&times;')
       .on('click', function(){
         if( this.dataset.key === 'Default' ) return;
