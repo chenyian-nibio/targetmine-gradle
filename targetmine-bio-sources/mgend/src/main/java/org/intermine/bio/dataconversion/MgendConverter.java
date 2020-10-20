@@ -151,7 +151,7 @@ public class MgendConverter extends BioFileConverter {
     		if (!StringUtils.isEmpty(cols[52])) {
     			diseaseName = cols[52];
     		} else if (!StringUtils.isEmpty(cols[53])) {
-    			diseaseName = cols[54];
+    			diseaseName = cols[53];
     		}
     		if (!StringUtils.isEmpty(diseaseName)) {
     			item.setAttribute("diseaseName", diseaseName);
@@ -163,7 +163,7 @@ public class MgendConverter extends BioFileConverter {
     			}
     		} else if (cols[50].equals("MedGen")) {
     			if (!StringUtils.isEmpty(cols[51])) {
-    				String medgenId = medgenUidMap.get(cols[51].substring(2));
+    				String medgenId = medgenUidMap.get(cols[51]);
     				if (medgenId != null) {
     					item.setReference("diseaseTerm", getMedgenTerm(medgenId));
     				}
