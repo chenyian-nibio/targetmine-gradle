@@ -71,6 +71,7 @@
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
+<<<<<<< HEAD
  -->
 <!-- incompatible with who-trial, maybe -->
     <source name="who-trial2" type="who-trial">
@@ -135,6 +136,13 @@
       <property name="src.data.dir.includes" value="chainType_pdbj.csv"/>
       <property name="mapFile" value="/data/bio/db/Targetmine/pdbj/type_mapping.csv"/>
     </source>
+
+    <source name="possum" type="possum">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/possum"/>
+      <property name="src.data.dir.includes" value="possum_binding_sites_*_similarity.csv"/>
+      <property name="ligandFile" value="/data/bio/db/Targetmine/possum/possum_ligand_list.csv"/>
+    </source>
+
     <source name="scop" type="scop">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/scop"/>
       <property name="src.data.dir.includes" value="dir.des.scop.txt_1.75"/>
@@ -253,26 +261,24 @@
 <!-- 
     <source name="gostar" type="gostar">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gostar"/>
-      <property name="src.data.dir.includes" value="ACTIVITY_ASSAY.csv"/>
-      <property name="activityAssayFile" value="/data/bio/db/Targetmine/gostar/ACTIVITY_ASSAY.csv" />
-      <property name="allActivityGostarFile" value="/data/bio/db/Targetmine/gostar/ALL_ACTIVITY_GOSTAR.csv" />
+      <property name="src.data.dir.includes" value="filtered/filtered_ACTIVITY_ASSAY.csv"/>
+      <property name="allActivityGostarFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_ALL_ACTIVITY_GOSTAR.csv" />
       <property name="bindingSiteFile" value="/data/bio/db/Targetmine/gostar/BINDING_SITE.csv" />
       <property name="casFile" value="/data/bio/db/Targetmine/gostar/CAS.csv" />
       <property name="compoundSynonymsFile" value="/data/bio/db/Targetmine/gostar/COMPOUND_SYNONYMS.csv" />
       <property name="referenceMasterFile" value="/data/bio/db/Targetmine/gostar/REFERENCE_MASTER.csv" />
-      <property name="structureDetailsFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS.csv" />
-      <property name="structureDetailsInchiInfoFile" value="/data/bio/db/Targetmine/gostar/STRUCTURE_DETAILS_INCHI_INFO.csv" />
-      <property name="targetProteinMasterFile" value="/data/bio/db/Targetmine/gostar/TARGET_PROTEIN_MASTER.csv" />
+      <property name="structureDetailsFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_STRUCTURE_DETAILS.csv" />
+      <property name="structureDetailsInchiInfoFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_STRUCTURE_DETAILS_INCHI_INFO.csv" />
+      <property name="targetProteinMasterFile" value="/data/bio/db/Targetmine/gostar/filtered/filtered_TARGET_PROTEIN.csv" />
    </source>
  -->
 <!-- internal use only -->
 <!-- 
    <source name="gobiom" type="gobiom">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gobiom"/>
-      <property name="src.data.dir.includes" value="BIOM_STRUCTURE_MASTER.csv"/>
-      <property name="locusMasterFile" value="/data/bio/db/Targetmine/gobiom/BIOM_LOCUS_MASTER.csv" />
+      <property name="src.data.dir.includes" value="BIOM_STRUCTURE_MASTER.fixed.csv"/>
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="humanIdMappingFile" value="/data/bio/db/Targetmine/gobiom/HUMAN_9606_idmapping.dat" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
    </source>
  -->
 
@@ -318,6 +324,15 @@
       <!--  property name="pubmedFile" value="/data/bio/db/Targetmine/medgen/medgen_pubmed_lnk.txt" /  -->
       <property name="definitionFile" value="/data/bio/db/Targetmine/medgen/MGDEF.csv" />
       <property name="osAlias" value="os.production"/>
+    </source>
+
+    <source name="mgend" type="mgend">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/mgend"/>
+      <property name="src.data.dir.includes" value="processed_MGeND_*.tsv"/>
+      <property name="mimMedgenFile" value="/data/bio/db/Targetmine/gene_info/mim2gene_medgen"/>
+      <property name="medgenUidFile" value="/data/bio/db/Targetmine/medgen/MedGen_UID_CUI_history.txt"/>
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
 
     <source name="dbsnp-info" type="dbsnp-txt">
@@ -428,7 +443,7 @@
     
     <source name="irefindex" type="irefindex">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>
-      <property name="src.data.dir.includes" value="*.mitab.*.txt"/>
+      <property name="src.data.dir.includes" value="*.mitab.txt"/>
     </source>
     <source name="ccsb" type="ccsb">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/interactome/ccsb"/>

@@ -1,15 +1,16 @@
 package org.intermine.bio.dataconversion;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
@@ -25,39 +26,33 @@ import org.openscience.cdk.smiles.SmilesParser;
 import net.sf.jniinchi.INCHI_RET;
 /**
  * @author Ishikawa.Motokazu
+ * 
+ * (refinded by chenyian)
  */
 public class GobiomConverter extends BioFileConverter {
 	
-	private static final Logger LOG = LogManager.getLogger( GobiomConverter.class );
+	private static final Logger LOG = LogManager.getLogger(GobiomConverter.class);
 	
 	private static final String DATASET_TITLE = "GOBIOM";
 	private static final String DATA_SOURCE_NAME = "GOBIOM";
-	
-	private static final String HOMO_SAPIENS_TAXON_ID = "9606";
-	
-	private File humanIdMappingFile;
-	private File locusMasterFile;
-	private File mrConsoFile;
-	
-	// key is biomarker name, value is Biomarker item
-	private Map<String, Item> biomarkerMap = new HashMap<String, Item>();
-	// key is compound biomarker name, value is Compound Item
-	private Map<String, Item> compoundMap = new HashMap<String, Item>();
-	// key is inchikey, value is Compound Group
-	private Map<String, Item> compoundGroupMap = new HashMap<String, Item>();
-	// key is CUI, value is reference to DiseaseTerm item
-	private Map<String, String> diseaseTermMap = new HashMap<String, String>();
-	// key is gene symbol, value is reference to Gene item
-	private Map<String, String> geneMap = new HashMap<String, String>();
-	// key is locs_id, value is gene symbol
-	private Map<String, String> locusMap = new HashMap<String, String>();
-	// key is string of source vocabularies, value is CUI
-	private Map<String, String> mrConsoMap = new HashMap<String, String>();
-	// key is protein UniProt Accession, value is reference to Protein item
-	private Map<String, String> proteinMap = new HashMap<String, String>();
-	// key is gene symbol, value is UniProt Accession
-	private Map<String, String> symbolUniProtMap = new HashMap<String, String>();
 
+	private static final String HOMO_SAPIENS_TAXON_ID = "9606";
+
+	private static Set<String> GENE_RELATED_BIOMARKERS = new HashSet<String>();
+	{
+		GENE_RELATED_BIOMARKERS.add("Variation");
+		GENE_RELATED_BIOMARKERS.add("Protein");
+		GENE_RELATED_BIOMARKERS.add("Gene");
+		GENE_RELATED_BIOMARKERS.add("RNA");
+		GENE_RELATED_BIOMARKERS.add("Peptide");
+		GENE_RELATED_BIOMARKERS.add("Epigenetics");
+		GENE_RELATED_BIOMARKERS.add("Antibody");
+		GENE_RELATED_BIOMARKERS.add("Haplotype");
+		GENE_RELATED_BIOMARKERS.add("Noncoding RNA");
+	}
+	
+	private InChIGeneratorFactory factory;
+	
 	/**
 	 * Construct a new GobiomConverter.
 	 * 
@@ -74,303 +69,275 @@ public class GobiomConverter extends BioFileConverter {
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
+		if (resolver == null) {
+			resolver = new UMLSResolver(mrConsoFile, mrStyFile);
+		}
 		
 		LOG.info("Start to process GOBIOM");
-		/**
-		 * Processing MRCONSO.RRF file to collect UMLS's source vocabularies and CUIs
-		 */
-		Iterator<String[]> mrConsoIterator = getMrConsoIterator();
-		mrConsoIterator.next(); // Skip header
-		while( mrConsoIterator.hasNext() ) {
-			
-			String[] mrConsoRow = mrConsoIterator.next();
-			String cui = mrConsoRow[ 0 ];
-			String str = mrConsoRow[ 14 ];
-			mrConsoMap.put( str.toLowerCase(), cui );
-			
-		}
-		
-		/**
-		 * Processing HUMAN_9606_idmapping.dat file to collect gene symbol-UniProt Accession relationship
-		 */
-		Iterator<String[]> humanIdMappingIterator = getHumanIdMappingIterator();
-		while( humanIdMappingIterator.hasNext() ) {
-			
-			String[] humanIdMappingRow = humanIdMappingIterator.next();
-			String uniprotAcc = humanIdMappingRow[ 0 ];
-			String dbName = humanIdMappingRow[ 1 ];
-			String dbId = humanIdMappingRow[ 2 ];
-			if ( "Gene_Name".equals( dbName ) ) {
-				symbolUniProtMap.put( dbId.toLowerCase(), uniprotAcc );
-			}
-			
-		}
-		
-		/**
-		 * Processing BIOM_LOCUS_MASTER.csv file to collect LOCUS_ID, gene symbol information
-		 */
-		Iterator<String[]> locusMasterIterator = getLocusMasterIterator();
-		locusMasterIterator.next(); // Skip header
-		while( locusMasterIterator.hasNext() ) {
-			
-			String[] locusMasterRow = locusMasterIterator.next();
-			String locusId = locusMasterRow[ 0 ];
-			String officialName = locusMasterRow[ 1 ];
-			if( !"".equals( locusId ) && !"".equals( officialName ) ) {
-				locusMap.put( locusId, officialName );
-			}
-			
-		}
 		
 		/**
 		 * Processing BIOM_STRUCTURE_MASTER.csv file to collect biomarker information
 		 */
 		int numberOfConversionFailure = 0;
 		
-		SmilesParser sp = new SmilesParser( DefaultChemObjectBuilder.getInstance() );
-		InChIGeneratorFactory factory = InChIGeneratorFactory.getInstance();
+		if (factory == null) {
+			factory = InChIGeneratorFactory.getInstance();
+		}
 		
-		Iterator<String[]> biomStructureMasterIterator = FormattedTextParser.parseCsvDelimitedReader( reader );
-		biomStructureMasterIterator.next(); // Skip header
+		Iterator<String[]> iterator = FormattedTextParser.parseCsvDelimitedReader(reader);
+		iterator.next(); // Skip header
 		
-		while( biomStructureMasterIterator.hasNext() ) {
+		while( iterator.hasNext() ) {
 			
-			String[] biomStructureDetailsRow = biomStructureMasterIterator.next();
-			String smiles = biomStructureDetailsRow[ 2 ];
-			String CasNo = biomStructureDetailsRow[ 5 ];
-			String biomarkerName = biomStructureDetailsRow[ 6 ];
-			String biomarkerType = biomStructureDetailsRow[ 7 ];
-			String chemicalNature = biomStructureDetailsRow[ 8 ];
-			String therapeuticClass = biomStructureDetailsRow[ 9 ];
-			String diseaseName = biomStructureDetailsRow[ 10 ];
-			String locusId = biomStructureDetailsRow[ 12 ];
-			String status = biomStructureDetailsRow[ 18 ];
-			String rsNumber = biomStructureDetailsRow[ 25 ];
+			String[] biomStructureDetailsRow = iterator.next();
 			
-			LOG.debug( "biomarkerName="+biomarkerName+", biomarkerType="+biomarkerType+", chemicalNature="+chemicalNature+", therapeuticClass="+therapeuticClass+", diseaseName="+diseaseName+", locusId="+locusId+", rsNumber"+rsNumber );
+			String identifier = biomStructureDetailsRow[0];
+			String smiles = biomStructureDetailsRow[2];
+			String CasNo = biomStructureDetailsRow[5];
+			String biomarkerName = biomStructureDetailsRow[6];
+			String biomarkerType = biomStructureDetailsRow[7];
+			String chemicalNature = biomStructureDetailsRow[8];
+			String therapeuticClass = biomStructureDetailsRow[9];
+			String diseaseName = biomStructureDetailsRow[10];
+			String diseaseType = biomStructureDetailsRow[11];
+			String locusId = biomStructureDetailsRow[12];
+			String multipleloci = biomStructureDetailsRow[13];
+			String status = biomStructureDetailsRow[18];
+			String rsNumber = biomStructureDetailsRow[25];
 			
-			if( ! biomarkerMap.containsKey( biomarkerName ) ) {
+			Item item = createItem("Biomarker");
+			item.setAttribute("identifier", identifier);
+			item.setAttribute("name", biomarkerName);
+			item.setAttribute("biomarkerType", biomarkerType);
+			item.setAttribute("chemicalNature", chemicalNature);
+			item.setAttribute("therapeuticClass", therapeuticClass);
+			item.setAttribute("status", status);
+
+			/**
+			 * According to chemical nature of this biomarker, substantial instance will be created below
+			 */
+			if (GENE_RELATED_BIOMARKERS.contains(chemicalNature)) {
+				boolean flag = false;
+				Set<String> geneIds = new HashSet<String>();
+				if (!"".equals(locusId) && isValidId(locusId)) {
+					geneIds.add(locusId);
+				}
+				if (!"".equals(multipleloci)) {
+					for (String id : multipleloci.split("; ")) {
+						if (isValidId(id)) {
+							geneIds.add(id);
+						}
+					}
+				}
+				if (geneIds.size() > 0) {
+					for (String id : geneIds) {
+						item.addToCollection("genes", getGene(id));
+					}
+					flag = false;
+				}
 				
-				Item item = createItem( "Biomarker" );
-				item.setAttribute( "name", biomarkerName );
-				item.setAttribute( "biomarkerType", biomarkerType );
-				item.setAttribute( "chemicalNature", chemicalNature );
-				item.setAttribute( "therapeuticClass", therapeuticClass );
-				item.setAttribute( "status", status );
-				
-				/**
-				 * According to chemical nature of this biomarker, substantial instance will be created below
-				 */
-				if( "Variation".equals( chemicalNature ) && ! "".equals( rsNumber ) ) {
-					
+				if (!"".equals(rsNumber)) {
 					// Register "Variation" biomarker as a SNP instance only if it has rs number
-					Item snpItem = createItem( "SNP" );
-					snpItem.setAttribute( "identifier",  rsNumber);
-					store( snpItem );
-					item.setReference( "snp", snpItem );
-					
-				}else if( "Gene".equals( chemicalNature ) && ! "".equals( locusId ) && locusMap.containsKey( locusId ) ) {
-					
-					item.setReference( "gene", getGene( locusMap.get( locusId ) ) );
-					
-				}else if( "Protein".equals( chemicalNature )
-						&& ! "".equals( locusId )
-						&& locusMap.containsKey( locusId )
-						&& symbolUniProtMap.containsKey( locusMap.get(locusId) ) ) {
-					
-					item.setReference( "protein", getProtein( symbolUniProtMap.get( locusMap.get(locusId) )  ) );
-					
-				}else if( "Scoring scale".equals( biomarkerType ) ) {
-					
-					Item scoringScaleItem = createItem( "ScoringScale" );
-					scoringScaleItem.setAttribute( "name", biomarkerName );
-					store( scoringScaleItem );
-					item.setReference( "scoringScale", scoringScaleItem );
-					
-				}else if( "Chemical compound".equals( chemicalNature ) && ! "".equals(smiles)) {
-					
-					if( ! compoundMap.containsKey( biomarkerName ) ) {
-						
+					item.setReference("snp", getSnp(rsNumber));
+					flag = false;
+				}
+				
+				if (flag) {
+					continue;
+				}
+				
+			} else if ("Scoring scale".equals(biomarkerType)) {
+				// unchecked
+				Item scoringScaleItem = createItem("ScoringScale");
+				scoringScaleItem.setAttribute("name", biomarkerName);
+				store(scoringScaleItem);
+				item.setReference("scoringScale", scoringScaleItem);
+				
+			} else if ("Chemical compound".equals(chemicalNature)) {
+				
+				String compound = compoundMap.get(biomarkerName);
+				if (compound == null && !"".equals(smiles)) {
+					String inchikey = inchiKeyMap.get(smiles);
+					if (inchikey == null) {
+						SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 						IAtomContainer mol = null;
 						try {
 							// if conversion from SMILES to InChIkey fails, skip this entry
-							mol = sp.parseSmiles( smiles );
-						}catch( InvalidSmilesException e ) {
+							mol = sp.parseSmiles(smiles);
+							InChIGenerator generator = factory.getInChIGenerator(mol);
+							
+							if (generator.getReturnStatus() == INCHI_RET.OKAY) {
+								inchikey = generator.getInchiKey();
+							} else {
+								inchikey = "";
+							}
+							
+						} catch (InvalidSmilesException e) {
 							numberOfConversionFailure += 1;
-							continue;
+							inchikey = "";
 						}
-						InChIGenerator generator = factory.getInChIGenerator( mol );
-						
-						if( generator.getReturnStatus() != INCHI_RET.OKAY ) {
-							
-							continue;
-							
-						}
-						
-						String inchikey = generator.getInchiKey();
-						
-						Item compoundGroupItem = getCompoundGroup( inchikey, biomarkerName );
-						
-						Item compoundItem = getCompound( biomarkerName, inchikey, CasNo );
-						compoundGroupItem.addToCollection( "compounds", compoundItem );
-						compoundMap.put( biomarkerName, compoundItem );
-						
+						inchiKeyMap.put(smiles, inchikey);
 					}
 					
-					item.setReference( "compound", compoundMap.get( biomarkerName ) );
+					compound = getCompound(biomarkerName, inchikey, CasNo);
 					
-				}else {
+					compoundMap.put(biomarkerName, compound);
 					
+				} else {
 					continue;
-					
 				}
 				
-				biomarkerMap.put( biomarkerName, item );
+				item.setReference("compound", compound);
+				
+			} else {
+				continue;
 			}
 			
-				
-			Item biomarkerItem = biomarkerMap.get( biomarkerName );
-				
+			// in case we cannot find the umls term, also save the original name
+			item.setAttribute( "diseaseType", diseaseType );
+			item.setAttribute( "diseaseName", diseaseName );
+
 			/**
 			 * Finding out UMLS CUI for this disease
 			 */
-			String cui = mrConsoMap.get( diseaseName.toLowerCase() );
-			if ( null != cui ) {
-				
-				biomarkerItem.addToCollection( "diseaseTerms", getDiseaseTerm( cui, diseaseName ) );
-					
+			String cui = getCui(diseaseName);
+			if (!StringUtils.isEmpty(cui)) {
+				item.setReference("umlsTerm", getUmlsTerm(cui));
 			}
-			
-			LOG.info( "Number of conversion(SMILES->InChIkey) failures: "+numberOfConversionFailure );
-				
-		}
-		
-		/**
-		 * Store all Biomarker items
-		 */
-		for( Item biomarkerItem : biomarkerMap.values() ) {
-			
-			store( biomarkerItem );
-			
-		}
-		
-		/**
-		 * Store all CompoundGroup items
-		 */
-		for( Item compoundGroup : compoundGroupMap.values() ) {
-			
-			store( compoundGroup );
-			
-		}
-		
-	}
-	
-	private Item getCompound( String name, String inchikey, String casRegistryNumber ) throws ObjectStoreException {
-	
-		Item compoundItem = compoundMap.get( name );
-		if( null == compoundItem ) {
-			
-			Item item = createItem( "GobiomCompound" );
-			item.setAttribute( "identifier", name );
-			item.setAttribute( "name", name );
-			item.setAttribute( "inchiKey", inchikey );
-			item.setReference( "compoundGroup", compoundGroupMap.get( inchikey ) );
-			if ( ! "".equals( casRegistryNumber ) )
-				item.setAttribute( "casRegistryNumber", casRegistryNumber );
-			store( item );
-			compoundMap.put( name, item );
-			
-		}
-		return compoundMap.get( name );
-		
-	}
-		
-	private Item getCompoundGroup( String inchikey, String name ) throws ObjectStoreException {
-		
-		Item compoundGroupItem = compoundGroupMap.get( inchikey );
-		if ( null == compoundGroupItem ){
-			
-			Item item = createItem("CompoundGroup");
-			item.setAttribute( "identifier", inchikey );
-			item.setAttribute( "name", name );
-			compoundGroupMap.put( inchikey, item );
-			// Store items afterward
-			
-		}
-		return compoundGroupMap.get( inchikey );
-		
-	}
-	
-	private String getDiseaseTerm( String cui, String diseaseName ) throws ObjectStoreException {
-		
-		String diseaseTermRef = diseaseTermMap.get( cui );
-		if ( diseaseTermRef == null ){
-			
-			Item item = createItem("DiseaseTerm");
-			item.setAttribute( "identifier", cui );
-			item.setAttribute( "name", diseaseName );
-			item.setAttribute( "description", diseaseName );
+
 			store(item);
-			String ref = item.getIdentifier();
-			diseaseTermMap.put( cui, ref );
 		}
-		return diseaseTermMap.get( cui );
+		
+		LOG.info("Number of conversion(SMILES->InChIkey) failures: " + numberOfConversionFailure);
 		
 	}
 	
-	private String getGene( String geneSymbol ) throws ObjectStoreException {
+	// smiles -> inchiKey
+	private Map<String, String> inchiKeyMap = new HashMap<String, String>();
+	// biomarkerName -> compound item reference
+	private Map<String, String> compoundMap = new HashMap<String, String>();
+
+	private String getCompound(String name, String inchiKey, String casRegistryNumber) throws ObjectStoreException {
+		Item item = createItem("GobiomCompound");
+		item.setAttribute("identifier", name);
+		item.setAttribute("name", name);
+		if (!StringUtils.isEmpty(inchiKey)) {
+			item.setAttribute("inchiKey", inchiKey);
+			String compoundGroupId = inchiKey.substring(0, inchiKey.indexOf("-"));
+			item.setReference("compoundGroup", getCompoundGroup(compoundGroupId, name));
+		}
+		if (!"".equals(casRegistryNumber))
+			item.setAttribute("casRegistryNumber", casRegistryNumber);
+		store(item);
+		return item.getIdentifier();
+	}
+	
+	private Map<String, String> compoundGroupMap = new HashMap<String, String>();
+
+	private String getCompoundGroup(String compoundGroupId, String name) throws ObjectStoreException {
+		String ret = compoundGroupMap.get(compoundGroupId);
+		if (ret == null) {
+			Item item = createItem("CompoundGroup");
+			item.setAttribute("identifier", compoundGroupId);
+			item.setAttribute("name", name);
+			store(item);
+			ret = item.getIdentifier();
+			compoundGroupMap.put(compoundGroupId, ret);
+		}
+		return ret;
+	}
+	
+	private Map<String, String> umlsTermMap = new HashMap<String, String>();
+
+	private String getUmlsTerm(String cui) throws ObjectStoreException {
+		String ret = umlsTermMap.get(cui);
+		if (ret == null) {
+			Item item = createItem("UMLSTerm");
+			item.setAttribute("identifier", "UMLS:" + cui);
+			store(item);
+			ret = item.getIdentifier();
+			umlsTermMap.put(cui, ret);
+		}
+		return ret;
+	}
+	
+	private Map<String, String> geneMap = new HashMap<String, String>();
+
+	private String getGene( String geneId ) throws ObjectStoreException {
 		
-		String ret = geneMap.get( geneSymbol );
+		String ret = geneMap.get( geneId );
 		if (ret == null) {
 			Item item = createItem( "Gene" );
-			item.setAttribute( "symbol", geneSymbol );
+			item.setAttribute( "primaryIdentifier", geneId );
 			item.setReference( "organism", getOrganism( HOMO_SAPIENS_TAXON_ID ) );
 			store(item);
-			geneMap.put( geneSymbol, item.getIdentifier() );
+			geneMap.put( geneId, item.getIdentifier() );
 		}
-		return geneMap.get( geneSymbol );
+		return geneMap.get( geneId );
 		
 	}
 	
-	private String getProtein( String uniprotAcc ) throws ObjectStoreException {
-		
-		String ret = proteinMap.get( uniprotAcc );
-		if (ret == null) {
-			Item item = createItem( "Protein" );
-			item.setAttribute( "primaryIdentifier", uniprotAcc );
-			store(item);
-			proteinMap.put( uniprotAcc, item.getIdentifier() );
-		}
-		return proteinMap.get( uniprotAcc );
-		
-	}
-
 	public String getDataSetTitle(String taxonId) {
 		return DATASET_TITLE;
 	}
 	
-	private Iterator<String[]> getHumanIdMappingIterator() throws IOException {
-		return FormattedTextParser.parseDelimitedReader( new FileReader( this.humanIdMappingFile ), '\t' );
-	}
-	
-	public void setHumanIdMappingFile( File humanIdMappingFile ) {
-		this.humanIdMappingFile = humanIdMappingFile;
-	}
-	
-	private Iterator<String[]> getLocusMasterIterator() throws IOException {
-		return FormattedTextParser.parseCsvDelimitedReader( new FileReader( this.locusMasterFile ) );
-	}
-	
-	public void setLocusMasterFile(File locusMasterFile) {
-		this.locusMasterFile = locusMasterFile;
+	private Map<String, String> snpMap = new HashMap<String, String>();
+
+	private String getSnp(String identifier) throws ObjectStoreException {
+		String ret = snpMap.get(identifier);
+		if (ret == null) {
+			Item item = createItem("SNP");
+			item.setAttribute("identifier", identifier);
+			store(item);
+			ret = item.getIdentifier();
+			snpMap.put(identifier, ret);
+		}
+		return ret;
 	}
 
-	private Iterator<String[]> getMrConsoIterator() throws IOException {
-		return FormattedTextParser.parseDelimitedReader( new FileReader( this.mrConsoFile ), '|' );
+	public static boolean isValidId(String s) {
+		if (s == null || s.isEmpty())
+			return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (i == 0 && s.charAt(i) == '0') {
+				return false;
+			}
+			if (Character.digit(s.charAt(i), 10) < 0)
+				return false;
+		}
+		return true;
 	}
-	
-	public void setMrConsoFile( File mrConsoFile ) {
+
+	private UMLSResolver resolver;
+	private File mrConsoFile;
+	private File mrStyFile;
+
+	public void setMrConsoFile(File mrConsoFile) {
 		this.mrConsoFile = mrConsoFile;
 	}
-	
+
+	public void setMrStyFile(File mrStyFile) {
+		this.mrStyFile = mrStyFile;
+	}
+
+	private Map<String, String> diseaseTermCuiMap = new HashMap<String, String>();
+
+	private String getCui(String diseaseName) {
+		String ret = diseaseTermCuiMap.get(diseaseName);
+		if (ret == null) {
+			ret = resolver.getIdentifier(diseaseName);
+
+			if (ret == null && diseaseName.contains("(disorder)")) {
+				ret = resolver.getIdentifier(diseaseName.replaceAll("\\(disorder\\)", "").trim());
+			}
+
+			if (ret == null) {
+				ret = "";
+				LOG.info("Cannot find CUI for the term: '" + diseaseName + "'");
+			}
+			diseaseTermCuiMap.put(diseaseName, ret);
+		}
+		return ret;
+	}
+
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <classes>
-    <class name="UMLSTerm" is-interface="true">
-        <attribute name="identifier" type="java.lang.String"/>
+    <class name="UMLSTerm" extends="OntologyTerm" is-interface="true">
     </class>
 	<class name="TrialGroup" is-interface="true">
         <attribute name="identifier" type="java.lang.String"/>

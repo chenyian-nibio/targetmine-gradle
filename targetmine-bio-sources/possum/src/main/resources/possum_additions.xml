@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<classes>
+
+	<class name="ProteinChain" is-interface="true">
+		<attribute name="pdbId" type="java.lang.String"/>
+		<attribute name="chain" type="java.lang.String"/>
+		<attribute name="identifier" type="java.lang.String"/>
+		<collection name="pockets" referenced-type="LigandBindingPocket" reverse-reference="chain"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+	<class name="LigandBindingPocket" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="pocketType" type="java.lang.String"/> <!-- could be known or putative -->
+		<reference name="ligand" referenced-type="Ligand"/>
+		<reference name="chain" referenced-type="ProteinChain" reverse-reference="pockets"/>
+		<collection name="similarPockets" referenced-type="LigandBindingPocket"/>
+		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+
+	<class name="Ligand" is-interface="true">
+		<attribute name="hetCode" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<reference name="pdbCompound" referenced-type="PDBCompound"/>
+		<reference name="chemblCompound" referenced-type="ChemblCompound"/>
+	</class>
+
+	<class name="PDBCompound" extends="Compound" is-interface="true" />
+	<class name="ChemblCompound" extends="Compound" is-interface="true" />
+	<class name="Compound" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="originalId" type="java.lang.String"/>
+	</class>
+
+</classes>

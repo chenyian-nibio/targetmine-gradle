@@ -899,6 +899,17 @@
     </fields>
   </class>
 
+  <class className="org.intermine.model.bio.Mgend">
+    <fields>
+      <fieldconfig fieldExpr="variant.identifier"/>
+      <fieldconfig fieldExpr="alleleChange"/>
+      <fieldconfig fieldExpr="aminoAcidChange"/>
+      <fieldconfig fieldExpr="clinicalSignificance"/>
+      <fieldconfig fieldExpr="diseaseTerm.identifier"/>
+      <fieldconfig fieldExpr="diseaseTerm.name"/>
+    </fields>
+  </class>
+
   <class className="org.intermine.model.bio.Frequency">
     <fields>
       <fieldconfig fieldExpr="allele"/>
@@ -915,15 +926,16 @@
     </fields>
   </class>
 
-<!-- Start: Added by Ishikawa.Motokazu 
+<!-- Start: Added by Ishikawa.Motokazu -->
   <class className="org.intermine.model.bio.Biomarker">
     <fields>
       <fieldconfig fieldExpr="name"/>
       <fieldconfig fieldExpr="biomarkerType"/>
       <fieldconfig fieldExpr="chemicalNature"/>
+      <fieldconfig fieldExpr="diseaseType"/>
+      <fieldconfig fieldExpr="diseaseName"/>
     </fields>
   </class>
--->
 
 <!-- End: Added by Ishikawa.Motokazu -->
 
@@ -1166,6 +1178,18 @@
                                  constraints="diseases.dataSet.name=[DataSet],organism.taxonId=[list]"
                                  typeClass="Gene"
                                  views="primaryIdentifier, symbol, organism.name, diseases.diseaseTerm.identifier, diseases.diseaseTerm.name"/>
+
+      <enrichmentwidgetdisplayer id="mgend_enrichment"
+                                 title="MGeND Enrichment"
+                                 description="MGeND disease enriched for genes in this list"
+                                 label="Disease term"
+                                 startClass="Gene"
+                                 startClassDisplay="symbol"
+                                 enrich="snps.snp.mgends.diseaseTerm.name"
+                                 enrichIdentifier="snps.snp.mgends.diseaseTerm.identifier"
+                                 constraints="organism.taxonId=[list]"
+                                 typeClass="Gene"
+                                 views="primaryIdentifier, symbol, organism.name, snps.snp.identifier, snps.snp.mgends.diseaseTerm.identifier, snps.snp.mgends.diseaseTerm.name"/>
 
       <enrichmentwidgetdisplayer id="protein_pathway_enrichment"
                                  title="Pathway Enrichment"

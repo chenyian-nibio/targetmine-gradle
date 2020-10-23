@@ -203,3 +203,7 @@ include ':bio-source-ipftrial'
 project(':bio-source-ipftrial').projectDir = new File(settingsDir, './ipftrial')
 include ':bio-source-bioexpress'
 project(':bio-source-bioexpress').projectDir = new File(settingsDir, './bioexpress')
+include ':bio-source-possum'
+project(':bio-source-possum').projectDir = new File(settingsDir, './possum')
+include ':bio-source-mgend'
+project(':bio-source-mgend').projectDir = new File(settingsDir, './mgend')
