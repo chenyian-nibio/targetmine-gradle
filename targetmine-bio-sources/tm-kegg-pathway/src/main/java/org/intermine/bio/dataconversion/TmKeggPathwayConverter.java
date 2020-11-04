@@ -208,7 +208,9 @@ public class TmKeggPathwayConverter extends BioFileConverter {
 			item.setReference("organism", getOrganism(taxonId));
 			String[] pathwayIds = line[1].split("\\s");
 			for (String pid : pathwayIds) {
-				item.addToCollection("pathways", getPathway(pid, organism));
+				if (pathwayNameMap.get(pid) != null) {
+					item.addToCollection("pathways", getPathway(pid, organism));
+				}
 			}
 			store(item);
 			
