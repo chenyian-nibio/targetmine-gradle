@@ -185,13 +185,13 @@
       <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchi"/>
       <property name="osAlias" value="os.production"/>
     </source>
-  	
+
     <source name="kegg-jscc" type="kegg-jtc">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/br"/>
       <property name="src.data.dir.includes" value="br0830*.keg"/>
       <property name="osAlias" value="os.production"/>
     </source>
-	
+
     <source name="kegg-pathway" type="tm-kegg-pathway">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp"/>
       <property name="src.data.dir.includes" value="*/*_gene_map.tab"/>
@@ -230,7 +230,7 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="mim2gene_medgen"/>
     </source>
-    
+
     <source name="disgenet" type="disgenet">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/disgenet/5.0"/>
       <property name="src.data.dir.includes" value="curated_gene_disease_associations.tsv"/>
@@ -239,7 +239,7 @@
     </source>
     <source name="efo" type="efo">
       <property name="src.data.file" location="/data/bio/db/Targetmine/efo/efo.modi.obo"/>
-    </source>  
+    </source>
 
 <!-- internal use only -->
     <source name="gostar" type="gostar">
@@ -270,17 +270,17 @@
       <property name="humanGeneInfoFile" value="/data/bio/db/Targetmine/gene_info/Homo_sapiens.gene_info" />
       <property name="ordoOwlFile" value="/data/bio/db/Targetmine/orphanet/ORDO_en_2.7.owl" />
     </source>
-  	
+
     <source name="efo-xref" type="efo-xref">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
       <property name="src.data.dir.includes" value="efo.modi.obo" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
-    </source>  
+    </source>
     <source name="mesh-term" type="mesh-term">
       <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
       <property name="src.data.dir.includes" value="*.bin" />
-    </source>  
+    </source>
     <source name="gwas" type="gwas">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gwas/nhgri-ebi" />
       <property name="src.data.dir.includes" value="gwas-catalog-associations_ontology-annotated.tsv" />
@@ -411,7 +411,7 @@
       <property name="source.db.name" value="hgmd-db"/>
       <property name="osAlias" value="os.production"/>
     </source>
-    
+
     <source name="irefindex" type="irefindex">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/irefindex"/>
       <property name="src.data.dir.includes" value="*.mitab.*.txt"/>
@@ -449,9 +449,9 @@
       <property name="src.data.dir.includes" value="*.csv" />
     </source>
     <source name="human-body-index" type="human-body-index">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/human-body-index" />
+      <property name="src.data.dir" location="/home/topeins/ohila-data/bio/db/Targetmine/human-body-index" />
       <property name="src.data.dir.includes" value="GSE7307_Raw_Norm_Flag_indv.txt" />
-      <property name="sampleInfoFile" value="/data/bio/db/Targetmine/human-body-index/GSE7307_samples.txt" />
+      <property name="sampleInfoFile" value="/home/topeins/ohila-data/bio/db/Targetmine/human-body-index/GSE7307_samples.txt" />
     </source>
 
     <source name="predicted-dbp" type="predicted-dbp">
@@ -503,7 +503,7 @@
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
-    
+
     <source name="dataset-info" type="dataset-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine" />
       <property name="src.data.dir.includes" value="*/*current_ver.txt" />
