@@ -75,6 +75,7 @@ public class EfoXrefConverter extends BioFileConverter
 				if(cui!=null) {
 					cuiIdSet.add(cui);
 					System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
+					LOG.info("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
 				}
 			} else if (line.startsWith("synonym: ")) {
 				Matcher matcher = synonymPattern.matcher(line);
@@ -84,6 +85,7 @@ public class EfoXrefConverter extends BioFileConverter
 					if(cui!=null){
 						cuiIdSet.add(cui);
 						System.out.println("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
+						LOG.info("UMLSLINK\t" + identifier +"\t" + cui +"\t"+name);
 					}
 				}
 			} else if (line.startsWith("property_value: http://www.ebi.ac.uk/efo/MSH_definition_citation")) {
