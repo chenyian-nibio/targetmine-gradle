@@ -284,7 +284,7 @@
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
     <source name="mesh-term" type="mesh-term">
-      <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
+      <property name="src.data.dir" location="/data/bio/db/MeSH/current/text/" />
       <property name="src.data.dir.includes" value="*.bin" />
     </source>
     <source name="gwas" type="gwas">
@@ -563,8 +563,9 @@
       <property name="taxonMapFile" value="/data/bio/db/Targetmine/kegg-ftp/prokaryotes/taxonomic_rank"/>
     </source>
     <source name="pubmed-mesh" type="pubmed-mesh">
-      <property name="src.data.dir" location="/data/bio/db/pubmed/2017"/>
-      <property name="src.data.dir.includes" value="*/mesh/*-mesh.txt"/>
+      <property name="src.data.dir" location="/data/bio/db/pubmed/current"/>
+      <property name="src.data.dir.includes" value="baseline/mesh/*-mesh.txt"/>
+      <property name="updateFile" value="/data/bio/db/pubmed/current/update-mesh.txt"/>
       <property name="osAlias" value="os.production"/>
     </source>
     <source name="publication-info" type="publication-efetch">

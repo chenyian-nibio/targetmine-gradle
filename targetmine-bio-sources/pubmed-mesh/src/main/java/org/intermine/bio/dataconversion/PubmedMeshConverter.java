@@ -1,5 +1,8 @@
 package org.intermine.bio.dataconversion;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,8 +37,14 @@ public class PubmedMeshConverter extends BioFileConverter
     private static final String DATA_SOURCE_NAME = "PubMed";
 
     private Set<String> pubMedIds;
-    private Map<String, Item> publicationMap = new HashMap<String, Item>();
+    private Map<String, String> publicationMap = new HashMap<String, String>();
     
+	private File updateFile;
+
+	public void setUpdateFile(File updateFile) {
+		this.updateFile = updateFile;
+	}
+
 	private String osAlias;
 
 	public void setOsAlias(String osAlias) {
@@ -57,17 +66,29 @@ public class PubmedMeshConverter extends BioFileConverter
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
+    	if (pubMedIds == null) {
+    		pubMedIds = getPubMedIds();
+    		// update file contents should be read first
+    		System.out.println("Processing the update file ...");
+    		LOG.info("Processing the update file ...");
+    		processMeshTxtFile(new FileReader(updateFile));
+    	}
+    	
 		String fileName = getCurrentFile().getName();
 		LOG.info("Processing the file " + fileName + " ...");
 		
-    	if (pubMedIds == null) {
-    		pubMedIds = getPubMedIds();
-    	}
-    	
-    	Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
+    	processMeshTxtFile(reader);
+    }
+
+	private void processMeshTxtFile(Reader reader) throws IOException, ObjectStoreException {
+		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
     	while (iterator.hasNext()) {
     		String[] cols = iterator.next();
     		String pubMedId = cols[0];
+    		if (publicationMap.get(pubMedId) != null) {
+    			continue;
+    		}
+    		
     		if (pubMedIds.contains(pubMedId)) {
         		Item publication = createItem("Publication");
         		publication.setAttribute("pubMedId", pubMedId);
@@ -75,15 +96,11 @@ public class PubmedMeshConverter extends BioFileConverter
         		for (String meshId : meshIds) {
 					publication.addToCollection("meshTerms", getMeshTerm(meshId));
 				}
-        		publicationMap.put(pubMedId, publication);
+        		store(publication);
+        		publicationMap.put(pubMedId, publication.getIdentifier());
     		}
     	}
-    }
-    
-    @Override
-    public void close() throws Exception {
-    	store(publicationMap.values());
-    }
+	}
     
 	/**
 	 * Retrieve the publications to be updated
@@ -125,3 +142,4 @@ public class PubmedMeshConverter extends BioFileConverter
 		return ret;
 	}
 }
+
