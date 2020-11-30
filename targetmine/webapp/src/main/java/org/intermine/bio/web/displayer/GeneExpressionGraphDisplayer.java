@@ -74,6 +74,10 @@ public class GeneExpressionGraphDisplayer extends ReportDisplayer{
         // process each individually
         Set<Expression> expressions = (Set<Expression>) ps.getFieldValue("expressions");
         for( Expression exp: expressions ){
+        	//logger.error("class name: " + exp.getClass().getName());	
+        	if (!exp.getClass().getName().equals("org.intermine.model.bio.HbiExpressionShadow")) {
+        		continue;
+        	}
 
           String probeID = (String)ps.getFieldValue("probeSetId");
           // For each expression value, we need to store the following information

@@ -464,9 +464,9 @@
       <property name="src.data.dir.includes" value="*.csv" />
     </source>
     <source name="human-body-index" type="human-body-index">
-      <property name="src.data.dir" location="/home/topeins/ohila-data/bio/db/Targetmine/human-body-index" />
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/human-body-index" />
       <property name="src.data.dir.includes" value="GSE7307_Raw_Norm_Flag_indv.txt" />
-      <property name="sampleInfoFile" value="/home/topeins/ohila-data/bio/db/Targetmine/human-body-index/GSE7307_samples.txt" />
+      <property name="sampleInfoFile" value="/data/bio/db/Targetmine/human-body-index/GSE7307_samples.txt" />
     </source>
 
     <source name="predicted-dbp" type="predicted-dbp">
