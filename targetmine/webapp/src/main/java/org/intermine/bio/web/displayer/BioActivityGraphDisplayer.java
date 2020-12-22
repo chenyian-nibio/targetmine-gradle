@@ -21,10 +21,17 @@ public class BioActivityGraphDisplayer extends ReportDisplayer {
   /* log output printed to catalina.out */
   protected static final Logger LOG = Logger.getLogger(BioActivityGraphDisplayer.class);
 
+  /**
+   * constructor
+   * Use super class to define required structures
+   */
 	public BioActivityGraphDisplayer(ReportDisplayerConfig config, InterMineAPI im) {
 		super(config, im);
 	}
 
+  /**
+   *
+   */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void display(HttpServletRequest request, ReportObject reportObject) {

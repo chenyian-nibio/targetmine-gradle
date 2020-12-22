@@ -13,12 +13,12 @@
 		<attribute name="location" type="java.lang.String"/>
 		<collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
+		<collection name="publications" referenced-type="Publication"/>
 	</class>
 
 	<class name="SNP" extends="Variant" is-interface="true">
 		<attribute name="refSnpAllele" type="java.lang.String"/>
 		<attribute name="orientation" type="java.lang.String"/>
-		<collection name="publications" referenced-type="Publication"/>
 	</class>
 
 	<class name="VariationAnnotation" is-interface="true">

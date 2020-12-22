@@ -8,10 +8,10 @@
       <property name="src.data.file" location="/data/bio/db/Targetmine/so/so.obo"/>
     </source>
     <source name="go" type="go">
-      <property name="src.data.file" location="/data/bio/db/Targetmine/go/gene_ontology.obo"/>
+      <property name="src.data.file" location="/data/bio/db/Targetmine/go-goslim/go-basic.obo"/>
     </source>
     <source name="goslim" type="goslim">
-      <property name="src.data.file" location="/data/bio/db/Targetmine/goslim/goslim_generic.obo"/>
+      <property name="src.data.file" location="/data/bio/db/Targetmine/go-goslim/goslim_generic.obo"/>
     </source>
     <source name="uniprot" type="tm-uniprot">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/uniprot/split"/>
@@ -35,7 +35,7 @@
     <source name="go-annotation" type="go-goslim-annotation">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/go-annotation"/>
       <property name="src.data.dir.includes" value="goa_*.gaf"/>
-      <property name="goslim.map" value="/data/bio/db/Targetmine/goslim/goslim.map"/>
+      <property name="goslim.map" value="/data/bio/db/Targetmine/go-goslim/goslim.map"/>
     </source>
     <source name="do" type="do">
       <property name="src.data.file" location="/data/bio/db/Targetmine/do/HumanDO.obo"/>
@@ -201,13 +201,13 @@
       <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchi"/>
       <property name="osAlias" value="os.production"/>
     </source>
-  	
+
     <source name="kegg-jscc" type="kegg-jtc">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/br"/>
       <property name="src.data.dir.includes" value="br0830*.keg"/>
       <property name="osAlias" value="os.production"/>
     </source>
-	
+
     <source name="kegg-pathway" type="tm-kegg-pathway">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp"/>
       <property name="src.data.dir.includes" value="*/*_gene_map.tab"/>
@@ -246,7 +246,7 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="mim2gene_medgen"/>
     </source>
-    
+
     <source name="disgenet" type="disgenet">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/disgenet/5.0"/>
       <property name="src.data.dir.includes" value="curated_gene_disease_associations.tsv"/>
@@ -255,7 +255,7 @@
     </source>
     <source name="efo" type="efo">
       <property name="src.data.file" location="/data/bio/db/Targetmine/efo/efo.modi.obo"/>
-    </source>  
+    </source>
 
 <!-- internal use only -->
 <!-- 
@@ -288,20 +288,20 @@
       <property name="humanGeneInfoFile" value="/data/bio/db/Targetmine/gene_info/Homo_sapiens.gene_info" />
       <property name="ordoOwlFile" value="/data/bio/db/Targetmine/orphanet/ORDO_en_2.7.owl" />
     </source>
-  	
+
     <source name="efo-xref" type="efo-xref">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/efo/" />
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/efo" />
       <property name="src.data.dir.includes" value="efo.modi.obo" />
       <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
       <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
-    </source>  
+    </source>
     <source name="mesh-term" type="mesh-term">
-      <property name="src.data.dir" location="/data/bio/db/MeSH/2018/text/" />
+      <property name="src.data.dir" location="/data/bio/db/MeSH/current/text/" />
       <property name="src.data.dir.includes" value="*.bin" />
-    </source>  
+    </source>
     <source name="gwas" type="gwas">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/gwas/nhgri-ebi" />
-      <property name="src.data.dir.includes" value="gwas-catalog-associations_ontology-annotated.tsv" />
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/gwas" />
+      <property name="src.data.dir.includes" value="gwas_catalog_*.tsv" />
     </source>
 
      <source name="clinvar" type="tm-clinvar">
@@ -579,8 +579,9 @@
       <property name="taxonMapFile" value="/data/bio/db/Targetmine/kegg-ftp/prokaryotes/taxonomic_rank"/>
     </source>
     <source name="pubmed-mesh" type="pubmed-mesh">
-      <property name="src.data.dir" location="/data/bio/db/pubmed/2017"/>
-      <property name="src.data.dir.includes" value="*/mesh/*-mesh.txt"/>
+      <property name="src.data.dir" location="/data/bio/db/pubmed/current"/>
+      <property name="src.data.dir.includes" value="baseline/mesh/*-mesh.txt"/>
+      <property name="updateFile" value="/data/bio/db/pubmed/current/update-mesh.txt"/>
       <property name="osAlias" value="os.production"/>
     </source>
     <source name="publication-info" type="publication-efetch">

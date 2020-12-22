@@ -44,9 +44,8 @@ public class RemoveCompoundCasRegistryNumber extends PostProcessor {
 //				statement.execute("UPDATE pubchemcompound SET casregistrynumber=null");
 //				statement.execute("UPDATE pdbcompound SET casregistrynumber=null");
 				
+//				connection.commit();
 				statement.close();
-
-				connection.commit();
 				connection.close();
 
 			} catch (SQLException e) {

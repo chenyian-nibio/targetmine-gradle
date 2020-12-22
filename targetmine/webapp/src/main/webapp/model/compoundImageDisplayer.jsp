@@ -19,7 +19,7 @@
 			<c:when test="${fn:startsWith(compound.identifier, 'ChEMBL') || fn:startsWith(compound.name, 'CHEMBL')}">
 			
 	<div id="structureimage">
-		<img src="https://www.ebi.ac.uk/chembl/api/data/image/${compound.inchiKey}?dimensions=300" onerror="document.getElementById('structureimage').innerHTML = 'Not available.'"/>
+		<img src="https://www.ebi.ac.uk/chembl/api/data/image/${compound.inchiKey}?dimensions=300&format=svg" onerror="document.getElementById('structureimage').innerHTML = 'Not available.'"/>
 		<br/>
 		<span style="font-size: 8px;">Provided by <a href="https://www.ebi.ac.uk/chembl/ws" target="_blank">ChEMBL web service</a></span>
 	</div>

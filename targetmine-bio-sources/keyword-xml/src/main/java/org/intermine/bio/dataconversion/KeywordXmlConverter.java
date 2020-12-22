@@ -20,7 +20,7 @@ public class KeywordXmlConverter extends BioFileConverter
 {
 //	private static Logger LOG = Logger.getLogger(KeywordXmlConverter.class);
     //
-    private static final String DATASET_TITLE = "UniProt keywords data set";
+    private static final String DATASET_TITLE = "UniProtKB Keywords";
     private static final String DATA_SOURCE_NAME = "UniProt";
     
     private String ontologyRefId = null;

@@ -22,13 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
 import org.intermine.model.bio.Gene;
-import org.intermine.model.bio.Organism;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -47,13 +46,12 @@ import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.postprocess.PostProcessor;
 import org.intermine.sql.Database;
 import org.intermine.util.DynamicUtil;
-
-import edu.uci.ics.jung.algorithms.cluster.WeakComponentClusterer;
-import edu.uci.ics.jung.algorithms.filters.FilterUtils;
-import edu.uci.ics.jung.algorithms.scoring.BetweennessCentrality;
-import edu.uci.ics.jung.algorithms.scoring.ClosenessCentrality;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
+import org.jgrapht.alg.scoring.BetweennessCentrality;
+import org.jgrapht.alg.scoring.ClosenessCentrality;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultUndirectedGraph;
 
 /**
  * 
@@ -74,11 +72,11 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 	public void doAnalysis() {
 		// create datasource & dataset
-		InterMineObject dataSource = (InterMineObject) DynamicUtil.simpleCreateObject(model
-				.getClassDescriptorByName("DataSource").getType());
+		InterMineObject dataSource = (InterMineObject) DynamicUtil
+				.simpleCreateObject(model.getClassDescriptorByName("DataSource").getType());
 		dataSource.setFieldValue("name", "TargetMine");
-		InterMineObject dataSet = (InterMineObject) DynamicUtil.simpleCreateObject(model
-				.getClassDescriptorByName("DataSet").getType());
+		InterMineObject dataSet = (InterMineObject) DynamicUtil
+				.simpleCreateObject(model.getClassDescriptorByName("DataSet").getType());
 		dataSet.setFieldValue("name", "TargetMine");
 		dataSet.setFieldValue("dataSource", dataSource);
 		dataSet.setFieldValue("description", "TargetMine interactome analysis");
@@ -123,11 +121,11 @@ public class NetworkAnalysisTool extends PostProcessor {
 			System.out.println("HCDP contains " + hcdp.size() + " interactions (" + taxonId + ").");
 			System.out.println("HC contains " + hc.size() + " interactions (" + taxonId + ").");
 
-			Graph<String, String> hcdplcc = findLargestConnectiveNetwork(hcdp);
-			System.out.println("HCDPLCC contains " + hcdplcc.getEdgeCount() + " interactions ("
+			Graph<String, DefaultEdge> hcdplcc = findLargestConnectiveNetwork(hcdp);
+			System.out.println("HCDPLCC contains " + hcdplcc.edgeSet().size() + " interactions ("
 					+ taxonId + ").");
-			Graph<String, String> hclcc = findLargestConnectiveNetwork(hc);
-			System.out.println("HCLCC contains " + hclcc.getEdgeCount() + " interactions ("
+			Graph<String, DefaultEdge> hclcc = findLargestConnectiveNetwork(hc);
+			System.out.println("HCLCC contains " + hclcc.edgeSet().size() + " interactions ("
 					+ taxonId + ").");
 
 			Results intResults = queryInteractionByTaxonId(taxonId);
@@ -166,16 +164,13 @@ public class NetworkAnalysisTool extends PostProcessor {
 					item.setFieldValue("dataSet", dataSet);
 					osw.store(item);
 				}
-				System.out.println("There are " + x + " interactions tag with HCDP. (" + taxonId
-						+ ").");
-				System.out.println("There are " + y + " interactions tag with HC. (" + taxonId
-						+ ").");
+				System.out.println("There are " + x + " interactions tag with HCDP. (" + taxonId + ").");
+				System.out.println("There are " + y + " interactions tag with HC. (" + taxonId + ").");
 				osw.commitTransaction();
 
 				// For tracing
 				currentTime[i] = System.currentTimeMillis();
-				System.out.println("Spent " + (currentTime[i] - currentTime[i - 1]) / 1000
-						+ " seconds");
+				System.out.println("Spent " + (currentTime[i] - currentTime[i - 1]) / 1000 + " seconds");
 				i++;
 
 				System.out.println("calculateNetworkProperties(hcdplcc)...");
@@ -184,8 +179,7 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 				// For tracing
 				currentTime[i] = System.currentTimeMillis();
-				System.out.println("Spent " + (currentTime[i] - currentTime[i - 1]) / 1000
-						+ " seconds");
+				System.out.println("Spent " + (currentTime[i] - currentTime[i - 1]) / 1000 + " seconds");
 				i++;
 
 				Set<String> geneIds = hcdplccNp.keySet();
@@ -222,25 +216,13 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 				// For tracing
 				currentTime[i] = System.currentTimeMillis();
-				System.out.println("Spent " + (currentTime[i] - currentTime[i - 1]) / 1000
-						+ " seconds");
+				System.out.println("Spent " + (currentTime[i] - currentTime[i - 1]) / 1000 + " seconds");
 				i++;
 
 			} catch (ObjectStoreException e) {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private Set<String> getInteractionPairs(Graph<String, String> lcc) {
-		Set<String> ret = new HashSet<String>();
-		Collection<String> edges = lcc.getEdges();
-		for (String edge : edges) {
-			// A-B, B-A have already been filtered
-			ret.add(edge);
-		}
-		return ret;
 	}
 
 	private Set<String> getInteractionPairs(Set<InteractionData> hcppi) {
@@ -260,12 +242,11 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 	private Results queryInteractionByTaxonId(String taxonId) {
 		Query q = new Query();
-		QueryClass qcGene1 = new QueryClass(Gene.class);
-		QueryClass qcGene2 = new QueryClass(Gene.class);
-		QueryClass qcOrganism1 = new QueryClass(Organism.class);
-		QueryClass qcOrganism2 = new QueryClass(Organism.class);
-		QueryClass qcInteraction = new QueryClass(model.getClassDescriptorByName("Interaction")
-				.getType());
+		QueryClass qcGene1 = new QueryClass(model.getClassDescriptorByName("Gene").getType());
+		QueryClass qcGene2 = new QueryClass(model.getClassDescriptorByName("Gene").getType());
+		QueryClass qcOrganism1 = new QueryClass(model.getClassDescriptorByName("Organism").getType());
+		QueryClass qcOrganism2 = new QueryClass(model.getClassDescriptorByName("Organism").getType());
+		QueryClass qcInteraction = new QueryClass(model.getClassDescriptorByName("Interaction").getType());
 
 		QueryField qfTaxonId1 = new QueryField(qcOrganism1, "taxonId");
 		QueryField qfTaxonId2 = new QueryField(qcOrganism2, "taxonId");
@@ -288,10 +269,8 @@ public class NetworkAnalysisTool extends PostProcessor {
 		cs.addConstraint(new ContainsConstraint(qor3, ConstraintOp.CONTAINS, qcGene1));
 		QueryObjectReference qor4 = new QueryObjectReference(qcInteraction, "gene2");
 		cs.addConstraint(new ContainsConstraint(qor4, ConstraintOp.CONTAINS, qcGene2));
-		cs.addConstraint(new SimpleConstraint(qfTaxonId1, ConstraintOp.EQUALS, new QueryValue(
-				taxonId)));
-		cs.addConstraint(new SimpleConstraint(qfTaxonId2, ConstraintOp.EQUALS, new QueryValue(
-				taxonId)));
+		cs.addConstraint(new SimpleConstraint(qfTaxonId1, ConstraintOp.EQUALS, new QueryValue(taxonId)));
+		cs.addConstraint(new SimpleConstraint(qfTaxonId2, ConstraintOp.EQUALS, new QueryValue(taxonId)));
 		q.setConstraint(cs);
 
 		ObjectStore os = osw.getObjectStore();
@@ -412,13 +391,13 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 	}
 
-	private Graph<String, String> findLargestConnectiveNetwork(Collection<InteractionData> data) {
-		Graph<String, String> graph = generateNetworkGraph(data);
-
-		WeakComponentClusterer<String, String> wcc = new WeakComponentClusterer<String, String>();
-		Set<Set<String>> transform = wcc.transform(graph);
-
-		List<Set<String>> list = new ArrayList<Set<String>>(transform);
+	private static Graph<String,DefaultEdge> findLargestConnectiveNetwork(Collection<InteractionData> data) {
+		Graph<String, DefaultEdge> graph = generateNetworkGraph(data);
+		
+		ConnectivityInspector<String, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
+		List<Set<String>> sets = inspector.connectedSets();
+		
+		List<Set<String>> list = new ArrayList<Set<String>>(sets);
 
 		Collections.sort(list, new Comparator<Set<String>>() {
 
@@ -431,13 +410,16 @@ public class NetworkAnalysisTool extends PostProcessor {
 			}
 		});
 
-		Graph<String, String> lcc = FilterUtils.createInducedSubgraph(list.get(0), graph);
+		Set<String> vertexSet = new HashSet<String>(graph.vertexSet());
+		vertexSet.removeAll(list.get(0));
 
-		return lcc;
+		graph.removeAllVertices(vertexSet);
+		
+		return graph;
 	}
 
-	private Graph<String, String> generateNetworkGraph(Collection<InteractionData> data) {
-		Graph<String, String> g = new SparseMultigraph<String, String>();
+	private static Graph<String, DefaultEdge> generateNetworkGraph(Collection<InteractionData> data) {
+		Graph<String, DefaultEdge> simpleGraph = new DefaultUndirectedGraph<>(DefaultEdge.class);
 		Set<String> vertex = new HashSet<String>();
 		Iterator<InteractionData> iterator = data.iterator();
 		while (iterator.hasNext()) {
@@ -445,40 +427,48 @@ public class NetworkAnalysisTool extends PostProcessor {
 			List<String> genes = interactionData.getGenes();
 			for (String gene : genes) {
 				if (!vertex.contains(gene)) {
-					g.addVertex(gene);
+					simpleGraph.addVertex(gene);
 					vertex.add(gene);
 				}
 			}
-			g.addEdge(String.format("%s-%s", genes.get(0), genes.get(1)), genes.get(0),
-					genes.get(1));
+			simpleGraph.addEdge(genes.get(0), genes.get(1));
 
 		}
-		return g;
+		return simpleGraph;
 	}
 
-	private Map<String, NetworkData> calculateNetworkProperties(Graph<String, String> graph) {
-		Collection<String> vertices = graph.getVertices();
+	private static Map<String, NetworkData> calculateNetworkProperties(Graph<String,DefaultEdge> graph) {
+		Collection<String> vertices = graph.vertexSet();
 		Set<String> geneIds = new HashSet<String>();
 		for (String id : vertices) {
 			geneIds.add(id);
 		}
+		System.out.println("Found " + geneIds.size() + " genes in hcdplcc.");
+		
+		System.out.println("calculating BetweennessCentrality ...");
 
-		BetweennessCentrality<String, String> bc = new BetweennessCentrality<String, String>(graph);
+		BetweennessCentrality<String, DefaultEdge> bc = new BetweennessCentrality<>(graph, true);
 
-		ClosenessCentrality<String, String> cc = new ClosenessCentrality<String, String>(graph);
+		System.out.println("done.");
 
-		int n = graph.getVertexCount();
-		double nor = (n - 1d) * (n - 2d);
+		System.out.println("calculating ClosenessCentrality ...");
+		
+		ClosenessCentrality<String, DefaultEdge> cc = new ClosenessCentrality<>(graph);
+		
+		System.out.println("done.");
+
+		int n = graph.vertexSet().size();
 		int pos = n - n / CUT_OFF_PERCENTAGE;
 
 		List<Integer> allDegree = new ArrayList<Integer>();
 		List<Double> allBetweenness = new ArrayList<Double>();
 		Map<String, NetworkData> ret = new HashMap<String, NetworkData>();
 		for (String id : geneIds) {
-			Double b = bc.getVertexScore(id) / nor;
-			ret.put(id, new NetworkData(id, graph.degree(id), b, cc.getVertexScore(id)));
+			// TODO somehow the value calculated by JGraphT is a half of the commonly accept value, thus we multiply 2 here 
+			Double b = bc.getVertexScore(id) * 2d;
+			ret.put(id, new NetworkData(id, graph.degreeOf(id), b, cc.getVertexScore(id)));
 			allBetweenness.add(b);
-			allDegree.add(graph.degree(id));
+			allDegree.add(graph.degreeOf(id));
 		}
 		Collections.sort(allDegree);
 		Collections.sort(allBetweenness);
