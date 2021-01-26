@@ -203,7 +203,10 @@ public class GeneInfoConverter extends BioFileConverter {
 				String ensemblId = dbNameIdMap.get("Ensembl");
 				if (ensemblId != null) {
 					// add synonym for identifier
-					geneSynonyms.add(ensemblId);
+					String[] parts = ensemblId.split(",");
+					for (String part : parts) {
+						geneSynonyms.add(part);
+					}
 				}
 
 			}
@@ -347,14 +350,15 @@ public class GeneInfoConverter extends BioFileConverter {
 
 	private Map<String, String> processDbXrefs(String allDbRefString) {
 		Map<String, String> ret = new HashMap<String, String>();
-
-		// Genes with more than one id in specific database would be skip in this step
-		// e.g. 1 gene id -> 2 ensembl id
 		String[] values = allDbRefString.split("\\|");
 		for (String dbRef : values) {
 			String[] dbValue = dbRef.split(":");
 			if (dbValue[0].equals("Ensembl") || dbValue[0].equals("FLYBASE")) {
-				ret.put(dbValue[0], dbValue[1]);
+				String v = dbValue[1];
+				if (ret.get(dbValue[0]) != null) {
+					v = ret.get(dbValue[0]) + "," + v;
+				}
+				ret.put(dbValue[0], v);
 			} else {
 				ret.put(dbValue[0], dbRef);
 			}

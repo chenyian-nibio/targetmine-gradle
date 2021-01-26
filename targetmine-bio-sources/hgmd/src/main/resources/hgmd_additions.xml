@@ -29,6 +29,7 @@
         <attribute name="identifier" type="java.lang.String"/>
         <attribute name="description" type="java.lang.String"/>
         <attribute name="chromosome" type="java.lang.String"/>
+		<attribute name="coordinate" type="java.lang.Integer"/>
         <attribute name="location" type="java.lang.String"/>
         <collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
@@ -50,11 +51,7 @@
         <reference name="gene" referenced-type="Gene" reverse-reference="snps"/>
         <reference name="snp" referenced-type="Variant" reverse-reference="relatedGenes"/>
         <collection name="references" referenced-type="SNPReference" reverse-reference="annotation"/>
-        <reference name="function" referenced-type="SNPFunction"/>
-    </class>
-    <class name="SNPFunction" is-interface="true">
-        <attribute name="name" type="java.lang.String"/>
-        <attribute name="description" type="java.lang.String"/>
+		<reference name="function" referenced-type="OntologyTerm"/>
     </class>
     <class name="SNPReference" is-interface="true">
         <attribute name="mrnaAccession" type="java.lang.String"/>
@@ -65,7 +62,7 @@
         <attribute name="proteinAccession" type="java.lang.String"/>
         <attribute name="proteinPosition" type="java.lang.Integer"/>
         <attribute name="residue" type="java.lang.String"/>
-        <reference name="function" referenced-type="SNPFunction"/>
+		<reference name="function" referenced-type="OntologyTerm"/>
         <reference name="annotation" referenced-type="VariationAnnotation" reverse-reference="references"/>
     </class>
 
