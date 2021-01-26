@@ -111,6 +111,7 @@ public class MgendConverter extends BioFileConverter {
     				}
     				item.setAttribute("identifier", snpId);
     				item.setAttribute("chromosome", chr);
+    				item.setAttribute("coordinate", cols[5]);
     				item.setAttribute("location", location);
     				
     				store(item);
