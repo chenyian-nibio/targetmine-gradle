@@ -7,7 +7,7 @@
 		<attribute name="name" type="java.lang.String"/>
 		<attribute name="clinicalSignificance" type="java.lang.String"/>
 		<attribute name="reviewStatus" type="java.lang.String"/>
-		<reference name="snp" referenced-type="SNP" reverse-reference="alleles"/>
+		<reference name="snp" referenced-type="Variant" reverse-reference="alleles"/>
 		<reference name="gene" referenced-type="Gene" reverse-reference="alleles"/>
 		<collection name="variations" referenced-type="Variation" reverse-reference="alleles"/>
 	</class>
@@ -36,15 +36,30 @@
 		<!-- processed from reportedPhenotypeInfo -->
 		<collection name="diseaseTerms" referenced-type="DiseaseTerm"/>
 	</class>
-	<class name="SNP" is-interface="true">
+	<class name="Variant" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
+		<attribute name="chromosome" type="java.lang.String"/>
+		<attribute name="coordinate" type="java.lang.Integer"/>
+		<attribute name="location" type="java.lang.String"/>
+		<!--
+		<attribute name="refVarAllele" type="java.lang.String"/>
+		-->
 		<collection name="alleles" referenced-type="Allele" reverse-reference="snp"/>
+		<collection name="relatedGenes" referenced-type="VariationAnnotation" reverse-reference="snp"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+	<class name="SNP" extends="Variant" is-interface="true">
+	</class>
+	<class name="VariationAnnotation" is-interface="true">
+		<attribute name="identifier" type="java.lang.String"/>
+		<reference name="gene" referenced-type="Gene" reverse-reference="snps"/>
+		<reference name="snp" referenced-type="Variant" reverse-reference="relatedGenes"/>
 	</class>
 	<class name="DiseaseTerm" extends="OntologyTerm" is-interface="true" />
 
 	<class name="Gene" extends="SequenceFeature" is-interface="true">
 		<collection name="alleles" referenced-type="Allele" reverse-reference="gene"/>
+		<collection name="snps" referenced-type="VariationAnnotation" reverse-reference="gene"/>
 	</class>
 
 </classes>

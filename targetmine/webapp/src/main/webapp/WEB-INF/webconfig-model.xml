@@ -736,6 +736,7 @@
       <fieldconfig fieldExpr="gene.primaryIdentifier"/>
       <fieldconfig fieldExpr="gene.symbol"/>
       <fieldconfig fieldExpr="snp.identifier"/>
+      <fieldconfig fieldExpr="function.name"/>
     </fields>
   </class>
 
@@ -743,8 +744,6 @@
     <fields>
       <fieldconfig fieldExpr="identifier"/>
       <fieldconfig fieldExpr="refSnpAllele"/>
-      <fieldconfig fieldExpr="orientation"/>
-      <fieldconfig fieldExpr="chromosome"/>
       <fieldconfig fieldExpr="location"/>
     </fields>
   </class>
@@ -767,13 +766,6 @@
     </fields>
   </class>
 
-  <class className="org.intermine.model.bio.SNPFunction">
-    <fields>
-      <fieldconfig fieldExpr="name"/>
-      <fieldconfig fieldExpr="description"/>
-    </fields>
-  </class>
-
   <class className="org.intermine.model.bio.SNPReference">
     <fields>
       <fieldconfig fieldExpr="function.name"/>
@@ -785,7 +777,8 @@
       <fieldconfig fieldExpr="proteinAccession"/>
       <fieldconfig fieldExpr="proteinPosition"/>
       <fieldconfig fieldExpr="residue"/>
-    </fields>
+      <fieldconfig fieldExpr="function.name"/>
+   </fields>
   </class>
 
   <class className="org.intermine.model.bio.GeneDiseasePair">
@@ -1315,8 +1308,8 @@
                                  externalLink="http://www.cathdb.info/cathnode/"/>
 
       <enrichmentwidgetdisplayer id="protein_compound_enrichment"
-                                 title="Compound Enrichment"
-                                 description="Compound enriched for proteins in this list."
+                                 title="Interacting Compound Enrichment"
+                                 description="Interacting compounds enriched for proteins in this list."
                                  label="Compounds"
                                  filterLabel="DataSet"
                                  filters="DrugBank,ChEMBL,BioAssay,Ligand Expo,All"
@@ -1358,8 +1351,8 @@
                                  externalLink="http://www.cathdb.info/cathnode/"/>
 
       <enrichmentwidgetdisplayer id="gene_compound_enrichment"
-                                 title="Compound Enrichment"
-                                 description="Compound enriched for genes in this list."
+                                 title="Interacting Compound Enrichment"
+                                 description="Interacting compounds enriched for genes in this list."
                                  label="Compounds"
                                  filterLabel="DataSet"
                                  filters="DrugBank,ChEMBL,BioAssay,Ligand Expo,All"

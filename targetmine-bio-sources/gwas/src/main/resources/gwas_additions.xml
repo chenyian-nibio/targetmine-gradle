@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 
 <classes>
-	<class name="SNP" is-interface="true">
+	<class name="Variant" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
-		<collection name="genomeWideAssociations" referenced-type="GenomeWideAssociation" reverse-reference="snp"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+	<class name="SNP" extends="Variant" is-interface="true">
+		<collection name="genomeWideAssociations" referenced-type="GenomeWideAssociation" reverse-reference="snp"/>
 	</class>
 
 	<class name="GenomeWideAssociation" is-interface="true">
