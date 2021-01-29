@@ -235,7 +235,7 @@ public class GoGoslimConverter extends BioFileConverter {
 		if (ret == null) {
 			Item item = createItem("GOSlimTerm");
 			item.setAttribute("identifier", identifier);
-			item.setReference("ontology", getOntology("GOSlim"));
+			item.setReference("ontology", getOntology("GO slim"));
 			store(item);
 
 			ret = item.getIdentifier();

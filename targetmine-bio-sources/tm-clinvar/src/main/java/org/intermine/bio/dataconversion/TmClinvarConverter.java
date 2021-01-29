@@ -130,15 +130,15 @@ public class TmClinvarConverter extends BioFileConverter {
 							}
 						}
 					}
-					String refSnpAllele = null;
+					String refVarAllele = null;
 					if (!cols[21].equals("-") && !cols[22].equals("-")) {
-						refSnpAllele = String.format("%s/%s", cols[21], cols[22]);
-						if (refSnpAllele.equals("na/na")) {
-							refSnpAllele = null;
+						refVarAllele = String.format("%s/%s", cols[21], cols[22]);
+						if (refVarAllele.equals("na/na")) {
+							refVarAllele = null;
 						}
 					}
 					
-					String snpRefId = getMockSnp(alleleId, cols[3], chr, location, refSnpAllele);
+					String snpRefId = getVariant(alleleId, cols[3], chr, cols[19], location, refVarAllele);
 					allele.setReference("snp", snpRefId);
 				} else {
 					continue;
@@ -381,21 +381,22 @@ public class TmClinvarConverter extends BioFileConverter {
 		return ret;
 	}
 
-	private String getMockSnp(String alleleId, String geneId, String chromosome, String location,
-			String refSnpAllele) throws ObjectStoreException {
+	private String getVariant(String alleleId, String geneId, String chromosome, String coordinate,
+			String location, String refVarAllele) throws ObjectStoreException {
 		String ret = snpMap.get("cv-" + alleleId);
 		if (ret == null) {
-			Item snpItem = createItem("SNP");
+			Item snpItem = createItem("Variant");
 			snpItem.setAttribute("identifier", alleleId);
 			if (chromosome != null) {
 				snpItem.setAttribute("chromosome", chromosome);
 				if (location != null) {
 					snpItem.setAttribute("location", location);
+					snpItem.setAttribute("coordinate", coordinate);
 				}
 			}
-			if (refSnpAllele != null) {
-				snpItem.setAttribute("refSnpAllele", refSnpAllele);
-			}
+			// if (refVarAllele != null) {
+			// 	snpItem.setAttribute("refVarAllele", refVarAllele);
+			// }
 			store(snpItem);
 			
 			Item vaItem = createItem("VariationAnnotation");
