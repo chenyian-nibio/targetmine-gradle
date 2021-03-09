@@ -1134,7 +1134,7 @@
                                  enrich="goAnnotation.ontologyTerm.parents.name"
                                  enrichIdentifier="goAnnotation.ontologyTerm.parents.identifier"
                                  constraints="goAnnotation.ontologyTerm.parents.namespace=[Ontology],organism.name=[list],
-                                              goAnnotation.qualifier = null,
+                                              goAnnotation.isNegation = false,
                                               goAnnotation.evidence.code.code != IEA,
                                               goAnnotation.ontologyTerm.parents.identifier != go:0008150,
                                               goAnnotation.ontologyTerm.parents.identifier != go:0003674,
@@ -1156,7 +1156,7 @@
                                  enrich="goAnnotation.goSlimTerms.parents.name"
                                  enrichIdentifier="goAnnotation.goSlimTerms.parents.identifier"
                                  constraints="goAnnotation.goSlimTerms.parents.namespace=[Ontology],organism.name=[list],
-                                              goAnnotation.qualifier = null,
+                                              goAnnotation.isNegation = false,
                                               goAnnotation.evidence.code.code != IEA,
                                               goAnnotation.goSlimTerms.parents.identifier != go:0008150,
                                               goAnnotation.goSlimTerms.parents.identifier != go:0003674,
@@ -1232,7 +1232,7 @@
                                  enrich="goAnnotation.ontologyTerm.parents.name"
                                  enrichIdentifier="goAnnotation.ontologyTerm.parents.identifier"
                                  constraints="goAnnotation.ontologyTerm.parents.namespace=[Ontology],organism.name=[list],
-                                              primaryIdentifier != null, goAnnotation.qualifier = null,
+                                              primaryIdentifier != null, goAnnotation.isNegation = false,
                                               goAnnotation.evidence.code.code != IEA,
                                               goAnnotation.ontologyTerm.parents.identifier != go:0008150,
                                               goAnnotation.ontologyTerm.parents.identifier != go:0003674,
@@ -1254,7 +1254,7 @@
                                  enrich="goAnnotation.goSlimTerms.parents.name"
                                  enrichIdentifier="goAnnotation.goSlimTerms.parents.identifier"
                                  constraints="goAnnotation.goSlimTerms.parents.namespace=[Ontology],organism.name=[list],
-                                              goAnnotation.qualifier = null,
+                                              goAnnotation.isNegation = false,
                                               goAnnotation.evidence.code.code != IEA,
                                               goAnnotation.goSlimTerms.parents.identifier != go:0008150,
                                               goAnnotation.goSlimTerms.parents.identifier != go:0003674,

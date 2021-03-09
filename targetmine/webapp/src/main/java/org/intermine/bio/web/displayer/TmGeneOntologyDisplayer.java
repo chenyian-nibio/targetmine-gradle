@@ -182,7 +182,8 @@ public class TmGeneOntologyDisplayer extends ReportDisplayer
     			ONTOLOGIES));
     	
     	// not a NOT relationship
-    	q.addConstraint(Constraints.isNull(classType + ".goAnnotation.qualifier"));
+//    	q.addConstraint(Constraints.isNull(classType + ".goAnnotation.qualifier"));
+    	q.addConstraint(Constraints.neq(classType + ".goAnnotation.isNegation", Boolean.TRUE.toString()));
     	
     	// gene from report page
     	q.addConstraint(Constraints.eq(classType + ".id", "" + itemId));
