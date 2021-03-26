@@ -14,8 +14,8 @@
 		<collection name="publications" referenced-type="Publication"/>
 	</class>
 
-        <class name="GenomeWideAssociation" is-interface="true"/>
-        <class name="Allele" is-interface="true"/>
-        <class name="SNP" is-interface="true"/>
+	<class name="GenomeWideAssociation" is-interface="true"/>
+	<class name="Allele" is-interface="true"/>
+	<class name="SNP" is-interface="true"/>
 
 </classes>

@@ -55,6 +55,7 @@ public class DiseaseSummaryPostprocess extends PostProcessor {
 
 		Iterator<?> iterator = getGwasGenes();
 		int count = 0;
+		int countNew = 0;
 		while (iterator.hasNext()) {
 			ResultsRow<?> rr = (ResultsRow<?>) iterator.next();
 			InterMineObject gene = (InterMineObject) rr.get(0);
@@ -106,6 +107,7 @@ public class DiseaseSummaryPostprocess extends PostProcessor {
 					osw.store(item);
 
 					// LOG.info("create object: " + String.format("%s > %s", symbol, diseaseName));
+					countNew++;
 				}
 
 			} catch (IllegalAccessException e) {
@@ -115,6 +117,7 @@ public class DiseaseSummaryPostprocess extends PostProcessor {
 			count++;
 		}
 		LOG.info(String.format("Processed %d GWAS related genes.", count));
+		LOG.info(String.format("Add %d GeneDiseasePairs.", countNew));
 
 		HashSet<String> ignoredDiseaseNames = new HashSet<String>(IGNORED_DISEASE_NAMES);
 		iterator = getClinvarGenes();
