@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <classes>
 	<class name="GOAnnotation" extends="OntologyAnnotation" is-interface="true">
+		<attribute name="isNegation" type="java.lang.Boolean"/>
 		<attribute name="annotationExtension" type="java.lang.String"/>
 		<collection name="goSlimTerms" referenced-type="GOSlimTerm"/>
 	</class>

@@ -316,9 +316,15 @@ public class GoGoslimConverter extends BioFileConverter {
 		goAnnotation.setReference("subject", productIdentifier);
 		goAnnotation.setReference("ontologyTerm", getGoTerm(goId));
 
+		String isNegation = Boolean.FALSE.toString();
 		if (!StringUtils.isEmpty(qualifier)) {
 			goAnnotation.setAttribute("qualifier", qualifier);
+			if (qualifier.startsWith("NOT|")) {
+				isNegation = Boolean.TRUE.toString();
+			}
 		}
+
+		goAnnotation.setAttribute("isNegation", isNegation);
 		if (!StringUtils.isEmpty(annotationExtension)) {
 			goAnnotation.setAttribute("annotationExtension", annotationExtension);
 		}

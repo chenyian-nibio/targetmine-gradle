@@ -4,9 +4,9 @@
 	<class name="Variant" is-interface="true">
 		<attribute name="identifier" type="java.lang.String"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
+		<collection name="genomeWideAssociations" referenced-type="GenomeWideAssociation" reverse-reference="snp"/>
 	</class>
 	<class name="SNP" extends="Variant" is-interface="true">
-		<collection name="genomeWideAssociations" referenced-type="GenomeWideAssociation" reverse-reference="snp"/>
 	</class>
 
 	<class name="GenomeWideAssociation" is-interface="true">
@@ -26,7 +26,7 @@
 		<attribute name="platform" type="java.lang.String" />
 		<attribute name="mappedTrait" type="java.lang.String" />
 		<attribute name="riskAllele" type="java.lang.String" />
-		<reference name="snp" referenced-type="SNP" reverse-reference="genomeWideAssociations"/>
+		<reference name="snp" referenced-type="Variant" reverse-reference="genomeWideAssociations"/>
 		<collection name="efoTerms" referenced-type="EFOTerm"/>
 		<reference name="publication" referenced-type="Publication"/>
 		<reference name="dataSet" referenced-type="DataSet"/>
