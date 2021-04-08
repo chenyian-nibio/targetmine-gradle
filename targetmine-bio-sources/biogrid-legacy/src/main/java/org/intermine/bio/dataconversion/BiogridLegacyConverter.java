@@ -103,6 +103,18 @@ public class BiogridLegacyConverter extends BioFileConverter
         PSI_TERMS.put("MI:0794", "genetic");
         PSI_TERMS.put("MI:0796", "genetic");
         PSI_TERMS.put("MI:0799", "genetic");
+        PSI_TERMS.put("MI:2368", "genetic");
+        PSI_TERMS.put("MI:2370", "genetic");
+        PSI_TERMS.put("MI:2371", "genetic");
+        PSI_TERMS.put("MI:2374", "genetic");
+        PSI_TERMS.put("MI:2375", "genetic");
+        PSI_TERMS.put("MI:2376", "genetic");
+        PSI_TERMS.put("MI:2377", "genetic");
+        // this pare ist not very confident
+        PSI_TERMS.put("MI:2369", "genetic");
+        PSI_TERMS.put("MI:2372", "genetic");
+        PSI_TERMS.put("MI:2373", "genetic");
+        PSI_TERMS.put("MI:2378", "genetic");
     }
 
     /**
