@@ -228,29 +228,6 @@ public class ChemblDbConverter extends BioDBConverter {
 			assayTypeMap.put(type, desc);
 		}
 
-		// query high affinity interactions
-		String queryHFInteraction = " select distinct md.chembl_id, cseq.accession "
-				+ " from activities as act "
-				+ " join molecule_dictionary as md on md.molregno=act.molregno "
-				+ " join assays as ass on ass.assay_id=act.assay_id "
-				+ " join target_dictionary as td on td.tid=ass.tid "
-				+ " join target_components as tc on tc.tid=ass.tid "
-				+ " join component_sequences as cseq on cseq.component_id=tc.component_id "
-				+ " where ass.confidence_score >= 4 " + " and ass.assay_type = 'B' "
-				+ " and td.target_type = 'SINGLE PROTEIN' "
-				+ " and act.standard_type in ('IC50','Kd','Ki','EC50','AC50') "
-				+ " and act.standard_value <= 10000 " + " and act.standard_relation = '=' "
-				+ " and act.standard_units = 'nM' ";
-		
-		ResultSet resHFInteraction = stmt.executeQuery(queryHFInteraction);
-		Set<String> highAffinitySet = new HashSet<String>();
-		while (resHFInteraction.next()) {
-			String chemblId = resHFInteraction.getString("chembl_id");
-			String uniprotId = resHFInteraction.getString("accession");
-			String intId = uniprotId + "-" + chemblId;
-			highAffinitySet.add(intId);
-		}
-
 		// query all interactions with activities 
 		String queryInteraction = " select distinct md.chembl_id, "
 				+ " act.standard_type, act.standard_relation, act.standard_value, act.standard_units, "
@@ -297,11 +274,6 @@ public class ChemblDbConverter extends BioDBConverter {
 				Item interactionItem = createItem("ChemblInteraction");
 				interactionItem.setReference("protein", getProtein(uniprotId));
 				interactionItem.setReference("compound", compoundRef);
-				String weakTag = "TRUE";
-				if (highAffinitySet.contains(intId)) {
-					weakTag = "FALSE";
-				}
-				interactionItem.setAttribute("weakInteraction", weakTag);
 
 				store(interactionItem);
 				interactionRef = interactionItem.getIdentifier();

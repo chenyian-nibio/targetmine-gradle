@@ -26,9 +26,7 @@
 		<collection name="dataSets" referenced-type="DataSet"/>
 	</class>
 
-	<class name="ChemblInteraction" extends="CompoundProteinInteraction" is-interface="true">
-		<attribute name="weakInteraction" type="java.lang.Boolean" />
-	</class>
+	<class name="ChemblInteraction" extends="CompoundProteinInteraction" is-interface="true"/>
 
 	<class name="Protein" is-interface="true">
 		<collection name="compounds" referenced-type="CompoundProteinInteraction" reverse-reference="protein"/>
