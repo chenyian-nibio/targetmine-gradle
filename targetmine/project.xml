@@ -326,7 +326,6 @@
 <!-- internal use only -->
     <source name="hgmd" type="hgmd">
       <property name="source.db.name" value="hgmd-db"/>
-      <property name="osAlias" value="os.production"/>
     </source>
 
     <source name="dbsnp-info" type="dbsnp-txt">
