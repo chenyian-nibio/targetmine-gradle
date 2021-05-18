@@ -13,7 +13,6 @@ import org.intermine.metadata.ClassDescriptor;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
-import org.intermine.model.bio.Gene;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -50,7 +49,7 @@ public class AssociateGeneAndIPC extends PostProcessor {
 
 		Results results = findGeneIntegratedPathwayCluster(osw.getObjectStore());
 		int count = 0;
-		Gene lastGene = null;
+		InterMineObject lastGene = null;
 		Set<InterMineObject> newCollection = new HashSet<InterMineObject>();
 
 		osw.beginTransaction();
@@ -58,7 +57,7 @@ public class AssociateGeneAndIPC extends PostProcessor {
 		Iterator<?> resIter = results.iterator();
 		while (resIter.hasNext()) {
 			ResultsRow<?> rr = (ResultsRow<?>) resIter.next();
-			Gene thisGene = (Gene) rr.get(0);
+			InterMineObject thisGene = (InterMineObject) rr.get(0);
 			InterMineObject gsc = (InterMineObject) rr.get(1);
 			
 //			LOG.info(String.format("Gene: %s - GSC: %s", thisGene.getPrimaryIdentifier(), gsc.getFieldValue("identifier")));
@@ -66,7 +65,7 @@ public class AssociateGeneAndIPC extends PostProcessor {
 			if (lastGene == null || !thisGene.getId().equals(lastGene.getId())) {
 				if (lastGene != null) {
 					// clone so we don't change the ObjectStore cache
-					Gene tempGene = PostProcessUtil.cloneInterMineObject(lastGene);
+					InterMineObject tempGene = PostProcessUtil.cloneInterMineObject(lastGene);
 					tempGene.setFieldValue("integratedPathwayClusters", newCollection);
 					osw.store(tempGene);
 					count++;
@@ -79,7 +78,7 @@ public class AssociateGeneAndIPC extends PostProcessor {
 
 		if (lastGene != null) {
 			// clone so we don't change the ObjectStore cache
-			Gene tempGene = PostProcessUtil.cloneInterMineObject(lastGene);
+			InterMineObject tempGene = PostProcessUtil.cloneInterMineObject(lastGene);
 			tempGene.setFieldValue("integratedPathwayClusters", newCollection);
 			osw.store(tempGene);
 			count++;
@@ -91,7 +90,7 @@ public class AssociateGeneAndIPC extends PostProcessor {
 		// now ANALYSE tables relating to class that has been altered - may be rows added
 		// to indirection tables
 		if (osw instanceof ObjectStoreWriterInterMineImpl) {
-			ClassDescriptor cld = model.getClassDescriptorByName(Gene.class.getName());
+			ClassDescriptor cld = model.getClassDescriptorByName("Gene");
 			DatabaseUtil.analyse(((ObjectStoreWriterInterMineImpl) osw).getDatabase(), cld, false);
 		}
 
@@ -108,7 +107,7 @@ public class AssociateGeneAndIPC extends PostProcessor {
 	 */
 	protected Results findGeneIntegratedPathwayCluster(ObjectStore os) throws ObjectStoreException {
 		Query q = new Query();
-		QueryClass qcGene = new QueryClass(Gene.class);
+		QueryClass qcGene = new QueryClass(model.getClassDescriptorByName("Gene").getType());
 		QueryClass qcPathway = new QueryClass(model.getClassDescriptorByName("Pathway").getType());
 		QueryClass qcGsc = new QueryClass(model.getClassDescriptorByName("IntegratedPathwayCluster")
 				.getType());

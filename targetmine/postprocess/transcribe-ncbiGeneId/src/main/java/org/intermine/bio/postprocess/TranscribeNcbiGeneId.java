@@ -2,10 +2,11 @@ package org.intermine.bio.postprocess;
 
 import java.util.Iterator;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.intermine.metadata.ConstraintOp;
-import org.intermine.model.bio.Gene;
+import org.intermine.metadata.Model;
+import org.intermine.model.InterMineObject;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -26,11 +27,14 @@ import org.intermine.postprocess.PostProcessor;
 public class TranscribeNcbiGeneId extends PostProcessor {
 	private static final Logger LOG = LogManager.getLogger(TranscribeNcbiGeneId.class);
 	
+	private Model model;
+
 	public TranscribeNcbiGeneId(ObjectStoreWriter osw) {
 		super(osw);
+		model = Model.getInstanceByName("genomic");
 	}
 	
-	public void transcribeIdentifeir() {
+	public void transcribeIdentifeir() throws IllegalAccessException {
 		Results results = getGenesWithoutNcbiGeneId();
 		
 		System.out.println(String.format("found %d genes with no ncbiGeneId", results.size()));
@@ -43,8 +47,8 @@ public class TranscribeNcbiGeneId extends PostProcessor {
 
 			while (iterator.hasNext()) {
 				ResultsRow<?> result = (ResultsRow<?>) iterator.next();
-				Gene gene = (Gene) result.get(0);
-				gene.setFieldValue("ncbiGeneId", gene.getPrimaryIdentifier());
+				InterMineObject gene = (InterMineObject) result.get(0);
+				gene.setFieldValue("ncbiGeneId", (String) gene.getFieldValue("primaryIdentifier"));
 				osw.store(gene);
 			}
 			
@@ -57,7 +61,7 @@ public class TranscribeNcbiGeneId extends PostProcessor {
 	
 	private Results getGenesWithoutNcbiGeneId() {
 		Query q = new Query();
-		QueryClass qcGene = new QueryClass(Gene.class);
+		QueryClass qcGene = new QueryClass(model.getClassDescriptorByName("Gene").getType());
 		QueryField qfGeneId = new QueryField(qcGene, "ncbiGeneId");
 		
 		q.addFrom(qcGene);

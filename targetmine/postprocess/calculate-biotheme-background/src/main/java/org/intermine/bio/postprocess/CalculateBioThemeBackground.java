@@ -17,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
-import org.intermine.model.bio.Organism;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -49,7 +48,7 @@ public class CalculateBioThemeBackground extends PostProcessor {
 
 	private Map<String, InterMineObject> organismMap = new HashMap<String, InterMineObject>();
 
-	public CalculateBioThemeBackground(ObjectStoreWriter osw) {
+	public CalculateBioThemeBackground(ObjectStoreWriter osw) throws Exception {
 		super(osw);
 		model = Model.getInstanceByName("genomic");
 
@@ -72,10 +71,11 @@ public class CalculateBioThemeBackground extends PostProcessor {
 	/**
 	 * 
 	 * @param taxonIds
+	 * @throws IllegalAccessException 
 	 */
-	private void getOrganism(Collection<String> taxonIds) {
+	private void getOrganism(Collection<String> taxonIds) throws IllegalAccessException {
 		Query q = new Query();
-		QueryClass qcOrganism = new QueryClass(Organism.class);
+		QueryClass qcOrganism = new QueryClass(model.getClassDescriptorByName("Organism").getType());
 		QueryField qfTaxonId = new QueryField(qcOrganism, "taxonId");
 
 		q.addFrom(qcOrganism);
@@ -89,8 +89,9 @@ public class CalculateBioThemeBackground extends PostProcessor {
 		Iterator<?> iterator = results.iterator();
 		while (iterator.hasNext()) {
 			ResultsRow<?> result = (ResultsRow<?>) iterator.next();
-			Organism organism = (Organism) result.get(0);
-			organismMap.put(organism.getTaxonId(), organism);
+			InterMineObject organism = (InterMineObject) result.get(0);
+			String taxonId = (String) organism.getFieldValue("taxonId");
+			organismMap.put(taxonId, organism);
 		}
 
 	}

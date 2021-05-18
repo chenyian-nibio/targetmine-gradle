@@ -20,8 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
-import org.intermine.model.bio.Gene;
-import org.intermine.model.bio.Organism;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -96,7 +94,7 @@ public class IntegratedPathwayClustering extends PostProcessor {
 		pathwayMap = new HashMap<String, InterMineObject>();
 		while (iterator.hasNext()) {
 			ResultsRow<?> result = (ResultsRow<?>) iterator.next();
-			Gene gene = (Gene) result.get(0);
+			InterMineObject gene = (InterMineObject) result.get(0);
 			InterMineObject pathway = (InterMineObject) result.get(1);
 			String pathwayIdentifier;
 			try {
@@ -104,7 +102,7 @@ public class IntegratedPathwayClustering extends PostProcessor {
 				if (!pathwayGeneMap.containsKey(pathwayIdentifier)) {
 					pathwayGeneMap.put(pathwayIdentifier, new HashSet<String>());
 				}
-				pathwayGeneMap.get(pathwayIdentifier).add(gene.getPrimaryIdentifier());
+				pathwayGeneMap.get(pathwayIdentifier).add((String) gene.getFieldValue("primaryIdentifier"));
 				
 				if (!pathwayMap.containsKey(pathwayIdentifier)) {
 					pathwayMap.put(pathwayIdentifier, pathway);
@@ -126,10 +124,10 @@ public class IntegratedPathwayClustering extends PostProcessor {
 
 	private Results queryPathwaysToGenes(String taxonId) {
 		Query q = new Query();
-		QueryClass qcGene = new QueryClass(Gene.class);
+		QueryClass qcGene = new QueryClass(model.getClassDescriptorByName("Gene").getType());
 		QueryClass qcPathway = new QueryClass(model.getClassDescriptorByName("Pathway").getType());
-		QueryClass qcOrganism1 = new QueryClass(Organism.class);
-		QueryClass qcOrganism2 = new QueryClass(Organism.class);
+		QueryClass qcOrganism1 = new QueryClass(model.getClassDescriptorByName("Organism").getType());
+		QueryClass qcOrganism2 = new QueryClass(model.getClassDescriptorByName("Organism").getType());
 
 		QueryField qfTaxonId1 = new QueryField(qcOrganism1, "taxonId");
 		QueryField qfTaxonId2 = new QueryField(qcOrganism2, "taxonId");

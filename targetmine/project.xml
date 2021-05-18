@@ -338,7 +338,6 @@
 <!-- 
     <source name="hgmd" type="hgmd">
       <property name="source.db.name" value="hgmd-db"/>
-      <property name="osAlias" value="os.production"/>
     </source>
 -->
 

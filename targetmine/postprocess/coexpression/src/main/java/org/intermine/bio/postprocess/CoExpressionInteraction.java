@@ -13,8 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
-import org.intermine.model.bio.Gene;
-import org.intermine.model.bio.Organism;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -48,7 +46,7 @@ public class CoExpressionInteraction extends PostProcessor {
 		model = Model.getInstanceByName("genomic");
 	}
 	
-	public void addCoExpressionValue() {
+	public void addCoExpressionValue() throws IllegalAccessException {
 		Results results = queryInteractionByTaxonId("9606");
 		System.out.println(results.size() + " Interactions found.");
 		LOG.info(results.size() + " Interactions found.");
@@ -58,10 +56,11 @@ public class CoExpressionInteraction extends PostProcessor {
 		while (iterator.hasNext()) {
 			ResultsRow<?> result = (ResultsRow<?>) iterator.next();
 			InterMineObject item = (InterMineObject) result.get(0);
-			Gene gene1 = (Gene) result.get(1);
-			Gene gene2 = (Gene) result.get(2);
+			InterMineObject gene1 = (InterMineObject) result.get(1);
+			InterMineObject gene2 = (InterMineObject) result.get(2);
 
-			interactionMap.put(String.format("%s-%s", gene1.getPrimaryIdentifier(), gene2.getPrimaryIdentifier()), item);
+			interactionMap.put(String.format("%s-%s", (String) gene1.getFieldValue("primaryIdentifier"),
+					(String) gene2.getFieldValue("primaryIdentifier")), item);
 		}
 			  
 		BufferedReader in = null;
@@ -103,10 +102,10 @@ public class CoExpressionInteraction extends PostProcessor {
 
 	private Results queryInteractionByTaxonId(String taxonId) {
 		Query q = new Query();
-		QueryClass qcGene1 = new QueryClass(Gene.class);
-		QueryClass qcGene2 = new QueryClass(Gene.class);
-		QueryClass qcOrganism1 = new QueryClass(Organism.class);
-		QueryClass qcOrganism2 = new QueryClass(Organism.class);
+		QueryClass qcGene1 = new QueryClass(model.getClassDescriptorByName("Gene").getType());
+		QueryClass qcGene2 = new QueryClass(model.getClassDescriptorByName("Gene").getType());
+		QueryClass qcOrganism1 = new QueryClass(model.getClassDescriptorByName("Organism").getType());
+		QueryClass qcOrganism2 = new QueryClass(model.getClassDescriptorByName("Organism").getType());
 		QueryClass qcInteraction = new QueryClass(model.getClassDescriptorByName("Interaction")
 				.getType());
 
