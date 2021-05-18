@@ -7,25 +7,16 @@ sourceSets {
             srcDirs = ['src/main/resources']
         }
     }
-    test {
-        java {
-            srcDirs = ['src/test/java']
-        }
-        resources {
-            srcDirs = ['src/test/resources']
-        }
-    }
 }
 
 dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '23.0'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.2'
+    bioModel group: 'org.intermine', name: 'bio-model', version: bioVersion, transitive: false
     compile group: 'org.intermine', name: 'intermine-integrate', version: imVersion
-    compile group: 'org.intermine', name: 'bio-source-flymine-static', version: System.getProperty("flymineVersion"), transitive: false
-    bioModel group: 'org.intermine', name: 'bio-source-flymine-static', version: System.getProperty("flymineVersion"), transitive: false
+    compile group: 'org.intermine', name: 'intermine-objectstore', version: imVersion
 }
 
 processResources {
     from('.') { include ("*.properties")}
 }
-

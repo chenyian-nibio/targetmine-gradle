@@ -1083,11 +1083,12 @@
                      jspName="model/geneExpressionGraphDisplayer.jsp"
                      replacesFields=""
                      types="Gene" />
-
+<!--
     <reportdisplayer javaClass="org.intermine.bio.web.displayer.PathwayGraphDisplayer"
                      jspName="model/pathwayGraphDisplayer.jsp"
                      replacesFields=""
                      types="Pathway" />
+-->
 
   </reportdisplayers>
 

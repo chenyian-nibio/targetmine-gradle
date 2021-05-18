@@ -1,14 +1,11 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
-        maven {
-            url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
-        }
+        mavenCentral()
     }
     dependencies {
         classpath group: 'org.intermine', name: 'plugin', version: System.getProperty("imVersion")
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.3'
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.8.0'
     }
 }
 ext {
@@ -28,11 +25,8 @@ subprojects {
   
   repositories {
     mavenLocal()
-    jcenter()
+    mavenCentral()
     maven { url 'https://clojars.org/repo' }
-    maven {
-        url "https://oss.jfrog.org/artifactory/oss-snapshot-local"
-    }
     maven {
         url 'http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/'
     }

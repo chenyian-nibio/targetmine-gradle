@@ -1,6 +1,7 @@
 dependencies {
-    compile group: 'org.openscience.cdk', name: 'cdk-bundle', version: '2.1.1'
+    compile group: 'com.io7m.xom', name: 'xom', version: '1.2.10'
 }
+
 sourceSets {
     main {
         java {

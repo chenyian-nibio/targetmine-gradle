@@ -1,5 +1,7 @@
 dependencies {
-    compile group: 'org.openscience.cdk', name: 'cdk-bundle', version: '2.1.1'
+    compile group: 'org.openscience.cdk', name: 'cdk-data', version: '2.5'
+    compile group: 'org.openscience.cdk', name: 'cdk-inchi', version: '2.5'
+    compile group: 'org.openscience.cdk', name: 'cdk-smiles', version: '2.5'
     compile project(':bio-source-utils')
 }
 

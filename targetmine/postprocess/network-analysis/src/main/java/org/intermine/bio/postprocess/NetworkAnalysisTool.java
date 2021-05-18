@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 import org.intermine.metadata.ConstraintOp;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
-import org.intermine.model.bio.Gene;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
@@ -70,7 +69,7 @@ public class NetworkAnalysisTool extends PostProcessor {
 		model = Model.getInstanceByName("genomic");
 	}
 
-	public void doAnalysis() {
+	public void doAnalysis() throws IllegalAccessException {
 		// create datasource & dataset
 		InterMineObject dataSource = (InterMineObject) DynamicUtil
 				.simpleCreateObject(model.getClassDescriptorByName("DataSource").getType());
@@ -143,10 +142,10 @@ public class NetworkAnalysisTool extends PostProcessor {
 				while (resIter.hasNext()) {
 					ResultsRow<?> rr = (ResultsRow<?>) resIter.next();
 					InterMineObject interaction = (InterMineObject) rr.get(0);
-					Gene gene1 = (Gene) rr.get(1);
-					Gene gene2 = (Gene) rr.get(2);
-					String gene1Id = gene1.getPrimaryIdentifier();
-					String gene2Id = gene2.getPrimaryIdentifier();
+					InterMineObject gene1 = (InterMineObject) rr.get(1);
+					InterMineObject gene2 = (InterMineObject) rr.get(2);
+					String gene1Id = (String) gene1.getFieldValue("primaryIdentifier");
+					String gene2Id = (String) gene2.getFieldValue("primaryIdentifier");
 					InterMineObject item = (InterMineObject) DynamicUtil.simpleCreateObject(model
 							.getClassDescriptorByName("InteractionConfidence").getType());
 					if (hcdpPairs.contains(gene1Id + "-" + gene2Id)
@@ -194,8 +193,8 @@ public class NetworkAnalysisTool extends PostProcessor {
 				Iterator<?> geneIter = geneResults.iterator();
 				while (geneIter.hasNext()) {
 					ResultsRow<?> rr = (ResultsRow<?>) geneIter.next();
-					Gene gene = (Gene) rr.get(0);
-					String geneId = gene.getPrimaryIdentifier();
+					InterMineObject gene = (InterMineObject) rr.get(0);
+					String geneId = (String) gene.getFieldValue("primaryIdentifier");
 					NetworkData hcdpData = hcdplccNp.get(geneId);
 					if (hcdpData != null) {
 						InterMineObject item = (InterMineObject) DynamicUtil
@@ -280,7 +279,7 @@ public class NetworkAnalysisTool extends PostProcessor {
 
 	private Results queryGenesByGeneIdList(Set<String> geneIds) {
 		Query q = new Query();
-		QueryClass qcGene = new QueryClass(Gene.class);
+		QueryClass qcGene = new QueryClass(model.getClassDescriptorByName("Gene").getType());
 		QueryField qfGeneId = new QueryField(qcGene, "primaryIdentifier");
 
 		q.addFrom(qcGene);
