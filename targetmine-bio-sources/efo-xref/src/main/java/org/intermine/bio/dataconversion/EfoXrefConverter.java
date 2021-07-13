@@ -113,7 +113,7 @@ public class EfoXrefConverter extends BioFileConverter
 					efoTerm.setReference("ontology", getOntology("EFO"));
 					if(identifier.startsWith("EFO:")) {
 						for (String cuiId:cuiIdSet){
-							efoTerm.addToCollection("diseaseConcepts", getUMLSDisease(cuiId));
+							efoTerm.addToCollection("diseaseConcepts", getDiseaseConcept(cuiId));
 						}
 					}
 					for (String meshIdentifier : meshIdSet) {
@@ -137,7 +137,7 @@ public class EfoXrefConverter extends BioFileConverter
 	private Set<String> diseaseEfoSet = new HashSet<String>();
 
 	private Map<String, Item> umlsMap = new HashMap<String, Item>();
-	private Item getUMLSDisease(String cui) throws ObjectStoreException {
+	private Item getDiseaseConcept(String cui) throws ObjectStoreException {
 		Item item = umlsMap.get(cui);
 		if (item == null) {
 			item = createItem("DiseaseConcept");
