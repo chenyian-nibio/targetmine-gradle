@@ -6,6 +6,7 @@
 		<reference name="targetGene" referenced-type="Gene"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
 		<collection name="bindingSites" referenced-type="TFBindingSite"/>
+		<collection name="publications" referenced-type="Publication"/>
 	</class>
 
 	<class name="Gene" is-interface="true">

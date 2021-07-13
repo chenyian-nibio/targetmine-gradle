@@ -26,7 +26,9 @@ public class MgendConverter extends BioFileConverter {
 	//
     private static final String DATASET_TITLE = "MGeND";
     private static final String DATA_SOURCE_NAME = "MGeND";
-    
+
+	private static final String HUMAN_TAXON_ID = "9606";
+
     private static Map<String, Integer> ageGroupMap = new HashMap<String, Integer>();
     private static Map<String, Integer> genderGroupMap = new HashMap<String, Integer>();
     {
@@ -101,18 +103,32 @@ public class MgendConverter extends BioFileConverter {
     			if (variantRef == null) {
     				Item item;
     				String chr = cols[3].substring(3);
-    				String location;
+    				String position;
     				if (cols[5].equals(cols[6])) {
     					item = createItem("SNP");
-    					location = String.format("%s:%s", chr, cols[5]);
+    					position = String.format("%s:%s", chr, cols[5]);
     				} else {
     					item = createItem("Variant");
-    					location = String.format("%s:%s-%s", chr, cols[5], cols[6]);
+    					position = String.format("%s:%s-%s", chr, cols[5], cols[6]);
     				}
-    				item.setAttribute("identifier", snpId);
-    				item.setAttribute("chromosome", chr);
+    				item.setAttribute("primaryIdentifier", snpId);
     				item.setAttribute("coordinate", cols[5]);
-    				item.setAttribute("location", location);
+    				item.setAttribute("position", position);
+
+					item.setReference("organism", getOrganism(HUMAN_TAXON_ID));
+    				
+					String chrRef = getChromosome(HUMAN_TAXON_ID, chr);
+					item.setReference("chromosome", chrRef);
+					
+					Item location = createItem("Location");
+					location.setAttribute("start", cols[5]);
+					location.setAttribute("end", cols[5]);
+					if (chrRef != null) {
+						location.setReference("locatedOn", chrRef);
+					}
+					location.setReference("feature", item);
+					store(location);
+					item.setReference("chromosomeLocation", location);
     				
     				store(item);
     				variantRef = item.getIdentifier();
@@ -231,7 +247,7 @@ public class MgendConverter extends BioFileConverter {
 		String ret = snpMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("SNP");
-			item.setAttribute("identifier", identifier);
+			item.setAttribute("primaryIdentifier", identifier);
 			store(item);
 			ret = item.getIdentifier();
 			snpMap.put(identifier, ret);
@@ -349,6 +365,22 @@ public class MgendConverter extends BioFileConverter {
 				LOG.info("Cannot find CUI for the term: '" + diseaseName + "'");
 			}
 			diseaseTermCuiMap.put(diseaseName, ret);
+		}
+		return ret;
+	}
+
+	private Map<String, String> chromosomeMap = new HashMap<String, String>();
+	private String getChromosome(String taxonId, String symbol) throws ObjectStoreException {
+		String key = taxonId + "-" + symbol;
+		String ret = chromosomeMap.get(key);
+		if (ret == null) {
+			Item chromosome = createItem("Chromosome");
+			chromosome.setReference("organism", getOrganism(taxonId));
+			chromosome.setAttribute("primaryIdentifier", symbol);
+			chromosome.setAttribute("symbol", symbol);
+			store(chromosome);
+			ret = chromosome.getIdentifier();
+			chromosomeMap.put(key, ret);
 		}
 		return ret;
 	}

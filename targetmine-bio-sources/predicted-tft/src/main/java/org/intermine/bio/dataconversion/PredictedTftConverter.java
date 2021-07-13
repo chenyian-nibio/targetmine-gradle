@@ -108,6 +108,7 @@ public class PredictedTftConverter extends BioFileConverter
 		String ret = chromosomeMap.get(key);
 		if (ret == null) {
 			Item chromosome = createItem("Chromosome");
+			chromosome.setAttribute("primaryIdentifier", symbol);
 			chromosome.setReference("organism", getOrganism(taxonId));
 			chromosome.setAttribute("symbol", symbol);
 			store(chromosome);

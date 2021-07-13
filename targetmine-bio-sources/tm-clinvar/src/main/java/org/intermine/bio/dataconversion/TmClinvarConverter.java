@@ -373,7 +373,7 @@ public class TmClinvarConverter extends BioFileConverter {
 		String ret = snpMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("SNP");
-			item.setAttribute("identifier", identifier);
+			item.setAttribute("primaryIdentifier", identifier);
 			store(item);
 			ret = item.getIdentifier();
 			snpMap.put(identifier, ret);
@@ -382,21 +382,31 @@ public class TmClinvarConverter extends BioFileConverter {
 	}
 
 	private String getVariant(String alleleId, String geneId, String chromosome, String coordinate,
-			String location, String refVarAllele) throws ObjectStoreException {
+			String position, String refVarAllele) throws ObjectStoreException {
 		String ret = snpMap.get("cv-" + alleleId);
 		if (ret == null) {
 			Item snpItem = createItem("Variant");
-			snpItem.setAttribute("identifier", alleleId);
+			snpItem.setAttribute("primaryIdentifier", alleleId);
+			snpItem.setReference("organism", getOrganism(HUMAN_TAXON_ID));
 			if (chromosome != null) {
-				snpItem.setAttribute("chromosome", chromosome);
-				if (location != null) {
-					snpItem.setAttribute("location", location);
+				if (position != null) {
+					snpItem.setAttribute("position", position);
 					snpItem.setAttribute("coordinate", coordinate);
+					
+					String chrRef = getChromosome(HUMAN_TAXON_ID, chromosome);
+					snpItem.setReference("chromosome", chrRef);
+					
+					Item location = createItem("Location");
+					location.setAttribute("start", coordinate);
+					location.setAttribute("end", coordinate);
+					if (chrRef != null) {
+						location.setReference("locatedOn", chrRef);
+					}
+					location.setReference("feature", snpItem);
+					store(location);
+					snpItem.setReference("chromosomeLocation", location);
 				}
 			}
-			// if (refVarAllele != null) {
-			// 	snpItem.setAttribute("refVarAllele", refVarAllele);
-			// }
 			store(snpItem);
 			
 			Item vaItem = createItem("VariationAnnotation");
@@ -541,6 +551,22 @@ public class TmClinvarConverter extends BioFileConverter {
 				return false;
 		}
 		return true;
+	}
+
+	private Map<String, String> chromosomeMap = new HashMap<String, String>();
+	private String getChromosome(String taxonId, String symbol) throws ObjectStoreException {
+		String key = taxonId + "-" + symbol;
+		String ret = chromosomeMap.get(key);
+		if (ret == null) {
+			Item chromosome = createItem("Chromosome");
+			chromosome.setReference("organism", getOrganism(taxonId));
+			chromosome.setAttribute("primaryIdentifier", symbol);
+			chromosome.setAttribute("symbol", symbol);
+			store(chromosome);
+			ret = chromosome.getIdentifier();
+			chromosomeMap.put(key, ret);
+		}
+		return ret;
 	}
 
 }

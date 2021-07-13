@@ -35,7 +35,7 @@ public class DbsnpTxtConverter extends BioFileConverter
     private static final String DATASET_TITLE = "dbSNP";
     private static final String DATA_SOURCE_NAME = "NCBI";
     
-//	private static final int HUMAN_TAXON_ID = 9606;
+	private static final String HUMAN_TAXON_ID = "9606";
 	
     Set<String> snpIdSet;
     
@@ -94,19 +94,32 @@ public class DbsnpTxtConverter extends BioFileConverter
 				String locationString = cols[3];
 				
 				Item item = createItem("SNP");
-				item.setAttribute("identifier", rsId);
-				if (!StringUtils.isEmpty(chr)) {
-					item.setAttribute("chromosome", chr);
-				}
+				item.setAttribute("primaryIdentifier", rsId);
 				if (!StringUtils.isEmpty(allele)) {
 					item.setAttribute("refSnpAllele", allele);
 				}
 				if (!StringUtils.isEmpty(locationString)) {
-					item.setAttribute("location", locationString);
+					item.setAttribute("position", locationString);
 					String pos = locationString.substring(locationString.indexOf(":") + 1);
 					// check if the pos string is an integer
 					if (isValidId(pos)) {
 						item.setAttribute("coordinate", pos);
+						
+						if (!StringUtils.isEmpty(chr)) {
+							String chrRef = getChromosome(HUMAN_TAXON_ID, chr);
+							item.setReference("chromosome", chrRef);
+							
+							Item location = createItem("Location");
+							location.setAttribute("start", String.valueOf(pos));
+							location.setAttribute("end", String.valueOf(pos));
+							if (chrRef != null) {
+								location.setReference("locatedOn", chrRef);
+							}
+							location.setReference("feature", item);
+							store(location);
+							item.setReference("chromosomeLocation", location);
+						}
+						
 					}
 				}
 				if (!StringUtils.isEmpty(pubmedIdString)) {
@@ -117,6 +130,7 @@ public class DbsnpTxtConverter extends BioFileConverter
 						}
 					}
 				}
+				item.setReference("organism", getOrganism(HUMAN_TAXON_ID));
 				store(item);
 				storedSnp++;
 			}
@@ -223,7 +237,7 @@ public class DbsnpTxtConverter extends BioFileConverter
 		String ret = snpMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("SNP");
-			item.setAttribute("identifier", identifier);
+			item.setAttribute("primaryIdentifier", identifier);
 			store(item);
 			ret = item.getIdentifier();
 			snpMap.put(identifier, ret);
@@ -291,7 +305,7 @@ public class DbsnpTxtConverter extends BioFileConverter
 		Query q = new Query();
 		QueryClass qcSnp = new QueryClass(os.getModel().getClassDescriptorByName("SNP").getType());
 
-		QueryField qfSnpId = new QueryField(qcSnp, "identifier");
+		QueryField qfSnpId = new QueryField(qcSnp, "primaryIdentifier");
 
 		q.addFrom(qcSnp);
 		q.addToSelect(qfSnpId);
@@ -334,4 +348,21 @@ public class DbsnpTxtConverter extends BioFileConverter
 		}
 		return ret;
 	}
+	
+	private Map<String, String> chromosomeMap = new HashMap<String, String>();
+	private String getChromosome(String taxonId, String symbol) throws ObjectStoreException {
+		String key = taxonId + "-" + symbol;
+		String ret = chromosomeMap.get(key);
+		if (ret == null) {
+			Item chromosome = createItem("Chromosome");
+			chromosome.setReference("organism", getOrganism(taxonId));
+			chromosome.setAttribute("primaryIdentifier", symbol);
+			chromosome.setAttribute("symbol", symbol);
+			store(chromosome);
+			ret = chromosome.getIdentifier();
+			chromosomeMap.put(key, ret);
+		}
+		return ret;
+	}
+
 }

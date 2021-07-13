@@ -708,7 +708,7 @@
 
   <class className="org.intermine.model.bio.GenomeWideAssociation">
     <fields>
-      <fieldconfig fieldExpr="snp.identifier"/>
+      <fieldconfig fieldExpr="snp.primaryIdentifier"/>
       <fieldconfig fieldExpr="riskAllele" showInSummary="false"/>
       <fieldconfig fieldExpr="frequency" showInSummary="false"/>
       <fieldconfig fieldExpr="pvalue"/>
@@ -728,16 +728,23 @@
       <fieldconfig fieldExpr="identifier"/>
       <fieldconfig fieldExpr="gene.primaryIdentifier"/>
       <fieldconfig fieldExpr="gene.symbol"/>
-      <fieldconfig fieldExpr="snp.identifier"/>
+      <fieldconfig fieldExpr="snp.primaryIdentifier"/>
       <fieldconfig fieldExpr="function.name"/>
+    </fields>
+  </class>
+
+  <class className="org.intermine.model.bio.Variant">
+    <fields>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
+      <fieldconfig fieldExpr="position"/>
     </fields>
   </class>
 
   <class className="org.intermine.model.bio.SNP">
     <fields>
-      <fieldconfig fieldExpr="identifier"/>
+      <fieldconfig fieldExpr="primaryIdentifier"/>
       <fieldconfig fieldExpr="refSnpAllele"/>
-      <fieldconfig fieldExpr="location"/>
+      <fieldconfig fieldExpr="position"/>
     </fields>
   </class>
 
@@ -887,7 +894,7 @@
 
   <class className="org.intermine.model.bio.Mgend">
     <fields>
-      <fieldconfig fieldExpr="variant.identifier"/>
+      <fieldconfig fieldExpr="variant.primaryIdentifier"/>
       <fieldconfig fieldExpr="alleleChange"/>
       <fieldconfig fieldExpr="aminoAcidChange"/>
       <fieldconfig fieldExpr="clinicalSignificance"/>
@@ -1173,7 +1180,7 @@
                                  enrichIdentifier="snps.snp.mgends.diseaseTerm.identifier"
                                  constraints="organism.taxonId=[list]"
                                  typeClass="Gene"
-                                 views="primaryIdentifier, symbol, organism.name, snps.snp.identifier, snps.snp.mgends.diseaseTerm.identifier, snps.snp.mgends.diseaseTerm.name"/>
+                                 views="primaryIdentifier, symbol, organism.name, snps.snp.primaryIdentifier, snps.snp.mgends.diseaseTerm.identifier, snps.snp.mgends.diseaseTerm.name"/>
 
       <enrichmentwidgetdisplayer id="protein_pathway_enrichment"
                                  title="Pathway Enrichment"

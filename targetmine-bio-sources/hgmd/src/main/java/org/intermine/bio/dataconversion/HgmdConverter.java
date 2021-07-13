@@ -32,6 +32,8 @@ public class HgmdConverter extends BioDBConverter {
 	private static final String DATASET_TITLE = "hgmd";
 	private static final String DATA_SOURCE_NAME = "hgmd";
 
+	private static final String HUMAN_TAXON_ID = "9606";
+
 	private Map<String, String> geneMap = new HashMap<String, String>();
 	private Map<String, String> snpMap = new HashMap<String, String>();
 	private Map<String, String> umlsTermMap = new HashMap<String, String>();
@@ -118,11 +120,13 @@ public class HgmdConverter extends BioDBConverter {
 				// hgmd にdbsnpのIDが入っていればSNP にリンクを張る。
 				if (snpId.startsWith("rs")) {
 					item = createItem("SNP");
-					item.setAttribute("identifier", snpId);
+					item.setAttribute("primaryIdentifier", snpId);
 				} else {
 					// 無い場合はhgmdのデータを利用してSNPの情報を埋める
 					item = createItem("Variant");
-					item.setAttribute("identifier", snpId);
+					item.setAttribute("primaryIdentifier", snpId);
+
+					item.setReference("organism", getOrganismItem(HUMAN_TAXON_ID));
 
 					// TODO: データの作り方 要確認 : allmut.hgvsまたはallmut.deletionまたはallmut.insertion
 					String refSnpAllele = "";
@@ -140,13 +144,26 @@ public class HgmdConverter extends BioDBConverter {
 					} else {
 						String coodStart = resAllmut.getString("startCoord");
 						String chromosome = resAllmut.getString("chromosome");
-						if (!StringUtils.isEmpty(coodStart)) {
-							String location = combineString(chromosome, coodStart, ":");
-							item.setAttribute("location", location);
-							item.setAttribute("coordinate", coodStart);
-						}
 						if (!StringUtils.isEmpty(chromosome)) {
-							item.setAttribute("chromosome", chromosome);
+							if (!StringUtils.isEmpty(coodStart)) {
+								String position = combineString(chromosome, coodStart, ":");
+								item.setAttribute("position", position);
+								item.setAttribute("coordinate", coodStart);
+								
+								String chrRef = getChromosomeRef(HUMAN_TAXON_ID, chromosome);
+								item.setReference("chromosome", chrRef);
+								
+								Item location = createItem("Location");
+								location.setAttribute("start", coodStart);
+								location.setAttribute("end", coodStart);
+								if (chrRef != null) {
+									location.setReference("locatedOn", chrRef);
+								}
+								location.setReference("feature", item);
+								store(location);
+								item.setReference("chromosomeLocation", location);
+
+							}
 						}
 						if (!StringUtils.isEmpty(refSnpAllele)) {
 							item.setAttribute("description", refSnpAllele);
@@ -269,6 +286,21 @@ public class HgmdConverter extends BioDBConverter {
 			store(item);
 			ret = item.getIdentifier();
 			publicationMap.put(pubMedId, ret);
+		}
+		return ret;
+	}
+
+	private Map<String, String> chromosomeMap = new HashMap<String, String>();
+	private String getChromosomeRef(String taxonId, String symbol) throws ObjectStoreException {
+		String key = taxonId + "-" + symbol;
+		String ret = chromosomeMap.get(key);
+		if (ret == null) {
+			Item chromosome = createItem("Chromosome");
+			chromosome.setReference("organism", getOrganismItem(taxonId));
+			chromosome.setAttribute("primaryIdentifier", symbol);
+			store(chromosome);
+			ret = chromosome.getIdentifier();
+			chromosomeMap.put(key, ret);
 		}
 		return ret;
 	}

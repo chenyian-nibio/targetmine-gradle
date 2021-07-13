@@ -111,6 +111,7 @@
     <source name="gene-esummary" type="gene-esummary">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="esummary.*"/>
+      <property name="chromosomeLengthFile" value="/data/bio/db/Targetmine/gene_info/chromosome/chromosome.length"/>
     </source>
 
     <source name="interpro" type="interpro">
@@ -384,8 +385,8 @@
       <property name="src.data.dir.includes" value="*.geneid.txt" />
     </source>
     <source name="oreganno" type="oreganno">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/oreganno" />
-      <property name="src.data.dir.includes" value="oreg.all.txt" />
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/oreganno/processed" />
+      <property name="src.data.dir.includes" value="*.tf.*.mapped.tsv" />
     </source>
     <source name="htridb" type="htridb">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/htridb" />
@@ -455,6 +456,7 @@
     <source name="mirbase-genome" type="mirbase-genome">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/mirbase/current/genomes" />
       <property name="src.data.dir.includes" value="*.gff3" />
+      <property name="organisms" value="9606 10090 10116"/>
       <property name="taxonIdFile" value="/data/bio/db/Targetmine/mirbase/current/taxonId.txt" />
     </source>
     <source name="mirtarbase" type="mirtarbase">
@@ -604,6 +606,8 @@
       <post-process name="transcribe-drugbank"/>
       <post-process name="calculate-biotheme-background"/>
       <post-process name="create-references"/>
+      <post-process name="create-location-overlap-index"/>
+      <post-process name="create-overlap-view" />
       <post-process name="summarise-objectstore"/>
       <post-process name="create-attribute-indexes"/>
       <post-process name="create-autocomplete-index"/>

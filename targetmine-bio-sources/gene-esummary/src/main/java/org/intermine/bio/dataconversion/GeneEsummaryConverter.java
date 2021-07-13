@@ -1,6 +1,9 @@
 package org.intermine.bio.dataconversion;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -8,22 +11,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.intermine.dataconversion.ItemWriter;
+import org.intermine.metadata.Model;
+import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.util.FormattedTextParser;
+import org.intermine.xml.full.Item;
 
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.intermine.dataconversion.ItemWriter;
-import org.intermine.metadata.Model;
-import org.intermine.objectstore.ObjectStoreException;
-import org.intermine.xml.full.Item;
 
 
 /**
@@ -40,6 +45,12 @@ public class GeneEsummaryConverter extends BioFileConverter
 
 	private Map<String, String> chromosomeMap = new HashMap<String, String>();
 	
+	private File chromosomeLengthFile;
+
+	public void setChromosomeLengthFile(File chromosomeLengthFile) {
+		this.chromosomeLengthFile = chromosomeLengthFile;
+	}
+	
     /**
      * Constructor
      * @param writer the ItemWriter used to handle the resultant items
@@ -55,6 +66,9 @@ public class GeneEsummaryConverter extends BioFileConverter
      * {@inheritDoc}
      */
     public void process(Reader reader) throws Exception {
+    	if (chromosomeLength.isEmpty()) {
+    		readChromosomeLengthMap();
+    	}
     	  
 		BufferedReader in = null;  
 		try {  
@@ -128,7 +142,7 @@ public class GeneEsummaryConverter extends BioFileConverter
 							}
 							
 							String chromosome = element.getChildElements("Chromosome").get(0).getValue();
-							if (!StringUtils.isEmpty(chromosome)) {
+							if (!StringUtils.isEmpty(chromosome) && chromosomeLength.containsKey(taxonId)) {
 							    if (element.getChildElements("GenomicInfo").get(0).getChildElements("GenomicInfoType").size() > 0) {
 								Element genomicInfo = element.getChildElements("GenomicInfo").get(0).getChildElements("GenomicInfoType").get(0);
 								String chrRef = getChromosome(taxonId, genomicInfo.getChildElements("ChrAccVer").get(0).getValue(), chromosome);
@@ -185,14 +199,52 @@ public class GeneEsummaryConverter extends BioFileConverter
 
     }
 
+	private Map<String, Map<String, Integer>> chromosomeLength = new HashMap<String, Map<String, Integer>>();
+
+	private void readChromosomeLengthMap() {
+		String fileName = chromosomeLengthFile.getName();
+		LOG.info(String.format("Parsing the file %s......", fileName));
+		System.out.println(String.format("Parsing the file %s......", fileName));
+
+		try {
+			FileReader reader = new FileReader(chromosomeLengthFile);
+			Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
+			while (iterator.hasNext()) {
+				String[] cols = iterator.next();
+				String taxonId = cols[0];
+				String chrId = cols[1];
+				String length = cols[2];
+				if (chromosomeLength.get(taxonId) == null) {
+					chromosomeLength.put(taxonId, new HashMap<String, Integer>());
+				}
+				chromosomeLength.get(taxonId).put(chrId, Integer.valueOf(length));
+			}
+			reader.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			throw new RuntimeException(String.format("The file '%s' not found.", fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
 	private String getChromosome(String taxonId, String identifier, String symbol) throws ObjectStoreException {
 		String key = taxonId + "-" + symbol;
 		String ret = chromosomeMap.get(key);
 		if (ret == null) {
 			Item chromosome = createItem("Chromosome");
 			chromosome.setReference("organism", getOrganism(taxonId));
-			chromosome.setAttribute("primaryIdentifier", identifier);
+			chromosome.setAttribute("primaryIdentifier", symbol);
+			chromosome.setAttribute("secondaryIdentifier", identifier);
 			chromosome.setAttribute("symbol", symbol);
+			if (chromosomeLength.get(taxonId) != null) {
+				Integer length = chromosomeLength.get(taxonId).get(symbol);
+				if (length != null) {
+					chromosome.setAttribute("length", length.toString());
+				}
+			}
 			store(chromosome);
 			ret = chromosome.getIdentifier();
 			chromosomeMap.put(key, ret);

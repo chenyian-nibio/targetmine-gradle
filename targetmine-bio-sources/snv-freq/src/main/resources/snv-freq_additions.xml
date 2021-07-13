@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <classes>
-	<class name="SNP" is-interface="true">
-		<attribute name="identifier" type="java.lang.String"/>
+	<class name="Variant" extends="SequenceFeature" is-interface="true"/>
+	<class name="SNP" extends="Variant" is-interface="true">
 		<collection name="frequencies" referenced-type="Frequency" reverse-reference="snp"/>
 	</class>
 	<class name="Frequency" is-interface="true">

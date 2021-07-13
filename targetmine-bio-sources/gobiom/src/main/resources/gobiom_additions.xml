@@ -51,9 +51,7 @@
 	<class name="SNP" extends="Variant" is-interface="true">
 		<reference name="biomarkers" referenced-type="Biomarker" reverse-reference="snp"/>
 	</class>
-	<class name="Variant" is-interface="true">
-		<attribute name="identifier" type="java.lang.String"/>
-		<collection name="dataSets" referenced-type="DataSet"/>
+	<class name="Variant" extends="SequenceFeature" is-interface="true">
 	</class>
 
 </classes>

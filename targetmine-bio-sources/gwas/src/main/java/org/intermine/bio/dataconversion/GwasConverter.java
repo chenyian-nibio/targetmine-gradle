@@ -219,7 +219,7 @@ public class GwasConverter extends BioFileConverter {
 				String snpItemRef = snpMap.get(dbSnpId);
 				if (snpItemRef == null) {
 					Item snpItem = createItem("SNP");
-					snpItem.setAttribute("identifier", dbSnpId);
+					snpItem.setAttribute("primaryIdentifier", dbSnpId);
 					store(snpItem);
 					snpItemRef = snpItem.getIdentifier();
 					snpMap.put(dbSnpId, snpItemRef);

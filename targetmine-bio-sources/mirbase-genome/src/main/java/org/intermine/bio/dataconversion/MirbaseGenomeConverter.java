@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.intermine.dataconversion.ItemWriter;
@@ -28,6 +30,13 @@ public class MirbaseGenomeConverter extends BioFileConverter {
 
 	private Map<String, String> accessionMap = new HashMap<String, String>();
 
+	private Set<String> taxonIds = new HashSet<String>();
+	public void setOrganisms(String taxonIdString) {
+		for (String taxonId : StringUtils.split(taxonIdString, " ")) {
+			taxonIds.add(taxonId);
+		}
+	}
+
 	/**
 	 * Constructor
 	 * 
@@ -49,56 +58,59 @@ public class MirbaseGenomeConverter extends BioFileConverter {
 		if (taxonIdMap == null) {
 			readTaxonIdMap();
 		}
+		
+		String currentTaxonId = getTaxonIdByFilename(getCurrentFile().getName());
 
-		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
-		while (iterator.hasNext()) {
-			String[] cols = iterator.next();
-			String chr = cols[0];
-			String type = cols[2];
-
-			String start = cols[3];
-			String end = cols[4];
-			String strand = cols[6];
-
-			Map<String, String> ids = new HashMap<String, String>();
-			for (String pair : cols[8].split(";")) {
-				String[] kv = pair.split("=");
-				ids.put(kv[0], kv[1]);
+		// no need to incorporate all chromosome data
+		if (taxonIds.contains(currentTaxonId)) {
+			Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
+			while (iterator.hasNext()) {
+				String[] cols = iterator.next();
+				String chr = cols[0];
+				String type = cols[2];
+				
+				String start = cols[3];
+				String end = cols[4];
+				String strand = cols[6];
+				
+				Map<String, String> ids = new HashMap<String, String>();
+				for (String pair : cols[8].split(";")) {
+					String[] kv = pair.split("=");
+					ids.put(kv[0], kv[1]);
+				}
+				String accession = ids.get("ID");
+				if (accession.contains("_") || accessionMap.get(accession) != null) {
+					continue;
+				}
+				
+				Item item;
+				if (type.equals("miRNA")) {
+					item = createItem("MiRNA");
+				} else if (type.equals("miRNA_primary_transcript")) {
+					item = createItem("MiRNAPrimaryTranscript");
+				} else {
+					throw new RuntimeException("Unexpect type: " + type);
+				}
+				item.setAttribute("primaryIdentifier", accession);
+				
+				String refId = item.getIdentifier();
+				
+				accessionMap.put(accession, refId);
+				String chromosomeRefId = getChromosome(chr, currentTaxonId);
+				
+				Item location = createItem("Location");
+				location.setAttribute("start", start);
+				location.setAttribute("end", end);
+				location.setAttribute("strand", strand);
+				location.setReference("feature", refId);
+				location.setReference("locatedOn", chromosomeRefId);
+				
+				item.setReference("chromosome", chromosomeRefId);
+				item.setReference("chromosomeLocation", location);
+				
+				store(location);
+				store(item);
 			}
-			String accession = ids.get("ID");
-			if (accession.contains("_") || accessionMap.get(accession) != null) {
-				continue;
-			}
-
-			Item item;
-			if (type.equals("miRNA")) {
-				item = createItem("MiRNA");
-			} else if (type.equals("miRNA_primary_transcript")) {
-				item = createItem("MiRNAPrimaryTranscript");
-			} else {
-				throw new RuntimeException("Unexpect type: " + type);
-			}
-			item.setAttribute("primaryIdentifier", accession);
-
-			String refId = item.getIdentifier();
-
-			accessionMap.put(accession, refId);
-			String chromosomeRefId = getChromosome(chr, getTaxonIdByFilename(getCurrentFile()
-					.getName()));
-
-			Item location = createItem("Location");
-			location.setAttribute("start", start);
-			location.setAttribute("end", end);
-			location.setAttribute("strand", strand);
-			location.setReference("feature", refId);
-			location.setReference("locatedOn", chromosomeRefId);
-
-			item.setReference("chromosome", chromosomeRefId);
-			item.setReference("chromosomeLocation", location);
-
-			store(location);
-			store(item);
-
 		}
 	}
 
@@ -111,7 +123,7 @@ public class MirbaseGenomeConverter extends BioFileConverter {
 			if (chr.toLowerCase().startsWith("chr")) {
 				chrId = chr.substring(3);
 			}
-//			item.setAttribute("primaryIdentifier", chrId);
+			item.setAttribute("primaryIdentifier", chrId);
 			item.setAttribute("symbol", chrId);
 			if (!StringUtils.isEmpty(taxonId)) {
 				item.setReference("organism", getOrganism(taxonId));

@@ -23,8 +23,12 @@ public class OregannoConverter extends BioFileConverter {
 	private static final String DATASET_TITLE = "ORegAnno";
 	private static final String DATA_SOURCE_NAME = "ORegAnno";
 
-	// so far only human
-	private static final String TAXON_ID = "9606";
+	private static final Map<String, String> TAXON_ID_MAP = new HashMap<String, String>();
+	{
+		TAXON_ID_MAP.put("Homo sapiens", "9606");
+		TAXON_ID_MAP.put("Mus musculus", "10090");
+		TAXON_ID_MAP.put("Rattus norvegicus", "10116");
+	}
 
 	private Map<String, String> geneMap = new HashMap<String, String>();
 
@@ -46,34 +50,40 @@ public class OregannoConverter extends BioFileConverter {
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
-		Iterator<String[]> iterator = FormattedTextParser
-				.parseTabDelimitedReader(new BufferedReader(reader));
+		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(new BufferedReader(reader));
 
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
 			// source target sequence start end chromosome strand genomeBuild stableId
-			String sourceId = cols[0].trim();
-			String targetId = cols[1].trim();
-			if (sourceId == null || sourceId.equals("")) {
+			String sourceId = cols[19].trim();
+			String targetId = cols[18].trim();
+			if (!isValidId(sourceId)) {
 				continue;
 			}
+			if (!isValidId(targetId)) {
+				continue;
+			}
+			
+			String taxonID = TAXON_ID_MAP.get(cols[1].trim());
 			
 			Item bindingStie = createItem("TFBindingSite");
 			bindingStie.setAttribute("primaryIdentifier", cols[8]);
 			bindingStie.setAttribute("name", String.format("TF %s target %s", sourceId, targetId));
-			bindingStie.setAttribute("length", String.valueOf(cols[2].length()));
-			bindingStie.setReference("sequence", createSequence(cols[2]));
-			bindingStie.setReference("organism", getOrganism(TAXON_ID));
+//			bindingStie.setAttribute("length", String.valueOf(cols[2].length()));
+//			bindingStie.setReference("sequence", createSequence(cols[2]));
+			bindingStie.setReference("organism", getOrganism(taxonID));
 			
-			if (!cols[3].equals("N/A") && !cols[4].equals("N/A") && !cols[5].equals("N/A")
-					&& !cols[6].equals("N/A")) {
-				String chromosomeRefId = getChromosome(cols[5], TAXON_ID);
+			
+			if (!cols[14].equals("N/A") && !cols[15].equals("N/A") && !cols[16].equals("N/A")
+					&& !cols[17].equals("N/A")) {
+				String chr = cols[15].substring(3);
+				String chromosomeRefId = getChromosome(chr, taxonID);
 
 				Item location = createItem("Location");
-				location.setAttribute("start", cols[3]);
-				location.setAttribute("end", cols[4]);
+				location.setAttribute("start", cols[16].trim());
+				location.setAttribute("end", cols[17].trim());
 				String strand = "+";
-				if (cols[6].startsWith("-")) {
+				if (cols[14].startsWith("-")) {
 					strand = "-";
 				}
 				location.setAttribute("strand", strand);
@@ -87,7 +97,12 @@ public class OregannoConverter extends BioFileConverter {
 			}
 			store(bindingStie);
 
-			getInteraction(sourceId, targetId).addToCollection("bindingSites", bindingStie);
+			Item interaction = getInteraction(sourceId, targetId);
+			interaction.addToCollection("bindingSites", bindingStie);
+			String pubmedId = cols[11].trim();
+			if (isValidId(pubmedId)) {
+				interaction.addToCollection("publications", getPublication(pubmedId));
+			}
 
 		}
 		reader.close();
@@ -114,7 +129,6 @@ public class OregannoConverter extends BioFileConverter {
 		if (ret == null) {
 			Item item = createItem("Gene");
 			item.setAttribute("primaryIdentifier", primaryIdentifier);
-			item.setAttribute("ncbiGeneId", primaryIdentifier);
 			store(item);
 			ret = item.getIdentifier();
 			geneMap.put(primaryIdentifier, ret);
@@ -133,6 +147,7 @@ public class OregannoConverter extends BioFileConverter {
 			if (chr.toLowerCase().startsWith("chr")) {
 				chrId = chr.substring(3);
 			}
+			item.setAttribute("primaryIdentifier", chrId);
 			item.setAttribute("symbol", chrId);
 			item.setReference("organism", getOrganism(taxonId));
 			store(item);
@@ -142,17 +157,50 @@ public class OregannoConverter extends BioFileConverter {
 		return ret;
 	}
 
-	private String createSequence(String sequence) throws ObjectStoreException {
-		Item item = createItem("Sequence");
-		item.setAttribute("residues", sequence);
-		item.setAttribute("length", String.valueOf(sequence.length()));
-		store(item);
-		return item.getIdentifier();
+	private Map<String, String> publicationMap = new HashMap<String, String>();
+
+	private String getPublication(String pubmedId) throws ObjectStoreException {
+		String ret = publicationMap.get(pubmedId);
+		if (ret == null) {
+			Item item = createItem("Publication");
+			item.setAttribute("pubMedId", pubmedId);
+			store(item);
+			ret = item.getIdentifier();
+			publicationMap.put(pubmedId, ret);
+		}
+		return ret;
 	}
+
+
+//	private String createSequence(String sequence) throws ObjectStoreException {
+//		Item item = createItem("Sequence");
+//		item.setAttribute("residues", sequence);
+//		item.setAttribute("length", String.valueOf(sequence.length()));
+//		store(item);
+//		return item.getIdentifier();
+//	}
 
 	@Override
 	public void close() throws Exception {
 		store(interactionMap.values());
+	}
+
+	/**
+	 * check if the string s is a positive integer 
+	 * @param s
+	 * @return
+	 */
+	public static boolean isValidId(String s) {
+		if (s == null || s.isEmpty())
+			return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (i == 0 && s.charAt(i) == '0') {
+				return false;
+			}
+			if (Character.digit(s.charAt(i), 10) < 0)
+				return false;
+		}
+		return true;
 	}
 
 }

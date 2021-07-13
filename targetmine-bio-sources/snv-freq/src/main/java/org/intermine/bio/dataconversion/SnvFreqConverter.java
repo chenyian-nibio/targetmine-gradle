@@ -162,7 +162,7 @@ public class SnvFreqConverter extends BioFileConverter
 		String ret = snpMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("SNP");
-			item.setAttribute("identifier", identifier);
+			item.setAttribute("primaryIdentifier", identifier);
 			store(item);
 			ret = item.getIdentifier();
 			snpMap.put(identifier, ret);
