@@ -54,7 +54,7 @@ public class DatasetInfoConverter extends FileConverter {
 				if (StringUtils.isEmpty(line)) {
 					continue;
 				}
-				String[] keyValue = line.split("=");
+				String[] keyValue = line.split("=", 2);
 				dataSetInfoMap.put(keyValue[0], keyValue[1]);
 			}
 			
