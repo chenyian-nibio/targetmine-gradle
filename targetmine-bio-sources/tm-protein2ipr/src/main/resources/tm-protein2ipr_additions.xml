@@ -20,7 +20,6 @@
 	</class>
 
 	<class name="ProteinDomain" extends="BioEntity" is-interface="true">
-		<attribute name="identifier" type="java.lang.String"/>
 		<collection name="proteinDomainRegions" referenced-type="ProteinDomainRegion" reverse-reference="proteinDomain" />
 	</class>
 

@@ -44,60 +44,6 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/do/" />
       <property name="src.data.dir.includes" value="HumanDO.obo" />
     </source>
-<!-- internal use only -->
-<!-- 
-    <source name="pharmaprojects" type="pharmaprojects">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/pharmaprojects/" />
-      <property name="src.data.dir.includes" value="drug-export-pg-*.json" />
-      <property name="smilesInchiKeyFile" value="/data/bio/db/Targetmine/pharmaprojects/smilesinchikeys.tsv" />
-      <property name="osAlias" value="os.production"/>
-    </source>
- -->
-<!-- internal use only -->
-<!-- 
-    <source name="ctod" type="ctod">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/ctod/" />
-      <property name="src.data.dir.includes" value="*.csv" />
-      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
-      <property name="osAlias" value="os.production"/>
-    </source>
- -->
-<!-- internal use only -->
-<!-- 
-    <source name="who-trial" type="who-trial">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
-      <property name="src.data.dir.includes" value="data.jl" />
-      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
-    </source>
- -->
-<!-- incompatible with who-trial, maybe -->
-    <source name="who-trial2" type="who-trial">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials2" />
-      <property name="src.data.dir.includes" value="*/*.xml" />
-      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
-    </source>
-
-<!-- internal use only -->
-<!-- 
-    <source name="trialtrove" type="trialtrove">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/trialtrove" />
-      <property name="src.data.dir.includes" value="*.csv" />
-      <property name="osAlias" value="os.production"/>
-    </source>
- -->
-    <source name="ipf" type="ipf">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/IPF" />
-      <property name="src.data.dir.includes" value="*.csv" />
-    </source>
-    <source name="ipftrial" type="ipftrial">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/IPFTrial" />
-      <property name="src.data.dir.includes" value="*.csv" />
-      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
-      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
-    </source>
     <source name="gene-info" type="gene-info">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info"/>
       <property name="src.data.dir.includes" value="*.gene_info"/>
@@ -255,6 +201,61 @@
     </source>
     <source name="efo" type="efo">
       <property name="src.data.file" location="/data/bio/db/Targetmine/efo/efo.modi.obo"/>
+    </source>
+
+<!-- internal use only -->
+<!-- 
+    <source name="pharmaprojects" type="pharmaprojects">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/pharmaprojects/" />
+      <property name="src.data.dir.includes" value="drug-export-pg-*.json" />
+      <property name="smilesInchiKeyFile" value="/data/bio/db/Targetmine/pharmaprojects/smilesinchikeys.tsv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+ -->
+<!-- internal use only -->
+<!-- 
+    <source name="ctod" type="ctod">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/ctod/" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+ -->
+<!-- internal use only -->
+<!-- 
+    <source name="who-trial" type="who-trial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials/" />
+      <property name="src.data.dir.includes" value="data.jl" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+    </source>
+ -->
+<!-- incompatible with who-trial, maybe -->
+    <source name="who-trial2" type="who-trial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/whotrials2" />
+      <property name="src.data.dir.includes" value="*/*.xml" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
+    </source>
+
+<!-- internal use only -->
+<!-- 
+    <source name="trialtrove" type="trialtrove">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/trialtrove" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="osAlias" value="os.production"/>
+    </source>
+ -->
+    <source name="ipf" type="ipf">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/IPF" />
+      <property name="src.data.dir.includes" value="*.csv" />
+    </source>
+    <source name="ipftrial" type="ipftrial">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/IPFTrial" />
+      <property name="src.data.dir.includes" value="*.csv" />
+      <property name="mrConsoFile" value="/data/bio/db/umls/2018/2018AB/META/MRCONSO.RRF" />
+      <property name="mrStyFile" value="/data/bio/db/umls/2018/2018AB/META/MRSTY.RRF" />
     </source>
 
 <!-- internal use only -->
