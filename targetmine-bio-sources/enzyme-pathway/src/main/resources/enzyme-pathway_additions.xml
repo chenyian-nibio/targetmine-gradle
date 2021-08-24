@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <classes>
-	<class name="Enzyme" is-interface="true">
+	<class name="Enzyme" extends="BioEntity" is-interface="true">
 		<attribute name="ecNumber" type="java.lang.String"/>
 		<collection name="pathways" referenced-type="Pathway" reverse-reference="enzymes"/>
 	</class>

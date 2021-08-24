@@ -187,6 +187,7 @@ public class KeggEcReactionConverter extends BioFileConverter {
 		String ret = enzymeMap.get(ecNumber);
 		if (ret == null) {
 			Item enzyme = createItem("Enzyme");
+			enzyme.setAttribute("primaryIdentifier", ecNumber);
 			enzyme.setAttribute("ecNumber", ecNumber);
 			store(enzyme);
 			ret = enzyme.getIdentifier();

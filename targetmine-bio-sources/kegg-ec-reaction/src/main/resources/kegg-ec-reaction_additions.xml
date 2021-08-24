@@ -16,7 +16,7 @@
 		<reference name="dataSet" referenced-type="DataSet" />
 		<collection name="enzymes" referenced-type="Enzyme" reverse-reference="reactions"/>
 	</class>
-	<class name="Enzyme" is-interface="true">
+	<class name="Enzyme" extends="BioEntity" is-interface="true">
 		<attribute name="ecNumber" type="java.lang.String"/>
 		<collection name="reactions" referenced-type="Reaction" reverse-reference="enzymes" />
 	</class>
