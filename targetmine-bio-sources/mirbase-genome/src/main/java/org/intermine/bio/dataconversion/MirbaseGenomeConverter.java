@@ -101,7 +101,7 @@ public class MirbaseGenomeConverter extends BioFileConverter {
 				Item location = createItem("Location");
 				location.setAttribute("start", start);
 				location.setAttribute("end", end);
-				location.setAttribute("strand", strand);
+				location.setAttribute("strand", strand.equals("+") ? "1" : "-1");
 				location.setReference("feature", refId);
 				location.setReference("locatedOn", chromosomeRefId);
 				

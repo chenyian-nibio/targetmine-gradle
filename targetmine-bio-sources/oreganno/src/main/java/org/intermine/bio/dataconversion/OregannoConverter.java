@@ -82,9 +82,9 @@ public class OregannoConverter extends BioFileConverter {
 				Item location = createItem("Location");
 				location.setAttribute("start", cols[16].trim());
 				location.setAttribute("end", cols[17].trim());
-				String strand = "+";
+				String strand = "1";
 				if (cols[14].startsWith("-")) {
-					strand = "-";
+					strand = "-1";
 				}
 				location.setAttribute("strand", strand);
 				// TODO this part is not clear, comment out temporary...

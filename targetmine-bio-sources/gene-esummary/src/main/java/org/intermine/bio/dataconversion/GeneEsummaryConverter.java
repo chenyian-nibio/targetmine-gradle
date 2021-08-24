@@ -152,11 +152,11 @@ public class GeneEsummaryConverter extends BioFileConverter
 								Integer chrStart = Integer.valueOf(genomicInfo.getChildElements("ChrStart").get(0).getValue()) + 1;
 								Integer chrStop = Integer.valueOf(genomicInfo.getChildElements("ChrStop").get(0).getValue()) + 1;
 								if (chrStop.intValue() > chrStart.intValue()) {
-									location.setAttribute("strand", String.valueOf("+"));
+									location.setAttribute("strand", String.valueOf("1"));
 									location.setAttribute("start", String.valueOf(chrStart));
 									location.setAttribute("end", String.valueOf(chrStop));
 								} else {
-									location.setAttribute("strand", String.valueOf("-"));
+									location.setAttribute("strand", String.valueOf("-1"));
 									location.setAttribute("start", String.valueOf(chrStop));
 									location.setAttribute("end", String.valueOf(chrStart));
 								}
