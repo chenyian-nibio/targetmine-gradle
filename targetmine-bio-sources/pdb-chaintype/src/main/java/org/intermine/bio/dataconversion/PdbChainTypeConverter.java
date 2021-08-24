@@ -64,6 +64,8 @@ public class PdbChainTypeConverter extends BioFileConverter {
 		}
 
 		Iterator<String[]> iterator = FormattedTextParser.parseCsvDelimitedReader(reader);
+		// skip the header
+		iterator.next();
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
 			String pdbId = cols[0].toLowerCase();
