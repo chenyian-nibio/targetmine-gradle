@@ -17,7 +17,7 @@
 		<c:choose>
 			<c:when test="${empty chemblCompound.parent}">
 				<div id="parentimage">
-					<img src="https://www.ebi.ac.uk/chembl/api/data/image/${chemblCompound.inchiKey}?dimensions=200" onerror="document.getElementById('parentimage').innerHTML = 'Not available.'"/>
+					<img src="https://www.ebi.ac.uk/chembl/api/data/image/${chemblCompound.inchiKey}?dimensions=200&format=svg" onerror="document.getElementById('parentimage').innerHTML = 'Not available.'"/>
 				</div>
 				<div>
 		    		<a href="report.do?id=${chemblCompound.id}">${chemblCompound.originalId}</a><br/>
@@ -26,7 +26,7 @@
 			</c:when>
 			<c:otherwise>
 				<div id="parentimage">
-					<img src="https://www.ebi.ac.uk/chembl/api/data/image/${chemblCompound.parent.inchiKey}?dimensions=200" onerror="document.getElementById('parentimage').innerHTML = 'Not available.'"/>
+					<img src="https://www.ebi.ac.uk/chembl/api/data/image/${chemblCompound.parent.inchiKey}?dimensions=200&format=svg" onerror="document.getElementById('parentimage').innerHTML = 'Not available.'"/>
 				</div>
 				<div>
 		    		<a href="report.do?id=${chemblCompound.parent.id}">${chemblCompound.parent.originalId}</a><br/>
@@ -42,7 +42,7 @@
 			<c:forEach var="altCompound" items="${chemblCompound.alternateForms}" varStatus="status">
 	    		<td>
 					<div id="image${status.count}">
-	    				<img src="https://www.ebi.ac.uk/chembl/api/data/image/${altCompound.inchiKey}?dimensions=200" onerror="document.getElementById('image${status.count}').innerHTML = 'Not available.'"/>
+	    				<img src="https://www.ebi.ac.uk/chembl/api/data/image/${altCompound.inchiKey}?dimensions=200&format=svg" onerror="document.getElementById('image${status.count}').innerHTML = 'Not available.'"/>
 					</div>
 					<div>
 		    			<a href="report.do?id=${altCompound.id}">${altCompound.originalId}</a><br/>
