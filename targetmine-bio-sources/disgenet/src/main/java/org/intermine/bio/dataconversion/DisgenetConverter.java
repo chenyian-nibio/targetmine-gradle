@@ -21,8 +21,10 @@ import org.intermine.xml.full.Item;
 
 
 /**
- * parse the file 'curated_gene_disease_associations.tsv' downloaded from DisGeNET. </br>
- * refine the parser for version 5.0 (2018/3/27)
+ * parse the file 'curated_gene_disease_associations.tsv' downloaded from DisGeNET. <br/>
+ * pmidFile: all_gene_disease_pmid_associations.tsv <br/>
+ * diseaseMapFile: disease_mappings.tsv <br/>
+ * this parser is used for version 7.0 (2021/10/13)
  * 
  * @author chenyian
  */
@@ -56,13 +58,13 @@ public class DisgenetConverter extends BioFileConverter {
      */
     public DisgenetConverter(ItemWriter writer, Model model) {
         super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
+        sourceNameMap.put("CGI", "The Cancer Genome Interpreter");
+        sourceNameMap.put("CLINGEN", "The Clinical Genome Resource");
         sourceNameMap.put("CTD_human", "Comparative Toxicogenomics Database");
-        sourceNameMap.put("GWASCAT", "NHGRI GWAS Catalog");
-        sourceNameMap.put("UNIPROT", "UniProt");
+        sourceNameMap.put("GENOMICS_ENGLAND", "The Genomics England PanelApp");
         sourceNameMap.put("ORPHANET", "Orphanet");
-        sourceNameMap.put("CLINVAR", "ClinVar");
         sourceNameMap.put("PSYGENET", "PsyGeNET");
-        sourceNameMap.put("HPO", "Human Phenotype Ontology");
+        sourceNameMap.put("UNIPROT", "UniProt");
     }
 
     /**
@@ -81,23 +83,20 @@ public class DisgenetConverter extends BioFileConverter {
     	
     	while (iterator.hasNext()) {
     		String[] cols = iterator.next();
-    		String diseaseId = cols[2];
-    		String diseaseName = cols[3];
-    		String geneId = cols[0];
-    		String source = cols[7];
-    		
-    		if( source.contains("ORPHANET")) {
-    			// Orphanet data will be imported from orphanet data source
-    			continue;
-    		}
+    		String diseaseId = cols[4];
+    		String diseaseName = cols[5];
+    		String geneId = cols[0].trim();
+    		String source = cols[15];
     		
     		Item item = createItem("Disease");
 			item.setReference("diseaseTerm", getDiseaseTerm(diseaseId, diseaseName));
 			item.setReference("gene", getGene(geneId));
-			for (String sourceId: source.split(",")) {
+			for (String sourceId: source.split(";")) {
     			String name = sourceNameMap.get(sourceId);
     			if (name != null) {
     				item.addToCollection("sources", getDataSource(name));
+    			} else {
+    				LOG.info(String.format("Unknown source: %s", sourceId));
     			}
     		}
 			String key = String.format("%s-%s", geneId, diseaseId);
@@ -127,8 +126,8 @@ public class DisgenetConverter extends BioFileConverter {
 			while (iterator.hasNext()) {
 				String[] cols = iterator.next();
 				String geneId = cols[0];
-				String diseaseId = cols[1];
-				String pmid = cols[4];
+				String diseaseId = cols[4];
+				String pmid = cols[13];
 				try {
 					String key = String.format("%s-%s", geneId, diseaseId);
 					if (pmidMap.get(key) == null) {
@@ -174,6 +173,8 @@ public class DisgenetConverter extends BioFileConverter {
 					ontologyId = "DOID:" + code;
 				} else if (ontology.equals("MSH")) {
 					ontologyId = code;
+				} else if (ontology.equals("EFO")) {
+					ontologyId = "EFO:" + code;
 				} else {
 					continue;
 				}
@@ -218,9 +219,11 @@ public class DisgenetConverter extends BioFileConverter {
 			if (ontologyIdMap.get(identifier) != null) {
 				for (String ontologyId : ontologyIdMap.get(identifier)) {
 					if (ontologyId.startsWith("DOID:")) {
-						item.addToCollection("crossReferences", getDOTerm(ontologyId));
+						item.addToCollection("crossReferences", getOntologyTerm("DOTerm", ontologyId));
+					} else if (ontologyId.startsWith("EFO:")) {
+						item.addToCollection("crossReferences", getOntologyTerm("EFOTerm", ontologyId));
 					} else {
-						item.addToCollection("crossReferences", getMeshTerm(ontologyId));
+						item.addToCollection("crossReferences", getOntologyTerm("MeshTerm", ontologyId));
 					}
 				}
 			}
@@ -247,10 +250,10 @@ public class DisgenetConverter extends BioFileConverter {
 	}
 
 	private Map<String, String> ontologyItemMap = new HashMap<String, String>();
-	private String getDOTerm(String identifier) throws ObjectStoreException {
+	private String getOntologyTerm(String className, String identifier) throws ObjectStoreException {
 		String ret = ontologyItemMap.get(identifier);
 		if (ret == null) {
-			Item item = createItem("DOTerm");
+			Item item = createItem(className);
 			item.setAttribute("identifier", identifier);
 			store(item);
 			ret = item.getIdentifier();
@@ -258,18 +261,5 @@ public class DisgenetConverter extends BioFileConverter {
 		}
 		return ret;
 	}
-	private String getMeshTerm(String meshId) throws ObjectStoreException {
-		String ret = ontologyItemMap.get(meshId);
-		if (ret == null) {
-			Item item = createItem("MeshTerm");
-			item.setAttribute("identifier", meshId);
-			store(item);
-			ret = item.getIdentifier();
-			ontologyItemMap.put(meshId, ret);
-		}
-		return ret;
-	}
-	
-	
 
 }
