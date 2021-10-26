@@ -27,13 +27,9 @@ public class GwasConverter extends BioFileConverter {
 	private static final String DATASET_TITLE = "GWAS Catalog";
 	private static final String DATA_SOURCE_NAME = "GWAS Catalog";
 
-//	private static final String HUMAN_TAXON_ID = "9606";
-
-//	private Map<String, String> geneMap = new HashMap<String, String>();
 	private Map<String, String> publicationMap = new HashMap<String, String>();
 	private Map<String, String> efoMap = new HashMap<String, String>();
 	private Map<String, String> snpMap = new HashMap<String, String>();
-//	private Map<String, String> chromosomeMap = new HashMap<String, String>();
 
 	/**
 	 * Constructor
@@ -96,7 +92,6 @@ public class GwasConverter extends BioFileConverter {
 							String value = processDouble(freqValue);
 							if (value == null) {
 								LOG.info(String.format("ERROR! Not a double value! accession: %s; frequency: %s", cols[36], freqValue));
-//								throw new RuntimeException(String.format("Not a double value! accession: %s; frequency: %s", cols[36], freqValue));
 							} else {
 								LOG.info(String.format("Fix the wrong value! accession: %s; frequency: %s -> %s", cols[36], freqValue, value));
 								freqValue = value;
@@ -116,7 +111,6 @@ public class GwasConverter extends BioFileConverter {
 						String value = processDouble(freqValue);
 						if (value == null) {
 							LOG.info(String.format("ERROR! Not a double value! accession: %s; frequency: %s", cols[36], freqValue));
-//							throw new RuntimeException(String.format("Not a double value! accession: %s; frequency: %s", cols[36], freqValue));
 						} else {
 							LOG.info(String.format("Fix the wrong value! accession: %s; frequency: %s -> %s", cols[36], freqValue, value));
 							freqValue = value;
@@ -134,7 +128,6 @@ public class GwasConverter extends BioFileConverter {
 					String value = processDouble(orBeta);
 					if (value == null) {
 						LOG.info(String.format("ERROR! Not a double value! accession: %s; orBeta: %s", cols[36], orBeta));
-//						throw new RuntimeException(String.format("Not a double value! accession: %s; orBeta: %s", cols[36], orBeta));
 					} else {
 						LOG.info(String.format("Fix the wrong value! accession: %s; frequency: %s -> %s", cols[36], orBeta, value));
 						orBeta = value;
@@ -226,10 +219,15 @@ public class GwasConverter extends BioFileConverter {
 				}
 				gwaItem.setReference("snp", snpItemRef);
 				
-				String[] efoUrls = cols[35].split(", ");
+				String mappedTraitUri = cols[35];
+				if (mappedTraitUri.endsWith("\"")) {
+					mappedTraitUri = mappedTraitUri.replaceAll("\"$", "");
+				}
+				String[] efoUrls = mappedTraitUri.split(", ");
 				for (String efoUrl: efoUrls) {
-					if (efoUrl.contains("EFO_")) {
-						String efoId = "EFO:" + efoUrl.substring(efoUrl.indexOf("EFO_") + 4);
+					String efoId = efoUrl.substring(efoUrl.lastIndexOf("/") + 1);
+					if (!StringUtils.isEmpty(efoUrl)) {
+						efoId = efoId.replace("_", ":");
 						gwaItem.addToCollection("efoTerms", getEfoTerm(efoId));
 					}
 				}
