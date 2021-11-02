@@ -90,7 +90,7 @@
           <td>
             <strong>
               <c:set var="loc" value="${feature.chromosomeLocation}"/>
-              <c:out value="${loc.locatedOn.symbol} (${loc.locatedOn.primaryIdentifier}):${loc.start}-${loc.end}"/>
+              <c:out value="chr${loc.locatedOn.primaryIdentifier}:${loc.start}-${loc.end}"/>
             </strong>
             <c:if test="${!empty loc.strand}">
               <span class="smallnote">
