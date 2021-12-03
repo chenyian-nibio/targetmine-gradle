@@ -135,17 +135,11 @@
       <property name="src.data.dir.includes" value="atc_lv1to4.cleaned"/>
     </source>
 
-    <source name="drugbank" type="drugbank-v4">
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/drugbank"/>
-      <property name="src.data.dir.includes" value="full_database.xml"/>
-    </source>
-
     <source name="kegg-drug" type="kegg-drug">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/kegg-ftp/drug"/>
       <property name="src.data.dir.includes" value="drug"/>
       <property name="inchikeyFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchikey"/>
       <property name="inchiFile" value="/data/bio/db/Targetmine/kegg-ftp/drug/drug.inchi"/>
-      <property name="osAlias" value="os.production"/>
     </source>
 
     <source name="kegg-jscc" type="kegg-jtc">
@@ -598,13 +592,11 @@
   <post-processing>
       <post-process name="do-sources"/>
       <post-process name="transcribe-ncbiGeneId"/>
-      <post-process name="remove-casreg"/>
       <post-process name="integrated-pathway-clustering"/>
       <post-process name="associate-gene-to-cluster"/>
       <post-process name="network-analysis"/>
       <!-- the coexpression data location is assigned in the CoExpressionInteraction.java -->
       <post-process name="coexpression"/>
-      <post-process name="transcribe-drugbank"/>
       <post-process name="calculate-biotheme-background"/>
       <post-process name="create-references"/>
       <post-process name="create-location-overlap-index"/>

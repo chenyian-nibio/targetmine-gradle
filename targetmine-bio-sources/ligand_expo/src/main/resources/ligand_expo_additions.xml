@@ -13,7 +13,6 @@
 		<attribute name="originalId" type="java.lang.String"/>
 		<attribute name="name" type="java.lang.String"/>
 		<attribute name="inchiKey" type="java.lang.String"/>
-		<attribute name="casRegistryNumber" type="java.lang.String"/>
 		<reference name="compoundGroup" referenced-type="CompoundGroup" reverse-reference="compounds"/>
 		<collection name="targetProteins" referenced-type="CompoundProteinInteraction" reverse-reference="compound"/>
 		<collection name="structures" referenced-type="CompoundStructure" reverse-reference="compound"/>

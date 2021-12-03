@@ -89,7 +89,6 @@ public class KeggCompoundConverter extends BioFileConverter
 			String keggCompoundId = "";
 			String name = "";
 			List<String> allNames = new ArrayList<String>();
-			String casNumber = "";
 			
 			boolean isName = false;
 			
@@ -110,8 +109,6 @@ public class KeggCompoundConverter extends BioFileConverter
 					name = line.substring(12).replaceAll(";$", "").replaceAll("\\s\\(.+?\\)$","").trim();
 					allNames.add(line.substring(12).trim());
 					isName = true;
-				} else if (line.contains("CAS:")) {
-					casNumber = line.substring(line.indexOf(":") + 2);
 				} else if (line.startsWith("///")) {
 					
 					Item item = createItem("KeggCompound");
@@ -124,9 +121,6 @@ public class KeggCompoundConverter extends BioFileConverter
 					}
 					item.setAttribute("name", name);
 
-					if (!StringUtils.isEmpty(casNumber)) {
-						item.setAttribute("casRegistryNumber", casNumber);
-					}
 					String inchiKey = inchiKeyMap.get(keggCompoundId);
 					if (!StringUtils.isEmpty(inchiKey)) {
 						item.setAttribute("inchiKey", inchiKey);
@@ -164,7 +158,6 @@ public class KeggCompoundConverter extends BioFileConverter
 					keggCompoundId = "";
 					name = "";
 					allNames = new ArrayList<String>();
-					casNumber = "";
 				}
 			}
 		} catch (FileNotFoundException e) {
