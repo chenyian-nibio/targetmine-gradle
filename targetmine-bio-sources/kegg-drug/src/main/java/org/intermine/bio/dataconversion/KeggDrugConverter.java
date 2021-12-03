@@ -147,10 +147,10 @@ public class KeggDrugConverter extends BioFileConverter {
 						String type = "Undefined";
 						if (content.contains(": ")) {
 							String[] split = content.split(":\\s", 2);
-							entries = split[1].split(",\\s");
+							entries = split[1].split("[,|;]\\s");
 							type = split[0];
 						} else {
-							entries = content.split(",\\s");
+							entries = content.split("[,|;]\\s");
 						}
 						for (String entry : entries) {
 							// suppose they are all human genes thus formatted like [HSA:xxx xxx]
@@ -176,10 +176,10 @@ public class KeggDrugConverter extends BioFileConverter {
 						String type = "Undefined";
 						if (content.contains(": ")) {
 							String[] split = content.split(":\\s", 2);
-							entries = split[1].split(",\\s");
+							entries = split[1].split("[,|;]\\s");
 							type = split[0];
 						} else {
-							entries = content.split(",\\s");
+							entries = content.split("[,|;]\\s");
 						}
 						for (String entry : entries) {
 							// suppose they are all human genes thus formatted like [HSA:xxx xxx]
