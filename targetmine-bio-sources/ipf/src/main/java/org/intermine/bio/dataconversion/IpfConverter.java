@@ -86,6 +86,10 @@ public class IpfConverter extends BioFileConverter
 
 				String umlsId = map.get("UMLS code");
 				if (!StringUtils.isEmpty(umlsId)) {
+					// there is one contains multiple umls ids, this is just a temporary solution.
+					if (umlsId.contains(";")) {
+						umlsId = umlsId.split("; ")[0];
+					}
 					item.setReference("diseaseUmls", getUMLSTerm(umlsId));
 				}
 
@@ -169,7 +173,7 @@ public class IpfConverter extends BioFileConverter
 		String ret = ontologyItemMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("UMLSTerm");
-			item.setAttribute("identifier", identifier);
+			item.setAttribute("identifier", "UMLS:" + identifier);
 			store(item);
 			ret = item.getIdentifier();
 			ontologyItemMap.put(identifier, ret);

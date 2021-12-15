@@ -239,7 +239,7 @@ public class IpfTrialConverter extends BioFileConverter
 		String ret = ontologyItemMap.get(identifier);
 		if (ret == null) {
 			Item item = createItem("UMLSTerm");
-			item.setAttribute("identifier", identifier);
+			item.setAttribute("identifier", "UMLS:" + identifier);
 			store(item);
 			ret = item.getIdentifier();
 			ontologyItemMap.put(identifier, ret);
