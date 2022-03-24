@@ -9,9 +9,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
+import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.objectstore.ObjectStoreFactory;
+import org.intermine.objectstore.query.Query;
+import org.intermine.objectstore.query.QueryClass;
+import org.intermine.objectstore.query.QueryField;
+import org.intermine.objectstore.query.Results;
+import org.intermine.objectstore.query.ResultsRow;
 import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 
@@ -20,7 +28,7 @@ import org.intermine.xml.full.Item;
  * @author chenyian
  */
 public class MirtarbaseConverter extends BioFileConverter {
-//	private static Logger LOG = Logger.getLogger(MirtarbaseConverter.class);
+	private static Logger LOG = Logger.getLogger(MirtarbaseConverter.class);
 	//
 	private static final String DATASET_TITLE = "miRTarBase";
 	private static final String DATA_SOURCE_NAME = "miRTarBase";
@@ -49,44 +57,61 @@ public class MirtarbaseConverter extends BioFileConverter {
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
+		if (miRNAIdMap == null) {
+			getMiRNAIdMaps();
+		}
+
+		Set<String> unfound = new HashSet<String>();
+		int count = 0;
+
 		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
 			String sourceId = cols[0];
-			String accession = cols[2];
-			String ncbiGeneId = cols[3];
-			String experiment = cols[4];
-			String supportType = cols[5];
-			String pubmedId = cols[6];
+			String symbol = cols[1];
+			String ncbiGeneId = cols[2];
+			String experiment = cols[3];
+			String supportType = cols[4];
+			String pubmedId = cols[5];
 			
 			if (ncbiGeneId.equals("0")) {
 				continue;
 			}
 
-			String[] accs = accession.split(",");
-			for (int i = 0; i < accs.length; i++) {
-				Item item = createItem("MiRNAEvidence");
-
-				item.setReference("interaction",
-						getMiRNAInteraction(accs[i], ncbiGeneId, sourceId, supportType));
-				item.setReference("publication", getPublication(pubmedId));
-
-				if (!StringUtils.isEmpty(experiment) && !experiment.equals("-")) {
-					Set<String> expSet = new HashSet<String>(Arrays.asList(experiment.split("//|;")));
-					
-					for (String exp : expSet) {
-						if (!StringUtils.isEmpty(exp)) {
-							item.addToCollection("experiments", getMiRNAExperiment(exp));
-						}
-					}
+			if (miRNAIdMap.get(symbol) == null) {
+				LOG.info("cannot find the miRNA symbol: " + symbol);
+				// System.out.println("cannot find the miRNA symbol: " + symbol);
+				unfound.add(symbol);
+			} else {
+				for (String pid : miRNAIdMap.get(symbol)) {
+					createMiRNAEvidence(sourceId, ncbiGeneId, experiment, supportType, pubmedId, pid);
+					count++;
 				}
-
-				store(item);
-
 			}
 
 		}
 
+		System.out.println("create " + count + " miRNA interactions.");
+		System.out.println("Undfound entities: " + unfound);
+	}
+
+	private void createMiRNAEvidence(String sourceId, String ncbiGeneId, String experiment, String supportType,
+			String pubmedId, String mirnaId) throws ObjectStoreException {
+		Item item = createItem("MiRNAEvidence");
+
+		item.setReference("interaction", getMiRNAInteraction(mirnaId, ncbiGeneId, sourceId, supportType));
+		item.setReference("publication", getPublication(pubmedId));
+
+		if (!StringUtils.isEmpty(experiment) && !experiment.equals("-")) {
+			Set<String> expSet = new HashSet<String>(Arrays.asList(experiment.split("//|;")));
+
+			for (String exp : expSet) {
+				if (!StringUtils.isEmpty(exp)) {
+					item.addToCollection("experiments", getMiRNAExperiment(exp));
+				}
+			}
+		}
+		store(item);
 	}
 
 	private String getMiRNAInteraction(String miRNAAcc, String geneId, String sourceId,
@@ -160,6 +185,44 @@ public class MirtarbaseConverter extends BioFileConverter {
 			publicationMap.put(pubmedId, ret);
 		}
 		return ret;
+	}
+
+	private String osAlias = null;
+
+	public void setOsAlias(String osAlias) {
+		this.osAlias = osAlias;
+	}
+	
+	private Map<String, Set<String>> miRNAIdMap;
+
+	@SuppressWarnings("unchecked")
+	private void getMiRNAIdMaps() throws Exception {
+		ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
+
+		Query q = new Query();
+		QueryClass qcSnp = new QueryClass(os.getModel().getClassDescriptorByName("MiRNA").getType());
+
+		QueryField qfPrimaryId = new QueryField(qcSnp, "primaryIdentifier");
+		QueryField qfSymbol = new QueryField(qcSnp, "symbol");
+
+		q.addFrom(qcSnp);
+		q.addToSelect(qfPrimaryId);
+		q.addToSelect(qfSymbol);
+
+		Results results = os.execute(q);
+		Iterator<Object> iterator = results.iterator();
+		miRNAIdMap = new HashMap<String, Set<String>>();
+		while (iterator.hasNext()) {
+			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
+			String symbol = rr.get(1);
+			if (StringUtils.isEmpty(symbol)) {
+				continue;
+			}
+			if (miRNAIdMap.get(symbol) == null) {
+				miRNAIdMap.put(symbol, new HashSet<String>());
+			}
+			miRNAIdMap.get(symbol).add(rr.get(0));
+		}
 	}
 
 }
