@@ -95,10 +95,15 @@
             <c:if test="${!empty loc.strand}">
               <span class="smallnote">
                 <c:choose>
-                  <c:when test="${loc.strand == '+'}">forward strand</c:when>
-                  <c:when test="${loc.strand == '-'}">reverse strand</c:when>
+                  <c:when test="${loc.strand == '1'}">forward strand</c:when>
+                  <c:when test="${loc.strand == '-1'}">reverse strand</c:when>
                 </c:choose>
               </span>
+            </c:if>
+            <c:if test="${feature.organism.taxonId == '9606'}">
+	            &nbsp;<a style="margin-left: 16px;"  
+	            href="https://fantom.gsc.riken.jp/zenbu/gLyphs/#config=FANTOM5_promoterome_hg38;loc=hg38::chr${loc.locatedOn.primaryIdentifier}:${loc.start}..${loc.end}+"
+	            target="_blank"> view this region at ZENBU genome browser</a>
             </c:if>
           </td>
         </c:when>
@@ -112,7 +117,7 @@
                     <c:if test="${!empty loc.strand}">
                       <span class="smallnote">
                         <c:choose>
-                          <c:when test="${loc.strand == '+1'}">forward strand</c:when>
+                          <c:when test="${loc.strand == '1'}">forward strand</c:when>
                           <c:when test="${loc.strand == '-1'}">reverse strand</c:when>
                         </c:choose>
                       </span>

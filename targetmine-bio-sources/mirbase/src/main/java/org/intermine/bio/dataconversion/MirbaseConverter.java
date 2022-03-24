@@ -16,7 +16,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.dataconversion.ItemWriter;
 import org.intermine.metadata.Model;
+import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.objectstore.ObjectStoreFactory;
+import org.intermine.objectstore.query.Query;
+import org.intermine.objectstore.query.QueryClass;
+import org.intermine.objectstore.query.QueryField;
+import org.intermine.objectstore.query.Results;
+import org.intermine.objectstore.query.ResultsRow;
 import org.intermine.util.FormattedTextParser;
 import org.intermine.xml.full.Item;
 
@@ -33,8 +40,16 @@ public class MirbaseConverter extends BioFileConverter {
 	private Map<String, String> taxonIdMap;
 	private Map<String, String> geneMap = new HashMap<String, String>();
 	private Map<String, String> publicationMap = new HashMap<String, String>();
-	private Map<String, Item> matureMap = new HashMap<String, Item>();
+	private Map<String, String> miRNAMap = new HashMap<String, String>();
 
+	private Set<String> taxonIds = new HashSet<String>();
+	
+	public void setOrganisms(String taxonIdString) {
+		for (String taxonId : StringUtils.split(taxonIdString, " ")) {
+			taxonIds.add(taxonId);
+		}
+	}
+	
 	/**
 	 * Constructor
 	 * 
@@ -53,25 +68,29 @@ public class MirbaseConverter extends BioFileConverter {
 	 * {@inheritDoc}
 	 */
 	public void process(Reader reader) throws Exception {
-		if (taxonIdMap == null) {
-			readTaxonIdMap();
-		}
+		System.out.println("processing taxonId.txt file...");
+		readTaxonIdMap();
+		
+		System.out.println("querying for miRNA ids...");
+		getMiRNAIdMaps();
+		
+		System.out.println("processing mature.fa file...");
+		processMatureFa();
 
-		String fileName = getCurrentFile().getName();
-		if (fileName.equals("miRNA.dat")) {
-			System.out.println("processing miRNA.dat file...");
-			processMirnaDat(reader);
-		} else if (fileName.equals("mature.fa")) {
-			System.out.println("processing mature.fa file...");
-			processMatureFa(reader);
-		}
-
+		System.out.println("processing miRNA.dat file...");
+		processMirnaDat(reader);
 	}
 
 	private File taxonIdFile;
 
 	public void setTaxonIdFile(File taxonIdFile) {
 		this.taxonIdFile = taxonIdFile;
+	}
+
+	private File matureFaFile;
+	
+	public void setMatureFaFile(File matureFaFile) {
+		this.matureFaFile = matureFaFile;
 	}
 
 	private void readTaxonIdMap() throws Exception {
@@ -84,44 +103,57 @@ public class MirbaseConverter extends BioFileConverter {
 		}
 	}
 
-	private void processMatureFa(Reader reader) throws Exception {
-		BufferedReader in = null;
-		in = new BufferedReader(reader);
+	private void processMatureFa() throws Exception {
+		FileReader fileReader = new FileReader(matureFaFile);
+		BufferedReader br = new BufferedReader(fileReader);
 		String line;
-		while ((line = in.readLine()) != null) {
+		while ((line = br.readLine()) != null) {
 			if (line.startsWith(">")) {
 				// >hsa-let-7a-5p MIMAT0000062 Homo sapiens let-7a-5p
 				Pattern pattern = Pattern.compile(">(.+) (MIMAT\\d+) (.+)");
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.matches()) {
-					String id = matcher.group(1);
+					String symbol = matcher.group(1);
 					String accession = matcher.group(2);
 					String name = matcher.group(3);
-					Item item = matureMap.get(accession);
-					if (item == null) {
-						item = createItem("MiRNA");
-						item.setAttribute("primaryIdentifier", accession);
+					String seq = br.readLine();
+					String taxonId = getTaxonIdBySymbol(symbol);
+					if (taxonId == null || !taxonIds.contains(taxonId)) {
+						continue;
 					}
-					item.setAttribute("secondaryIdentifier", id);
-					item.setAttribute("name", name);
-					item.setAttribute("symbol", id.substring(id.indexOf("-") + 1));
-					String seq = in.readLine();
-					item.setReference("sequence", createSequence(seq));
-					item.setAttribute("length", String.valueOf(seq.length()));
-					String taxonId = getTaxonIdByIdentifier(id);
-					if (!StringUtils.isEmpty(taxonId)) {
-						item.setReference("organism", getOrganism(taxonId));
-					}
-					matureMap.put(accession, item);
 
+					if (miRNAIdMap.get(accession) == null) {
+						Item item = createItem("MiRNA");
+						item.setAttribute("primaryIdentifier", accession);
+//						item.setAttribute("secondaryIdentifier", accession);
+						item.setAttribute("name", name);
+						item.setAttribute("symbol", symbol);
+						item.setReference("sequence", createSequence(seq));
+						item.setAttribute("length", String.valueOf(seq.length()));
+						item.setReference("organism", getOrganism(taxonId));
+						store(item);
+						miRNAMap.put(accession, item.getIdentifier());
+					} else {
+						for (String pid : miRNAIdMap.get(accession)) {
+							Item item = createItem("MiRNA");
+							item.setAttribute("primaryIdentifier", pid);
+							item.setAttribute("secondaryIdentifier", accession);
+							item.setAttribute("name", name);
+							item.setAttribute("symbol", symbol);
+							item.setReference("sequence", createSequence(seq));
+							item.setAttribute("length", String.valueOf(seq.length()));
+							item.setReference("organism", getOrganism(taxonId));
+							store(item);
+							miRNAMap.put(pid, item.getIdentifier());
+						}
+					}
 				}
 			}
-
 		}
-
+		br.close();
 	}
 
-	private String getTaxonIdByIdentifier(String identifier) {
+	private String getTaxonIdBySymbol(String identifier) {
 		String taxonId = taxonIdMap.get(identifier.substring(0, identifier.indexOf("-")));
 		if (taxonId != null) {
 			return taxonId;
@@ -143,7 +175,7 @@ public class MirbaseConverter extends BioFileConverter {
 				Pattern pattern = Pattern.compile("ID\\s+(.+?)\\s+\\w+; \\w+; \\w+; \\d+ BP\\.");
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.matches()) {
-					entry.identifier = matcher.group(1);
+					entry.symbol = matcher.group(1);
 				}
 			} else if (line.startsWith("AC")) {
 				entry.accession = line.substring(5, 14);
@@ -176,11 +208,16 @@ public class MirbaseConverter extends BioFileConverter {
 	}
 
 	private void createMicroRNA(MicroRNAEntry entry) throws ObjectStoreException {
+		String taxonId = getTaxonIdBySymbol(entry.symbol);
+		if (taxonId == null || !taxonIds.contains(taxonId)) {
+			return;
+		}
+		
 		Item item = createItem("MiRNAPrimaryTranscript");
 		item.setAttribute("primaryIdentifier", entry.accession);
-		item.setAttribute("secondaryIdentifier", entry.identifier);
+//		item.setAttribute("secondaryIdentifier", entry.symbol);
 		item.setAttribute("name", entry.description);
-		item.setAttribute("symbol", entry.identifier.substring(entry.identifier.indexOf("-") + 1));
+		item.setAttribute("symbol", entry.symbol);
 		item.setReference("sequence", createSequence(entry.getSequence()));
 		item.setAttribute("length", String.valueOf(entry.getSequence().length()));
 		if (entry.geneId != null) {
@@ -190,12 +227,15 @@ public class MirbaseConverter extends BioFileConverter {
 			item.addToCollection("publications", getPublication(pubmedId));
 		}
 		for (String mature : entry.matures) {
-			item.addToCollection("microRNAs", getMiRNA(mature, item));
+			if (miRNAIdMap.get(mature) == null) {
+				item.addToCollection("microRNAs", getMiRNA(mature));
+			} else {
+				for (String id : miRNAIdMap.get(mature)) {
+					item.addToCollection("microRNAs", getMiRNA(id));
+				}
+			}
 		}
-		String taxonId = getTaxonIdByIdentifier(entry.identifier);
-		if (!StringUtils.isEmpty(taxonId)) {
-			item.setReference("organism", getOrganism(taxonId));
-		}
+		item.setReference("organism", getOrganism(taxonId));
 		store(item);
 	}
 
@@ -207,12 +247,14 @@ public class MirbaseConverter extends BioFileConverter {
 		return item.getIdentifier();
 	}
 
-	private Item getMiRNA(String accession, Item microRNA) throws ObjectStoreException {
-		Item ret = matureMap.get(accession);
+	private String getMiRNA(String identifier) throws ObjectStoreException {
+		String ret = miRNAMap.get(identifier);
 		if (ret == null) {
-			ret = createItem("MiRNA");
-			ret.setAttribute("primaryIdentifier", accession);
-			matureMap.put(accession, ret);
+			Item item = createItem("MiRNA");
+			item.setAttribute("primaryIdentifier", identifier);
+			store(item);
+			ret = item.getIdentifier();
+			miRNAMap.put(identifier, ret);
 		}
 		return ret;
 	}
@@ -251,7 +293,7 @@ public class MirbaseConverter extends BioFileConverter {
 		String sequence = "";
 		Set<String> pubMedIds = new HashSet<String>();
 		Set<String> matures = new HashSet<String>();
-		String identifier;
+		String symbol;
 
 		public MicroRNAEntry() {
 		}
@@ -259,7 +301,7 @@ public class MirbaseConverter extends BioFileConverter {
 		@Override
 		public String toString() {
 			return StringUtils.join(
-					Arrays.asList(identifier, accession, geneId, getSequence(),
+					Arrays.asList(symbol, accession, geneId, getSequence(),
 							pubMedIds.toString(), matures.toString()), "\t");
 		}
 
@@ -268,8 +310,42 @@ public class MirbaseConverter extends BioFileConverter {
 		}
 	}
 
-	@Override
-	public void close() throws Exception {
-		store(matureMap.values());
+	private String osAlias = null;
+
+	public void setOsAlias(String osAlias) {
+		this.osAlias = osAlias;
 	}
+	
+	private Map<String, Set<String>> miRNAIdMap;
+
+	@SuppressWarnings("unchecked")
+	private void getMiRNAIdMaps() throws Exception {
+		ObjectStore os = ObjectStoreFactory.getObjectStore(osAlias);
+
+		Query q = new Query();
+		QueryClass qcSnp = new QueryClass(os.getModel().getClassDescriptorByName("MiRNA").getType());
+
+		QueryField qfPrimaryId = new QueryField(qcSnp, "primaryIdentifier");
+		QueryField qfSecondaryId = new QueryField(qcSnp, "secondaryIdentifier");
+
+		q.addFrom(qcSnp);
+		q.addToSelect(qfPrimaryId);
+		q.addToSelect(qfSecondaryId);
+
+		Results results = os.execute(q);
+		Iterator<Object> iterator = results.iterator();
+		miRNAIdMap = new HashMap<String, Set<String>>();
+		while (iterator.hasNext()) {
+			ResultsRow<String> rr = (ResultsRow<String>) iterator.next();
+			String second = rr.get(1);
+			if (StringUtils.isEmpty(second)) {
+				continue;
+			}
+			if (miRNAIdMap.get(second) == null) {
+				miRNAIdMap.put(second, new HashSet<String>());
+			}
+			miRNAIdMap.get(second).add(rr.get(0));
+		}
+	}
+
 }

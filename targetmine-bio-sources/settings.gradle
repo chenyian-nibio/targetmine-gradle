@@ -207,3 +207,7 @@ include ':bio-source-possum'
 project(':bio-source-possum').projectDir = new File(settingsDir, './possum')
 include ':bio-source-mgend'
 project(':bio-source-mgend').projectDir = new File(settingsDir, './mgend')
+include ':bio-source-ncbi-gff-kai'
+project(':bio-source-ncbi-gff-kai').projectDir = new File(settingsDir, './ncbi-gff-kai')
+include ':bio-source-chromosome'
+project(':bio-source-chromosome').projectDir = new File(settingsDir, './chromosome')
