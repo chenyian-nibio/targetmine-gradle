@@ -27,7 +27,7 @@ Some instructions will be added here latter.
 Copyright and License
 ------------------------
 
-Copyright (C) 2011-2019 by [The Mizuguchi Laboratory](https://mizuguchilab.org/).
+Copyright (C) 2011-2022 by [The Mizuguchi Laboratory](https://mizuguchilab.org/).
 
 TargetMine is licensed under the MIT License.
 
@@ -35,6 +35,12 @@ See [LICENSE](LICENSE.md) for licensing information.
 
 Please cite
 ------------------------
+**The TargetMine Data Warehouse: Enhancement and Updates.**<br/>
+*Chen Y-A, Tripathi LP, Fujiwara T, Kameyama T, Itoh MN, Mizuguchi K.*<br/>
+[Frontiers in Genetics. 2019 Oct 9;10:934](https://www.frontiersin.org/articles/10.3389/fgene.2019.00934/full)<br/>
+[![doi](http://img.shields.io/badge/DOI-10.3389%2Ffgene.2019.00934-blue.svg?style=flat)](https://www.frontiersin.org/articles/10.3389/fgene.2019.00934/full) 
+[![pubmed](http://img.shields.io/badge/PMID-31649722-blue.svg?style=flat)](https://www.ncbi.nlm.nih.gov/pubmed/31649722)
+
 **An integrative data analysis platform for gene set analysis and knowledge discovery in a data warehouse framework.**<br/>
 *Chen Y-A, Tripathi LP, Mizuguchi K.*<br/>
 [Database (Oxford). 2016 Mar 17;2016. pii: baw009](https://academic.oup.com/database/article/doi/10.1093/database/baw009/2630159) <br/>
