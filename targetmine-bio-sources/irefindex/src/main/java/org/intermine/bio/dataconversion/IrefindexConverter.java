@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.keyvalue.MultiKey;
 import org.apache.commons.lang.StringUtils;
@@ -34,6 +36,8 @@ public class IrefindexConverter extends BioFileConverter {
 	private static final String DATASET_TITLE = "iRefIndex";
 	private static final String DATA_SOURCE_NAME = "iRefIndex";
 	private static final String TYPE_FILE = "interactiontype.txt";
+
+	private static final Pattern MI_PATTERN = Pattern.compile(".+(MI:\\d+).+");
 
 	private static final Logger LOG = LogManager.getLogger(IrefindexConverter.class);
 
@@ -103,7 +107,14 @@ public class IrefindexConverter extends BioFileConverter {
 				detectioniMethod = "-";
 			}
 			for (String pmid : pmids) {
-				expRefIdSet.add(getExperiment(pmid, cols[7], detectioniMethod, cols[28]));
+				if (pmid.equals("-")) {
+					expRefIdSet.add(getExperiment(null, cols[7], detectioniMethod, cols[28]));
+				} else {
+					pmid = pmid.substring(pmid.indexOf(':') + 1);
+					if (isValidId(pmid)) {
+						expRefIdSet.add(getExperiment(pmid, cols[7], detectioniMethod, cols[28]));
+					}
+				}
 			}
 			List<String> expRefIds = new ArrayList<String>(expRefIdSet);
 			Collections.sort(expRefIds);
@@ -346,9 +357,9 @@ public class IrefindexConverter extends BioFileConverter {
 				exp.setAttribute("name", author);
 			}
 			
-			if (!pubMedId.equals("-")) {
+			if (pubMedId != null) {
 				// example: pubmed:10998417
-				exp.setReference("publication", getPublication(pubMedId.substring(pubMedId.indexOf(':') + 1)));
+				exp.setReference("publication", getPublication(pubMedId));
 			}
 			if (!detectioniMethod.equals("-")) {
 				// example: psi-mi:"MI:0007"(anti tag coimmunoprecipitation) 
@@ -387,7 +398,12 @@ public class IrefindexConverter extends BioFileConverter {
 	}
 
 	private String getPsiMiId(String text) {
-		return text.substring(text.indexOf("MI:"), text.indexOf("\"("));
+		Matcher matcher = MI_PATTERN.matcher(text);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		} else {
+			throw new RuntimeException("Unable to process the MI contents: " + text);
+		}
 	}
 
 	private static Map<String, String> SPECIAL_TAXON_ID_MAP = new HashMap<String, String>();
@@ -400,4 +416,18 @@ public class IrefindexConverter extends BioFileConverter {
 		SPECIAL_TAXON_ID_MAP.put("taxid:-4", "in vivo");
 		SPECIAL_TAXON_ID_MAP.put("taxid:-5", "in sillico");
 	}
+
+		public static boolean isValidId(String s) {
+		if (s == null || s.isEmpty())
+			return false;
+		for (int i = 0; i < s.length(); i++) {
+			if (i == 0 && s.charAt(i) == '0') {
+				return false;
+			}
+			if (Character.digit(s.charAt(i), 10) < 0)
+				return false;
+		}
+		return true;
+	}
+
 }
