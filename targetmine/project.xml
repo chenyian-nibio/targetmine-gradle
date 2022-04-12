@@ -65,7 +65,7 @@
       <property name="gff3.dataSourceName" value="NCBI"/>
       <property name="gff3.dataSetTitle" value="NCBI-GFF"/>
       <property name="src.data.dir" location="/data/bio/db/Targetmine/ncbi-gff"/>
-      <property name="src.data.dir.includes" value="test.gff"/>
+      <property name="src.data.dir.includes" value="GRCh38_latest_genomic.subset.gff"/>
     </source>
     <source name="chromosome" type="chromosome">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info/chromosome"/>
@@ -351,19 +351,19 @@
 
     <source name="dbsnp-info" type="dbsnp-txt">
       <property name="tableType" value="info"/>
-      <property name="src.data.dir" location="/martha_scratch/dbsnp-b154/TABLE123/TABLE1"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/TABLE1"/>
       <property name="src.data.dir.includes" value="table1_refsnp-chr*"/>
       <property name="osAlias" value="os.production"/>
     </source>
     <source name="dbsnp-gene" type="dbsnp-txt">
       <property name="tableType" value="gene"/>
-      <property name="src.data.dir" location="/martha_scratch/dbsnp-b154/TABLE123/TABLE3"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/TABLE3"/>
       <property name="src.data.dir.includes" value="table3_refsnp-chr*"/>
       <property name="osAlias" value="os.production"/>
     </source>
     <source name="dbsnp-transcript" type="dbsnp-txt">
       <property name="tableType" value="transcript"/>
-      <property name="src.data.dir" location="/martha_scratch/dbsnp-b154/TABLE123/TABLE2"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/TABLE2"/>
       <property name="src.data.dir.includes" value="table2_refsnp-chr*"/>
       <property name="osAlias" value="os.production"/>
     </source>

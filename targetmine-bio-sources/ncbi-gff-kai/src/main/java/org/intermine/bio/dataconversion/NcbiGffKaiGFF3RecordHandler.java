@@ -57,7 +57,7 @@ public class NcbiGffKaiGFF3RecordHandler extends GFF3RecordHandler
         Item feature = getFeature();
         String type = record.getType();
 
-        if ("gene".equals(type) || "pseudogene".equals(type)) {
+        if ("gene".equals(type)) {
             feature.setClassName("Gene");
             for (String identifier : record.getDbxrefs()) {
                 if (identifier.contains("GeneID")) {
@@ -73,7 +73,7 @@ public class NcbiGffKaiGFF3RecordHandler extends GFF3RecordHandler
             }
             // to simplify the post-processing, create-references, 
             // temporary combine primary_transcript into transcript ...
-        } else if ("transcript".equals(type) || "primary_transcript".equals(type) || "MRNA".equalsIgnoreCase(type)) {
+        } else if ("transcript".equals(type) || "MRNA".equalsIgnoreCase(type)) {
             if ("MRNA".equalsIgnoreCase(type)) {
                 feature.setClassName("MRNA");
             } else {
