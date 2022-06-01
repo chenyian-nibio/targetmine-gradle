@@ -21,7 +21,7 @@ public class IpfConverter extends BioFileConverter
 {
     //
     private static final String DATASET_TITLE = "IPF";
-    private static final String DATA_SOURCE_NAME = "IPF";
+    private static final String DATA_SOURCE_NAME = "TargetMine";
 
     /**
      * Constructor
@@ -35,7 +35,7 @@ public class IpfConverter extends BioFileConverter
 	private static Map<String, String> propertyNames = new HashMap<String, String>();
     
 	static {
-		propertyNames.put("identifier", "S.No");
+//		propertyNames.put("identifier", "S.No");
 		// From Node
 		propertyNames.put("fromNodeName", "from_node_name_STD");
 		propertyNames.put("fromNodeType", "from_node_type");
@@ -76,9 +76,20 @@ public class IpfConverter extends BioFileConverter
      * {@inheritDoc}
      */
 	public void process(Reader reader) throws Exception {
-		try (CSVParser parser = new CSVParser(reader, true)) {
+    	String fileName = getCurrentFile().getName();
+    	String no = fileName.substring(0, 1);
+
+    	try (CSVParser parser = new CSVParser(reader, true)) {
 			for (Map<String, String> map : parser) {
+				String sno = map.get("S.No");
+				if (StringUtils.isEmpty(sno)) {
+					continue;
+				}
+				
 				Item item = createItem("IPF");
+				String ipfId = String.format("%s%05d", no, Integer.valueOf(sno));
+				item.setAttribute("identifier", ipfId);
+				
 				String pubmedId = map.get("PubMed id");
 				if (!StringUtils.isEmpty(pubmedId)) {
 					item.setReference("reference", getPublication(pubmedId));

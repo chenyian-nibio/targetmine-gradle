@@ -25,7 +25,7 @@ public class IpfTrialConverter extends BioFileConverter
 {
     //
     private static final String DATASET_TITLE = "IPF Trial";
-    private static final String DATA_SOURCE_NAME = "IPF";
+    private static final String DATA_SOURCE_NAME = "TargetMine";
 
     /**
      * Constructor

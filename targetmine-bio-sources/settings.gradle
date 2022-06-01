@@ -211,3 +211,5 @@ include ':bio-source-ncbi-gff-kai'
 project(':bio-source-ncbi-gff-kai').projectDir = new File(settingsDir, './ncbi-gff-kai')
 include ':bio-source-chromosome'
 project(':bio-source-chromosome').projectDir = new File(settingsDir, './chromosome')
+include ':bio-source-ipf-relation'
+project(':bio-source-ipf-relation').projectDir = new File(settingsDir, './ipf-relation')
