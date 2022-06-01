@@ -350,21 +350,21 @@
 -->
 
     <source name="dbsnp-info" type="dbsnp-txt">
-      <property name="tableType" value="info"/>
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/TABLE1"/>
-      <property name="src.data.dir.includes" value="table1_refsnp-chr*"/>
+      <property name="tableType" value="table1"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/current"/>
+      <property name="src.data.dir.includes" value="*_table1.tsv"/>
       <property name="osAlias" value="os.production"/>
     </source>
     <source name="dbsnp-gene" type="dbsnp-txt">
-      <property name="tableType" value="gene"/>
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/TABLE3"/>
-      <property name="src.data.dir.includes" value="table3_refsnp-chr*"/>
+      <property name="tableType" value="table3"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/current"/>
+      <property name="src.data.dir.includes" value="*_table3.tsv"/>
       <property name="osAlias" value="os.production"/>
     </source>
     <source name="dbsnp-transcript" type="dbsnp-txt">
-      <property name="tableType" value="transcript"/>
-      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/TABLE2"/>
-      <property name="src.data.dir.includes" value="table2_refsnp-chr*"/>
+      <property name="tableType" value="table4"/>
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/dbsnp/current"/>
+      <property name="src.data.dir.includes" value="*_table4.tsv"/>
       <property name="osAlias" value="os.production"/>
     </source>
 

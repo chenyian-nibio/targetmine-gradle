@@ -1,9 +1,11 @@
 package org.intermine.bio.dataconversion;
 
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,50 +70,75 @@ public class DbsnpTxtConverter extends BioFileConverter
 		}
 		System.out.println(String.format("Found %d SNPs", snpIdSet.size()));
     	
-		if (tableType.equals("info")) {
+		if (tableType.equals("table1")) { // used to be "info"
 			System.out.println("Processing SNP information......");
-			processDbsnpInfo(reader);
-		} else if (tableType.equals("gene")) {
+			processDbsnpTable1(reader);
+		} else if (tableType.equals("table3")) { // used to be "gene" 
 			System.out.println("Processing SNP gene association......");
-			processDbsnpGene(reader);
-		} else if (tableType.equals("transcript")) {
+			processDbsnpTable3(reader);
+		} else if (tableType.equals("table2")) { // used to be "transcript" 
 			System.out.println("Processing SNP transcript association......");
-			processDbsnpTranscript(reader);
+			processDbsnpTable2(reader);
+		} else if (tableType.equals("table4")) { // alternative format of table2 
+			System.out.println("Processing SNP transcript association......");
+			processDbsnpTable4(reader);
+		} else {
+			System.out.println("No matched table type. Finish the processing.");
 		}
     }
     
-	private void processDbsnpInfo(Reader reader) throws Exception {
+    /**
+     * Table1 here is a preprocessed tab separated table for the snp basic information. 
+     * The columns are as follow:  <br/>
+     * id (without rs); chromosome; position(start from 0); pmid(separated by semicolon); alleles info(details see below) <br/>
+     * 
+     * alleles info, separated by pipe. the columns are as follow: <br/>
+     * delete,insert,hgvs expression,expression type </br>
+     * 
+     * e.g. 10082476 10 122405137 19961953;24013816 A,C,NC_000010.11:g.122405138A>C,spdi|A,G,NC_000010.11:g.122405138A>G,spdi
+     * 
+     * @param reader
+     * @throws Exception
+     */
+	private void processDbsnpTable1(Reader reader) throws Exception {
 		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
 		int line = 1;
 		int storedSnp = 0;
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
 			String rsId = "rs" + cols[0];
-			String pubmedIdString = cols[4];
+			String pubmedIdString = cols[3];
 			if (snpIdSet.contains(rsId) || !StringUtils.isEmpty(pubmedIdString)) {
-				String allele = cols[1];
-				String chr = cols[2];
-				String locationString = cols[3];
+				String chr = cols[1];
+				String locationString = cols[2];
+				String alleleString = cols[4];
 				
 				Item item = createItem("SNP");
 				item.setAttribute("primaryIdentifier", rsId);
-				if (!StringUtils.isEmpty(allele)) {
-					item.setAttribute("refSnpAllele", allele);
+				if (!StringUtils.isEmpty(alleleString)) {
+					List<String> alleleList = new ArrayList<String>();
+					for (String allele : alleleString.split("\\|")) {
+						String[] parts = allele.split(",", -1);
+						alleleList.add(String.format("%s>%s", parts[0], parts[1]));
+					};
+					item.setAttribute("refSnpAllele", StringUtils.join(alleleList, " / "));
 				}
 				if (!StringUtils.isEmpty(locationString)) {
-					item.setAttribute("position", locationString);
-					String pos = locationString.substring(locationString.indexOf(":") + 1);
-					// check if the pos string is an integer
-					if (isValidId(pos)) {
-						item.setAttribute("coordinate", pos);
+					// check if the locationString is an integer
+					if (isValidId(locationString)) {
+						Integer position = Integer.valueOf(locationString) + 1;
+						
+						item.setAttribute("position", String.format("%s:%d", chr, position));
+						
+						item.setAttribute("coordinate", position.toString());
 						
 						if (!StringUtils.isEmpty(chr)) {
 							String chrRef = getChromosome(HUMAN_TAXON_ID, chr);
 							item.setReference("chromosome", chrRef);
 							
 							Item location = createItem("Location");
-							location.setAttribute("start", String.valueOf(pos));
-							location.setAttribute("end", String.valueOf(pos));
+							location.setAttribute("start", String.valueOf(position));
+							location.setAttribute("end", String.valueOf(position));
 							if (chrRef != null) {
 								location.setReference("locatedOn", chrRef);
 							}
@@ -146,7 +173,7 @@ public class DbsnpTxtConverter extends BioFileConverter
 		LOG.info(String.format("Stored %d SNPs", storedSnp));
 	}
 	
-	private void processDbsnpGene(Reader reader) throws Exception {
+	private void processDbsnpTable3(Reader reader) throws Exception {
 		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
 		int count = 1;
 		while (iterator.hasNext()) {
@@ -155,6 +182,11 @@ public class DbsnpTxtConverter extends BioFileConverter
 			if (snpIdSet.contains(snpId)) {
 				String geneId = cols[1];
 				String soId = cols[2];
+				if (soId.contains(";")) {
+					LOG.info(String.format("%s contains multiple SO: %s", snpId, soId));
+					soId = soId.split(";")[0];
+				} 
+
 				Item vaItem = createItem("VariationAnnotation");
 				vaItem.setAttribute("identifier", snpId + "-" + geneId);
 				vaItem.setReference("gene", getGene(geneId));
@@ -171,28 +203,30 @@ public class DbsnpTxtConverter extends BioFileConverter
 		}
 	}
 
-	private void processDbsnpTranscript(Reader reader) throws Exception {
+	private void processDbsnpTable2(Reader reader) throws Exception {
 		Map<String, String> variAnnotMap = new HashMap<String, String>();
 		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
 		int count = 1;
+		int countRef = 0;
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
-			if (11 != cols.length) {
+			if (12 != cols.length) {
 				continue;
 			}
 			String snpId = "rs" + cols[0];
 			if (snpIdSet.contains(snpId)) {
 				String geneId = cols[1];
 				String mrnaAcc = cols[2];
-				String mrnaPos = cols[3];
-				String orientation = cols[4];
-				String allele = cols[5];
-				String codon = cols[6];
-				String proteinAcc = cols[7];
-				String aaPos = cols[8];
-				String residue = cols[9];
+				String hgvs = cols[3];
+				String codon = cols[4];
+				String proteinAcc = cols[5];
+				String residue = cols[6];
+//				String expressionType = cols[8];
+				String mrnaPos = cols[9];
+				String allele = cols[10];
+				String aaPos = cols[11];
 
-				String soId = cols[10];
+				String soId = cols[7];
 				if (soId.contains(";")) {
 					LOG.info(String.format("%s contains multiple SO: %s", snpId, soId));
 					soId = soId.split(";")[0];
@@ -210,13 +244,78 @@ public class DbsnpTxtConverter extends BioFileConverter
 					vaItemRef = vaItem.getIdentifier();
 					variAnnotMap.put(key, vaItemRef);
 				}
-				createSNPReference(mrnaAcc, mrnaPos, orientation, allele, codon, proteinAcc, aaPos, residue, soId, vaItemRef);
+				createSNPReference(mrnaAcc, mrnaPos, hgvs, allele, codon, proteinAcc, aaPos, residue, soId, vaItemRef);
+				countRef++;
 			}
 			count++;
 			if (count % 5000000 == 0) {
 				System.out.println(String.format("Process %d lines...", count));
 			}
 		}
+		System.out.println(String.format("Create %d SNPReference(s).", countRef));
+	}
+
+	private void processDbsnpTable4(Reader reader) throws Exception {
+		Map<String, String> variAnnotMap = new HashMap<String, String>();
+		Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
+		int count = 1;
+		int countRef = 0;
+		while (iterator.hasNext()) {
+			String[] cols = iterator.next();
+			if (3 != cols.length) {
+				System.out.println("ERROR: " + StringUtils.join(cols, ","));
+				continue;
+			}
+			String snpId = "rs" + cols[0];
+			if (snpIdSet.contains(snpId)) {
+				String geneId = cols[1];
+				String transcriptInfo = cols[2];
+				
+				for (String transcript : transcriptInfo.split("\\|")) {
+					String[] parts = transcript.split(",", -1);
+					if (10 != parts.length) {
+						System.out.println("ERROR: " + transcript);
+						continue;
+					}
+					
+					String mrnaAcc = parts[0];
+					String hgvs = parts[1];
+					String codon = parts[2];
+					String proteinAcc = parts[3];
+					String residue = parts[4];
+//					String expressionType = parts[6];
+					String mrnaPos = parts[7];
+					String allele = parts[8];
+					String aaPos = parts[9];
+					
+					String soId = parts[5];
+					if (soId.contains(";")) {
+						LOG.info(String.format("%s contains multiple SO: %s", snpId, soId));
+						soId = soId.split(";")[0];
+					} 
+					
+					String key = snpId + "-" + geneId;
+					String vaItemRef = variAnnotMap.get(key);
+					if (vaItemRef == null) {
+						Item vaItem = createItem("VariationAnnotation");
+						vaItem.setAttribute("identifier", key);
+						if (!StringUtils.isEmpty(soId)) {
+							vaItem.setReference("function", getSOTerm(soId));
+						}
+						store(vaItem);
+						vaItemRef = vaItem.getIdentifier();
+						variAnnotMap.put(key, vaItemRef);
+					}
+					createSNPReference(mrnaAcc, mrnaPos, hgvs, allele, codon, proteinAcc, aaPos, residue, soId, vaItemRef);
+					countRef++;
+				}
+			}
+			count++;
+			if (count % 5000000 == 0) {
+				System.out.println(String.format("Process %d lines...", count));
+			}
+		}
+		System.out.println(String.format("Create %d SNPReference(s).", countRef));
 	}
 	
 	private Map<String, String> geneMap = new HashMap<String, String>();
@@ -257,18 +356,14 @@ public class DbsnpTxtConverter extends BioFileConverter
 		return ret;
 	}
 
-	private String createSNPReference(String mrnaAcc, String mrnaPos, String orientation,
+	private String createSNPReference(String mrnaAcc, String mrnaPos, String hgvs,
 			String allele, String codon, String proteinAcc, String aaPos, String residue,
 			String soId, String vaItemRef) throws ObjectStoreException {
 		Item item = createItem("SNPReference");
 		item.setAttribute("mrnaAccession", mrnaAcc);
-		if (!StringUtils.isEmpty(mrnaPos)) {
-			item.setAttribute("mrnaPosition", mrnaPos);
-		}
-		if (!StringUtils.isEmpty(orientation)) {
-			item.setAttribute("orientation", orientation);
-		}
-		if (!StringUtils.isEmpty(allele)) {
+		item.setAttributeIfNotNull("mrnaPosition", mrnaPos);
+		item.setAttributeIfNotNull("change", hgvs);
+		if (!StringUtils.isEmpty(allele) && !allele.equals("----")) {
 			item.setAttribute("mrnaAllele", allele);
 		}
 		if (!StringUtils.isEmpty(codon) && !codon.equals("---")) {
@@ -277,12 +372,8 @@ public class DbsnpTxtConverter extends BioFileConverter
 		if (!StringUtils.isEmpty(proteinAcc) && !proteinAcc.equals("0")) {
 			item.setAttribute("proteinAccession", proteinAcc);
 		}
-		if (!StringUtils.isEmpty(aaPos)) {
-			item.setAttribute("proteinPosition", aaPos);
-		}
-		if (!StringUtils.isEmpty(residue)) {
-			item.setAttribute("residue", residue);
-		}
+		item.setAttributeIfNotNull("proteinPosition", aaPos);
+		item.setAttributeIfNotNull("residue", residue);
 		if (!StringUtils.isEmpty(soId)) {
 			item.setReference("function", getSOTerm(soId));
 		}
@@ -350,14 +441,14 @@ public class DbsnpTxtConverter extends BioFileConverter
 	}
 	
 	private Map<String, String> chromosomeMap = new HashMap<String, String>();
-	private String getChromosome(String taxonId, String symbol) throws ObjectStoreException {
-		String key = taxonId + "-" + symbol;
+	private String getChromosome(String taxonId, String identifier) throws ObjectStoreException {
+		String key = taxonId + "-" + identifier;
 		String ret = chromosomeMap.get(key);
 		if (ret == null) {
 			Item chromosome = createItem("Chromosome");
 			chromosome.setReference("organism", getOrganism(taxonId));
-			chromosome.setAttribute("primaryIdentifier", symbol);
-			chromosome.setAttribute("symbol", symbol);
+			chromosome.setAttribute("primaryIdentifier", identifier);
+			chromosome.setAttribute("symbol", identifier);
 			store(chromosome);
 			ret = chromosome.getIdentifier();
 			chromosomeMap.put(key, ret);

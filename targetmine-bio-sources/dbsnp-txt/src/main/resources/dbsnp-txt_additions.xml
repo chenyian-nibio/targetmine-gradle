@@ -26,7 +26,7 @@
 	<class name="SNPReference" is-interface="true">
 		<attribute name="mrnaAccession" type="java.lang.String"/>
 		<attribute name="mrnaPosition" type="java.lang.String"/>
-		<attribute name="orientation" type="java.lang.String"/>
+		<attribute name="change" type="java.lang.String"/>
 		<attribute name="mrnaAllele" type="java.lang.String"/>
 		<attribute name="mrnaCodon" type="java.lang.String"/>
 		<attribute name="proteinAccession" type="java.lang.String"/>
