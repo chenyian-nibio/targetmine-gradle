@@ -1278,13 +1278,13 @@
                                  views="primaryAccession, name, organism.name, structuralDomains.cathClassification.cathCode,
                                         structuralDomains.cathClassification.description"
                                  externalLink="http://www.cathdb.info/cathnode/"/>
-
+<!--
       <enrichmentwidgetdisplayer id="protein_compound_enrichment"
                                  title="Interacting Compound Enrichment"
                                  description="Interacting compounds enriched for proteins in this list."
                                  label="Compounds"
                                  filterLabel="DataSet"
-                                 filters="DrugBank,ChEMBL,BioAssay,Ligand Expo,All"
+                                 filters="ChEMBL,BioAssay,Ligand Expo,All"
                                  startClass="Protein"
                                  startClassDisplay="primaryIdentifier"
                                  enrich="compounds.compound.name"
@@ -1293,6 +1293,7 @@
                                  typeClass="Protein"
                                  views="primaryAccession, name, organism.name, compounds.compound.identifier, compounds.compound.name"
                                  externalLink="/targetmine/portal.do?class=Compound&amp;externalids="/>
+-->
 
       <enrichmentwidgetdisplayer id="gene_interpro_enrichment"
                                  title="InterPro domain Enrichment"
@@ -1321,13 +1322,13 @@
                                  views="primaryIdentifier, symbol, organism.name, proteins.structuralDomains.cathClassification.cathCode,
                                         proteins.structuralDomains.cathClassification.description"
                                  externalLink="http://www.cathdb.info/cathnode/"/>
-
+<!--
       <enrichmentwidgetdisplayer id="gene_compound_enrichment"
                                  title="Interacting Compound Enrichment"
                                  description="Interacting compounds enriched for genes in this list."
                                  label="Compounds"
                                  filterLabel="DataSet"
-                                 filters="DrugBank,ChEMBL,BioAssay,Ligand Expo,All"
+                                 filters="ChEMBL,BioAssay,Ligand Expo,All"
                                  startClass="Gene"
                                  startClassDisplay="symbol"
                                  enrich="proteins.compounds.compound.name"
@@ -1336,6 +1337,7 @@
                                  typeClass="Gene"
                                  views="primaryIdentifier, symbol, organism.name, proteins.compounds.compound.identifier, proteins.compounds.compound.name"
                                  externalLink="/targetmine/portal.do?class=Compound&amp;externalids="/>
+-->
 
       <enrichmentwidgetdisplayer id="pathway_gene_enrichment"
                                  title="Gene Enrichment"

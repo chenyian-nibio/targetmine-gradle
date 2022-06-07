@@ -27,9 +27,6 @@ subprojects {
     mavenLocal()
     mavenCentral()
     maven { url 'https://clojars.org/repo' }
-    maven {
-        url 'http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/'
-    }
   }
 
   dependencies {
