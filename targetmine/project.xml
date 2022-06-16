@@ -67,6 +67,11 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/ncbi-gff"/>
       <property name="src.data.dir.includes" value="GRCh38_latest_genomic.subset.gff"/>
     </source>
+    <source name="epdnew" type="epdnew">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/epdnew/human_006"/>
+      <property name="src.data.dir.includes" value="Hs_EPDnew_006_hg38.bed"/>
+      <property name="taxonId" value="9606"/>
+    </source>
     <source name="chromosome" type="chromosome">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info/chromosome"/>
       <property name="src.data.dir.includes" value="chromosome_info.txt"/>

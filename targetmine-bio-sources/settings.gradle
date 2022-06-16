@@ -213,3 +213,5 @@ include ':bio-source-chromosome'
 project(':bio-source-chromosome').projectDir = new File(settingsDir, './chromosome')
 include ':bio-source-ipf-relation'
 project(':bio-source-ipf-relation').projectDir = new File(settingsDir, './ipf-relation')
+include ':bio-source-epdnew'
+project(':bio-source-epdnew').projectDir = new File(settingsDir, './epdnew')
