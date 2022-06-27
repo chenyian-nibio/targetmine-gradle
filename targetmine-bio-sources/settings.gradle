@@ -215,3 +215,5 @@ include ':bio-source-ipf-relation'
 project(':bio-source-ipf-relation').projectDir = new File(settingsDir, './ipf-relation')
 include ':bio-source-epdnew'
 project(':bio-source-epdnew').projectDir = new File(settingsDir, './epdnew')
+include ':bio-source-f5_enhancers'
+project(':bio-source-f5_enhancers').projectDir = new File(settingsDir, './f5_enhancers')
