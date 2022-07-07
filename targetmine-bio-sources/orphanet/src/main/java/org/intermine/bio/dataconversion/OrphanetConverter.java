@@ -8,6 +8,8 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +28,8 @@ import org.intermine.xml.full.Item;
 
 /**
  * @author Ishikawa.Motokazu
+ * 
+ * (refined by chenyian) 
  */
 public class OrphanetConverter extends BioFileConverter {
 	
@@ -35,6 +39,8 @@ public class OrphanetConverter extends BioFileConverter {
 	private static final String DATA_SOURCE_NAME = "Orphanet";
 	
 	private static final String HOMO_SAPIENS_TAXON_ID = "9606";
+	
+	private Pattern pubmedIdPattern = Pattern.compile("(^\\d+)"); 
 	
 	private File humanGeneInfoFile;
 	private File ordoOwlFile;
@@ -123,14 +129,14 @@ public class OrphanetConverter extends BioFileConverter {
 	private boolean store_gene_disease_relation( String disorderName, String geneSymbol, String associationType, String sourceOfValidation ) throws ObjectStoreException  {
 
 		String diseaseTerm = disorderMap.get( disorderName );
-		LOG.info( "disorderName="+disorderName+", geneSymbol="+geneSymbol+", associationType="+associationType+", diseaseTerm="+diseaseTerm+", sourceOfValidation"+sourceOfValidation );
+		LOG.info( "disorderName="+disorderName+", geneSymbol="+geneSymbol+", associationType="+associationType+", diseaseTerm="+diseaseTerm+", sourceOfValidation="+sourceOfValidation );
 		
 		if( null == diseaseTerm ) {
 			return false;
 		}
 		
 		String geneId = geneSymbolMap.get(geneSymbol);
-		// If Entrez Gene ID doesn't exist for this symbol, we should skip this gene
+		// If Gene ID doesn't exist for this symbol, we should skip this gene
 		if (geneId == null) {
 			return false;
 		}
@@ -139,37 +145,35 @@ public class OrphanetConverter extends BioFileConverter {
 		item.setAttribute( "associationType", associationType );
 		item.setReference( "gene", getGene(geneId) );
 		item.setReference( "diseaseTerm", diseaseTerm );
-		setPublications( item, sourceOfValidation );
+		
+		if (null != sourceOfValidation && !"".equals(sourceOfValidation)) {
+			for (String sov : sourceOfValidation.split("_")) {
+				Matcher matcher = pubmedIdPattern.matcher(sov);
+				if (matcher.find()) {
+					String pmid = matcher.group(1);
+					item.addToCollection("publications", getPublication(pmid));
+				} else {
+					LOG.info("CANNOT match the pmid: " + sov);
+				}
+				
+			}
+		}
 		
 		store( item );
 		return true;
 		
 	}
-	
-	private void setPublications( Item diseaseItem, String sourceOfValidation ) throws ObjectStoreException {
-		
-		if ( null != sourceOfValidation && !"".equals( sourceOfValidation ) ) {
-			
-			for( String pmid : sourceOfValidation.split("_") ) {
-				
-				pmid = pmid.replace( "[PMID]", "" );
-				
-				String ret = publicationMap.get( pmid );
-				if (ret == null) {
-					
-					Item item = createItem( "Publication" );
-					item.setAttribute( "pubMedId", pmid );
-					store( item );
-					ret = item.getIdentifier();
-					publicationMap.put( pmid, ret );
-					
-				}
-				diseaseItem.addToCollection( "publications", publicationMap.get( pmid ) );
-				
-			}
-			
+
+	private String getPublication(String pubmedId) throws ObjectStoreException {
+		String ret = publicationMap.get(pubmedId);
+		if (ret == null) {
+			Item item = createItem("Publication");
+			item.setAttribute("pubMedId", pubmedId);
+			store(item);
+			ret = item.getIdentifier();
+			publicationMap.put(pubmedId, ret);
 		}
-		
+		return ret;
 	}
 	
 	private String getGene(String geneId) throws ObjectStoreException {
@@ -306,5 +310,5 @@ public class OrphanetConverter extends BioFileConverter {
 	public void setOrdoOwlFile(File ordoOwlFile) {
 		this.ordoOwlFile = ordoOwlFile;
 	}
-	
+
 }

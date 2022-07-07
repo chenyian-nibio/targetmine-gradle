@@ -307,7 +307,7 @@
       <property name="src.data.dir" location="/data/bio/db/Targetmine/orphanet"/>
       <property name="src.data.dir.includes" value="en_product6.xml"/>
       <property name="humanGeneInfoFile" value="/data/bio/db/Targetmine/gene_info/Homo_sapiens.gene_info" />
-      <property name="ordoOwlFile" value="/data/bio/db/Targetmine/orphanet/ORDO_en_2.7.owl" />
+      <property name="ordoOwlFile" value="/data/bio/db/Targetmine/orphanet/ORDO_en_4.1.owl" />
     </source>
 
     <source name="efo-xref" type="efo-xref">
