@@ -61,9 +61,6 @@ public class IpfRelationConverter extends BioFileConverter {
     		String toGid = cols[31];
     		String toAnalysis = cols[34];
     		String toAlteration = cols[35];
-    		if (fromGid.equals("[NA]") || toGid.equals("[NA]")) {
-    			continue;
-    		}
     		
     		String ipfId = String.format("%s%05d", no, sno);
 			String text = String.format("%s %s -> %s %s", fromAnalysis, fromAlteration, toAnalysis, toAlteration);
@@ -72,7 +69,13 @@ public class IpfRelationConverter extends BioFileConverter {
     		
     		// relations
 			for (String gene1 : fromSet) {
+				if (gene1.equals("[NA]")) {
+					continue;
+				}
 				for (String gene2 : toSet) {
+					if (gene2.equals("[NA]")) {
+						continue;
+					}
 					// Item relation = createItem("Relation");
 					// relation.setAttribute("name", String.format("%s->%s", gene1, gene2));
 					// relation.setReference("gene1", getGene(gene1));
@@ -83,16 +86,18 @@ public class IpfRelationConverter extends BioFileConverter {
 					getRelation(gene1, gene2, text).addToCollection("details", getIPF(ipfId));
 				}
 			}
-    		
-    		// disease associations
+			// disease associations
 			for (String gene : fromSet) {
-    			getDisease(gene, umlsCode).addToCollection("publications", getPublication(pubmedId));
+				if (!gene.equals("[NA]")) {
+					getDisease(gene, umlsCode).addToCollection("publications", getPublication(pubmedId));
+				}
 			}
 			for (String gene : toSet) {
-    			getDisease(gene, umlsCode).addToCollection("publications", getPublication(pubmedId));
+				if (!gene.equals("[NA]")) {
+					getDisease(gene, umlsCode).addToCollection("publications", getPublication(pubmedId));
+				}
 			}
-    	}
-    	
+		}
     }
     
     @Override
