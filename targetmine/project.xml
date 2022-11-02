@@ -640,6 +640,12 @@
       <post-process name="create-attribute-indexes"/>
       <post-process name="create-autocomplete-index"/>
       <post-process name="create-search-index"/>
+      <!-- 
+      <post-process name="create-R2RML-mapping">
+          <property name="baseuri" value="https://targetmine.mizuguchilab.org/targetmine"/>
+          <property name="excludes" value="BindingSite,ChromosomeStructureVariation,CrossReference,EST,GoldenPathRegion,Oligo,ProbeSet,RegulatoryRegion,Transcript,TransposableElementInsertionSite,UniProtFeature"/>
+      </post-process>
+      -->
   </post-processing>
 
 </project>
