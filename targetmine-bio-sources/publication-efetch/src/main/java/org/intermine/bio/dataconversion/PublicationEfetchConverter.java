@@ -90,7 +90,15 @@ public class PublicationEfetchConverter extends BioFileConverter {
 					if (string.contains("\ud835\udf05")) {
 						string = string.replaceAll("\ud835\udf05", "k");
 					}
-					Document doc = parser.build(new StringReader(string));
+					Document doc;
+					try {
+						doc = parser.build(new StringReader(string));
+					} catch (Exception e) {
+						LOG.info("Problem occuored!");
+						LOG.info(string);
+						throw new RuntimeException(e);
+					}
+
 					Element entry = doc.getRootElement();
 
 					Elements elements = entry.getChildElements("PubmedArticle");
