@@ -61,6 +61,8 @@ public class IpfRelationConverter extends BioFileConverter {
     		String toGid = cols[31];
     		String toAnalysis = cols[34];
     		String toAlteration = cols[35];
+//    		String phenotypeStd = cols[37];
+//    		String phenotypeAlteration = cols[39];
     		
     		String ipfId = String.format("%s%05d", no, sno);
 			String text = String.format("%s %s -> %s %s", fromAnalysis, fromAlteration, toAnalysis, toAlteration);
@@ -83,7 +85,7 @@ public class IpfRelationConverter extends BioFileConverter {
 					// relation.setAttribute("text", text);
 					// relation.setReference("reference", getIPF(ipfId));
 					// store(relation);
-					getRelation(gene1, gene2, text).addToCollection("details", getIPF(ipfId));
+					getIPFRelation(gene1, gene2, text).addToCollection("details", getIPF(ipfId));
 				}
 			}
 			// disease associations
@@ -107,11 +109,11 @@ public class IpfRelationConverter extends BioFileConverter {
     }
 
 	private Map<String, Item> relationMap = new HashMap<String, Item>();
-	private Item getRelation(String gene1, String gene2, String text) throws ObjectStoreException {
+	private Item getIPFRelation(String gene1, String gene2, String text) throws ObjectStoreException {
 		String key = String.format("%s-%s-%s", gene1, gene2, text);
 		Item ret = relationMap.get(key);
 		if (ret == null) {
-			ret = createItem("Relation");
+			ret = createItem("IPFRelation");
 			ret.setAttribute("name", String.format("%s->%s", gene1, gene2));
 			ret.setReference("gene1", getGene(gene1));
 			ret.setReference("gene2", getGene(gene2));

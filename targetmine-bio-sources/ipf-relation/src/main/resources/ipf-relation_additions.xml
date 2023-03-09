@@ -11,6 +11,8 @@
 		<reference name="gene2" referenced-type="Gene" />
 		<attribute name="text" type="java.lang.String"/>
 		<collection name="dataSets" referenced-type="DataSet"/>
+	</class>
+	<class name="IPFRelation" extends="Relation" is-interface="true">
 		<collection name="details" referenced-type="IPF" />
 	</class>
     <class name="IPF" is-interface="true">
