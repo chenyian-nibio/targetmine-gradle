@@ -75,6 +75,9 @@ public class WwpdbConverter extends BioFileConverter {
 		while (iterator.hasNext()) {
 			String[] cols = iterator.next();
 			String pdbid = cols[PDB_ID].toLowerCase();
+			if (StringUtils.isEmpty(pdbid)) {
+				continue;
+			}
 			if (pdbIds.contains(pdbid)) {
 				LOG.error("Duplicated pdbId found: '" + pdbid + "', this line will be skipped!");
 				continue;
