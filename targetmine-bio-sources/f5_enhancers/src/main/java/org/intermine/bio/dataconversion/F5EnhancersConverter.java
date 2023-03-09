@@ -76,6 +76,9 @@ public class F5EnhancersConverter extends BioFileConverter
 			item.setReference("chromosome", chromosomeRefId);
 			item.setReference("chromosomeLocation", location);
 
+			int length = Integer.valueOf(end) - Integer.valueOf(start) + 1;
+			item.setAttribute("length", String.valueOf(length));
+
 			store(location);
 			store(item);
 
