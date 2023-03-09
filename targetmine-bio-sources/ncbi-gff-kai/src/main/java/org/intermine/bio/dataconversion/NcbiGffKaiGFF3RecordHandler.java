@@ -98,18 +98,28 @@ public class NcbiGffKaiGFF3RecordHandler extends GFF3RecordHandler
             symbol = symbol + "-exon" + identifier.substring(identifier.lastIndexOf("-"));
             feature.setAttribute("symbol", symbol);
 
-            /* removed: should be obsolete, TODO check ncRNA
-            if (record.getAttributes().get("transcript_id") != null) {
-                String transcriptId = record.getAttributes().get("transcript_id").iterator().next();
-                feature.setAttribute("primaryIdentifier", transcriptId);
-            } else {
-                // TODO ncRNA
-            }
-            */
             if (record.getAttributes().get("product") != null) {
                 String description = record.getAttributes().get("product").iterator().next();
                 feature.setAttribute("name", description);
             }
+        } else if ("five_prime_UTR".equalsIgnoreCase(type)) {
+            feature.setClassName("FivePrimeUTR");
+            String identifier = record.getId();
+            feature.setAttribute("primaryIdentifier", identifier);
+
+            String symbol = record.getAttributes().get("gene").iterator().next();
+            symbol = symbol + "-5putr";
+            feature.setAttribute("symbol", symbol);
+
+        } else if ("three_prime_UTR".equalsIgnoreCase(type)) {
+            feature.setClassName("ThreePrimeUTR");
+            String identifier = record.getId();
+            feature.setAttribute("primaryIdentifier", identifier);
+
+            String symbol = record.getAttributes().get("gene").iterator().next();
+            symbol = symbol + "-3putr";
+            feature.setAttribute("symbol", symbol);
+
         } else if ("mirna".equalsIgnoreCase(type)) {
             feature.setClassName("MiRNA");
             String identifier = record.getId();

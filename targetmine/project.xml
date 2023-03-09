@@ -65,7 +65,7 @@
       <property name="gff3.dataSourceName" value="NCBI"/>
       <property name="gff3.dataSetTitle" value="NCBI-GFF"/>
       <property name="src.data.dir" location="/data/bio/db/Targetmine/ncbi-gff"/>
-      <property name="src.data.dir.includes" value="GRCh38_latest_genomic.subset.gff"/>
+      <property name="src.data.dir.includes" value="GRCh38_latest_genomic.subset.utr.gff"/>
     </source>
     <source name="epdnew" type="epdnew">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/epdnew/human_006"/>
@@ -624,7 +624,7 @@
   <post-processing>
       <post-process name="create-intron-features-kai"/>
       <post-process name="create-intergenic-region-features"/>
-      <post-process name="create-references"/>
+      <post-process name="create-utr-references"/>
       <post-process name="do-sources"/>
       <post-process name="transcribe-ncbiGeneId"/>
       <post-process name="integrated-pathway-clustering"/>
