@@ -902,6 +902,17 @@
     </fields>
   </class>
 
+  <class className="org.intermine.model.bio.TbcAnnotation">
+    <fields>
+      <fieldconfig fieldExpr="drug.identifier"/>
+      <fieldconfig fieldExpr="drug.genericName"/>
+      <fieldconfig fieldExpr="target"/>
+      <fieldconfig fieldExpr="classification.name"/>
+      <fieldconfig fieldExpr="classification.parent.name"/>
+      <fieldconfig fieldExpr="classification.parent.parent.name"/>
+    </fields>
+  </class>
+
 <!-- exporters -->
   <tableExportConfig id="sequence" className="org.intermine.bio.web.export.SequenceHttpExporter"/>
   <tableExportConfig id="gff3" className="org.intermine.bio.web.export.GFF3HttpExporter"/>

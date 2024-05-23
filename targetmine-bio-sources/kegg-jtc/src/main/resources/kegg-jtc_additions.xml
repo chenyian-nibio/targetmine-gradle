@@ -17,6 +17,27 @@
 		<attribute name="keggDrugId" type="java.lang.String"/>
 		<collection name="jsccCodes" referenced-type="JscClassification"/>		
 		<collection name="uspClassifications" referenced-type="UspClassification"/>
+		<collection name="targetBasedClassifications" referenced-type="TbcAnnotation" reverse-reference="drug"/>
 	</class>
 	<class name="Compound" is-interface="true"/>
+
+	<class name="TargetBasedClassification" is-interface="true">
+		<attribute name="lv" type="java.lang.String"/>
+		<attribute name="name" type="java.lang.String"/>
+		<reference name="parent" referenced-type="TargetBasedClassification" reverse-reference="childern"/>
+		<collection name="childern" referenced-type="TargetBasedClassification" reverse-reference="parent"/>
+		<collection name="annotations" referenced-type="TbcAnnotation" reverse-reference="classification"/>
+	</class>
+	<class name="TbcAnnotation" is-interface="true">
+		<reference name="classification" referenced-type="TargetBasedClassification" reverse-reference="annotations"/>
+		<attribute name="target" type="java.lang.String"/>
+		<collection name="genes" referenced-type="Gene" reverse-reference="targetBasedClassifications"/>
+		<reference name="drug" referenced-type="DrugCompound" reverse-reference="targetBasedClassifications"/>
+	</class>
+
+	<class name="Gene" is-interface="true">
+		<attribute name="primaryIdentifier" type="java.lang.String"/>
+		<collection name="targetBasedClassifications" referenced-type="TbcAnnotation" reverse-reference="genes"/>
+	</class>
+
 </classes>
