@@ -27,11 +27,11 @@ import org.intermine.xml.full.Item;
  */
 public class TaxonPathwayConverter extends BioFileConverter {
 	private static final Logger LOG = LogManager.getLogger(TaxonPathwayConverter.class);
-    //
-    private static final String DATASET_TITLE = "KEGG Pathway";
-    private static final String DATA_SOURCE_NAME = "KEGG";
-    
-    private Map<String, Set<String>> pathwayTaxonRefMap = new HashMap<String, Set<String>>();
+	//
+	private static final String DATASET_TITLE = "KEGG Pathway";
+	private static final String DATA_SOURCE_NAME = "KEGG";
+
+	private Map<String, Set<String>> pathwayTaxonRefMap = new HashMap<String, Set<String>>();
 
 	private Map<String, String> mainClassMap = new HashMap<String, String>();
 	private Map<String, String> subClassMap = new HashMap<String, String>();
@@ -55,31 +55,24 @@ public class TaxonPathwayConverter extends BioFileConverter {
 		this.pathwayDescFile = pathwayDescFile;
 	}
 
-    /**
-     * Constructor
-     * @param writer the ItemWriter used to handle the resultant items
-     * @param model the Model
-     */
-    public TaxonPathwayConverter(ItemWriter writer, Model model) {
-        super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
-    }
+	/**
+	 * Constructor
+	 * @param writer the ItemWriter used to handle the resultant items
+	 * @param model the Model
+	 */
+	public TaxonPathwayConverter(ItemWriter writer, Model model) {
+		super(writer, model, DATA_SOURCE_NAME, DATASET_TITLE);
+	}
 
-    /**
-     * 
-     *
-     * {@inheritDoc}
-     */
-    public void process(Reader reader) throws Exception {
-//    	if (mainClassMap.isEmpty() || subClassMap.isEmpty() || pathwayNameMap.isEmpty()) {
-//    		processPathwayClassFile();
-//    	}
-//    	if (pathwayDescMap.isEmpty()) {
-//    		processPathwayDescFile();
-//    	}
+	/**
+	 * 
+	 *
+	 * {@inheritDoc}
+	 */
+	public void process(Reader reader) throws Exception {
 		if (taxonCodeIdMap.isEmpty()) {
 			processTaxonMapFile();
 		}
-    	
 		String fileName = getCurrentFile().getName();
 		int index = fileName.indexOf(".");
 		String taxonCode = fileName.substring(0, index);
@@ -96,17 +89,17 @@ public class TaxonPathwayConverter extends BioFileConverter {
 			Iterator<String[]> iterator = FormattedTextParser.parseTabDelimitedReader(reader);
 			while (iterator.hasNext()) {
 				String[] cols = iterator.next();
-				String pathwayId = cols[0].substring(index + 5);
+				String pathwayId = cols[0].substring(index);
 				if (pathwayTaxonRefMap.get(pathwayId) == null) {
 					pathwayTaxonRefMap.put(pathwayId, new HashSet<String>());
 				}
 				pathwayTaxonRefMap.get(pathwayId).add(taxonomyRef);
 			}
 		}
-    }
-    
-    @Override
-    public void close() throws Exception {
+	}
+
+	@Override
+	public void close() throws Exception {
 		processPathwayClassFile();
 		processPathwayDescFile();
 		
@@ -132,21 +125,21 @@ public class TaxonPathwayConverter extends BioFileConverter {
 			store(pathway);
 		}
 		LOG.info(pathwayTaxonRefMap.keySet().size() + " pathways were processed.");
-    }
-    
-    private Map<String, String> taxonItemRefMap = new HashMap<String, String>();
-    private String getTaxonomy(String taxonId) throws ObjectStoreException {
-    	String ret = taxonItemRefMap.get(taxonId);
-    	if (ret == null) {
-    		Item item = createItem("Taxonomy");
-    		item.setAttribute("taxonId", taxonId);
-    		store(item);
-    		ret = item.getIdentifier();
-    		taxonItemRefMap.put(taxonId, ret);
-    	}
+	}
+
+	private Map<String, String> taxonItemRefMap = new HashMap<String, String>();
+	private String getTaxonomy(String taxonId) throws ObjectStoreException {
+		String ret = taxonItemRefMap.get(taxonId);
+		if (ret == null) {
+			Item item = createItem("Taxonomy");
+			item.setAttribute("taxonId", taxonId);
+			store(item);
+			ret = item.getIdentifier();
+			taxonItemRefMap.put(taxonId, ret);
+		}
 		return ret;
-    }
-    
+	}
+
 	private void processTaxonMapFile() {
 		if (taxonMapFile == null) {
 			throw new NullPointerException("taxonMapFile property is missing");
