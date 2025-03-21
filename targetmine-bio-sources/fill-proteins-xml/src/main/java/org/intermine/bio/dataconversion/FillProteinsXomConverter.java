@@ -48,7 +48,7 @@ public class FillProteinsXomConverter extends BioFileConverter {
 	private static final int POSTGRES_INDEX_SIZE = 2712;
 	private static final String FEATURE_TYPES = "initiator methionine, signal peptide, transit peptide, propeptide, chain, peptide, topological domain, transmembrane region, intramembrane region, domain, repeat, calcium-binding region, zinc finger region, DNA-binding region, nucleotide phosphate-binding region, region of interest, coiled-coil region, short sequence motif, compositionally biased region, active site, metal ion-binding site, binding site, site, non-standard amino acid, modified residue, lipid moiety-binding region, glycosylation site, disulfide bond, cross-link";
 
-	private static final String UNIPROT_NAMESPACE = "http://uniprot.org/uniprot";
+	private static final String UNIPROT_NAMESPACE = "https://uniprot.org/uniprot";
 	
 	// private List<String> xrefs = Arrays.asList("RefSeq", "UniGene");
 
