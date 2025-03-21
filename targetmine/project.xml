@@ -64,6 +64,11 @@
       <property name="src.data.dir.includes" value="FANTOM5enhancers.bed"/>
       <property name="taxonId" value="9606"/>
     </source>
+    <source name="reftss" type="reftss">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/reftss"/>
+      <property name="src.data.dir.includes" value="refTSS_v4.1_human_coordinate_ALL_annotation.txt"/>
+      <property name="taxonId" value="9606"/>
+    </source>
     <source name="chromosome" type="chromosome">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/gene_info/chromosome"/>
       <property name="src.data.dir.includes" value="chromosome_info.txt"/>

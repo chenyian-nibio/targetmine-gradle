@@ -217,3 +217,5 @@ include ':bio-source-epdnew'
 project(':bio-source-epdnew').projectDir = new File(settingsDir, './epdnew')
 include ':bio-source-f5_enhancers'
 project(':bio-source-f5_enhancers').projectDir = new File(settingsDir, './f5_enhancers')
+include ':bio-source-reftss'
+project(':bio-source-reftss').projectDir = new File(settingsDir, './reftss')
