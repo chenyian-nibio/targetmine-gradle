@@ -7,7 +7,7 @@ Web site: [https://targetmine.mizuguchilab.org/](https://targetmine.mizuguchilab
 
 Dependencies
 ------------------------
-InterMine 3.0 or above. 
+InterMine 5.1.x. 
 
 If you are looking for TargetMine whihch base on "Pre-InterMine 2.0", please see [https://github.com/chenyian-nibio/targetmine](https://github.com/chenyian-nibio/targetmine).
 
@@ -20,14 +20,14 @@ For other information, please refer to [https://github.com/intermine/intermine](
 Installation
 ------------------------
 
-Please refer to the documentation in [InterMine Documentation][readthedocs]. 
+Please refer to the documentation in [InterMine Server Documentation][readthedocs]. 
 
 Some instructions will be added here latter.
 
 Copyright and License
 ------------------------
 
-Copyright (C) 2011-2022 by [The Mizuguchi Laboratory](https://mizuguchilab.org/).
+Copyright (C) 2011-2025 by [The Mizuguchi Laboratory](https://mizuguchilab.org/).
 
 TargetMine is licensed under the MIT License.
 
@@ -35,23 +35,29 @@ See [LICENSE](LICENSE.md) for licensing information.
 
 Please cite
 ------------------------
+**TargetMine 2022: a new vision into drug target analysis.**<br/>
+*Chen YA, Allendes Osorio RS, Mizuguchi K.*<br/>
+[Bioinformatics. 2022 Sep 15;38(18):4454-4456.](https://academic.oup.com/bioinformatics/article/38/18/4454/6650619)<br/>
+[![doi](http://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtac507-blue.svg?style=flat)](https://academic.oup.com/bioinformatics/article/38/18/4454/6650619) 
+[![pubmed](http://img.shields.io/badge/PMID-35894632-blue.svg?style=flat)](https://pubmed.ncbi.nlm.nih.gov/35894632/)
+
 **The TargetMine Data Warehouse: Enhancement and Updates.**<br/>
 *Chen Y-A, Tripathi LP, Fujiwara T, Kameyama T, Itoh MN, Mizuguchi K.*<br/>
 [Frontiers in Genetics. 2019 Oct 9;10:934](https://www.frontiersin.org/articles/10.3389/fgene.2019.00934/full)<br/>
 [![doi](http://img.shields.io/badge/DOI-10.3389%2Ffgene.2019.00934-blue.svg?style=flat)](https://www.frontiersin.org/articles/10.3389/fgene.2019.00934/full) 
-[![pubmed](http://img.shields.io/badge/PMID-31649722-blue.svg?style=flat)](https://www.ncbi.nlm.nih.gov/pubmed/31649722)
+[![pubmed](http://img.shields.io/badge/PMID-31649722-blue.svg?style=flat)](https://pubmed.ncbi.nlm.nih.gov/31649722/)
 
 **An integrative data analysis platform for gene set analysis and knowledge discovery in a data warehouse framework.**<br/>
 *Chen Y-A, Tripathi LP, Mizuguchi K.*<br/>
 [Database (Oxford). 2016 Mar 17;2016. pii: baw009](https://academic.oup.com/database/article/doi/10.1093/database/baw009/2630159) <br/>
 [![doi](http://img.shields.io/badge/DOI-10.1093%2Fdatabase%2Fbaw009-blue.svg?style=flat)](https://academic.oup.com/database/article/doi/10.1093/database/baw009/2630159) 
-[![pubmed](http://img.shields.io/badge/PMID-26989145-blue.svg?style=flat)](https://www.ncbi.nlm.nih.gov/pubmed/26989145)
+[![pubmed](http://img.shields.io/badge/PMID-26989145-blue.svg?style=flat)](https://pubmed.ncbi.nlm.nih.gov/26989145/)
 
 **TargetMine, an Integrated Data Warehouse for Candidate Gene Prioritisation and Target Discovery.**<br/>
 *Chen Y-A, Tripathi LP, Mizuguchi K.*<br/>
 [PLoS ONE. 2011 Mar 8;6(3): e17844](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0017844) <br/>
 [![doi](http://img.shields.io/badge/DOI-10.1371%2Fjournal%2Epone%2E0017844-blue.svg?style=flat)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0017844) 
-[![pubmed](http://img.shields.io/badge/PMID-21408081-blue.svg?style=flat)](https://www.ncbi.nlm.nih.gov/pubmed/21408081)
+[![pubmed](http://img.shields.io/badge/PMID-21408081-blue.svg?style=flat)](https://pubmed.ncbi.nlm.nih.gov/21408081/)
 
 
-[readthedocs]: http://intermine.readthedocs.org/en/latest
+[readthedocs]: http://intermine.org/im-docs/
