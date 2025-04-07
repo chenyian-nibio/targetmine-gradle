@@ -492,9 +492,12 @@
     <source name="gene-set" type="gene-set"/>
     <source name="calculate-bg" type="calculate-bg"/>
 
-    <source name="organism" type="fill-organisms">
-      <property name="src.data.file" location="organisms.xml"/>
+    <source name="organism" type="fill-organisms-table">
+      <property name="src.data.dir" location="/data/bio/db/Targetmine/taxonomy"/>
+      <property name="src.data.dir.includes" value="taxonpath.txt"/>
+      <property name="taxonNamesFile" value="/data/bio/db/Targetmine/taxonomy/taxon_names.txt"/>
       <property name="hasShortName" value="9606 10090 10116"/>
+      <property name="osAlias" value="os.production"/>
     </source>
     <source name="taxon" type="taxonomy">
       <property name="src.data.dir" location="/data/bio/db/Targetmine/taxonomy"/>

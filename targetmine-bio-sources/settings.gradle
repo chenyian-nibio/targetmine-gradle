@@ -219,3 +219,5 @@ include ':bio-source-f5_enhancers'
 project(':bio-source-f5_enhancers').projectDir = new File(settingsDir, './f5_enhancers')
 include ':bio-source-reftss'
 project(':bio-source-reftss').projectDir = new File(settingsDir, './reftss')
+include ':bio-source-fill-organisms-table'
+project(':bio-source-fill-organisms-table').projectDir = new File(settingsDir, './fill-organisms-table')
