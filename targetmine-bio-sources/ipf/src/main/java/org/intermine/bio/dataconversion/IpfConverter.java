@@ -124,7 +124,7 @@ public class IpfConverter extends BioFileConverter
 
 				String fromUniportIds = map.get("from_node_Uniprot id");
 				if (isNotNull(fromUniportIds)) {
-					for (String id : fromUniportIds.split("\\||;\\s|,\\s|\\s")) {
+					for (String id : fromUniportIds.split("\\||;\\s|,\\s|\\s|;")) {
 						if (isNotNull(id)) {
 							item.addToCollection("fromNodeProteins", getProtein(id));
 						}
@@ -133,7 +133,7 @@ public class IpfConverter extends BioFileConverter
 
 				String toUniportIds = map.get("to_node_Uniprot id");
 				if (isNotNull(toUniportIds)) {
-					for (String id : toUniportIds.split("\\||;\\s|,\\s|\\s")) {
+					for (String id : toUniportIds.split("\\||;\\s|,\\s|\\s|;")) {
 						if (isNotNull(id)) {
 							item.addToCollection("toNodeProteins", getProtein(id));
 						}
