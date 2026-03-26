@@ -107,17 +107,18 @@ public class FillOrganismsTableConverter extends BioFileConverter {
                         item.setAttribute("species", speciesName);
                     }
                     if (hasShortName.contains(taxonId)) {
-                        String shortName = genusName.charAt(0) + ". " + speciesName;
+                        String[] splits = speciesName.split(" ", 2);
+                        String shortName = splits[0].charAt(0) + ". " + splits[1];
                         item.setAttribute("shortName", shortName);
                         System.out.println("assign the short name: " + shortName);
                     }
                 }
 
-                Item taxonomy = createItem("Taxonomy");
-                taxonomy.setAttribute("taxonId", taxonId);
-                store(taxonomy);
+                // Item taxonomy = createItem("Taxonomy");
+                // taxonomy.setAttribute("taxonId", taxonId);
+                // store(taxonomy);
 
-                item.setReference("taxonomy", taxonomy);
+                // item.setReference("taxonomy", taxonomy);
                 store(item);
 
                 processedTaxonIds.add(taxonId);
@@ -135,11 +136,11 @@ public class FillOrganismsTableConverter extends BioFileConverter {
                     item.setAttribute("taxonId", taxonId);
                     item.setAttribute("name", name);
 
-                    Item taxonomy = createItem("Taxonomy");
-                    taxonomy.setAttribute("taxonId", taxonId);
-                    store(taxonomy);
+                    // Item taxonomy = createItem("Taxonomy");
+                    // taxonomy.setAttribute("taxonId", taxonId);
+                    // store(taxonomy);
     
-                    item.setReference("taxonomy", taxonomy);
+                    // item.setReference("taxonomy", taxonomy);
                     store(item);
 
                     // secondStep.add(taxonId);
