@@ -63,7 +63,16 @@ public class GwasConverter extends BioFileConverter {
 			gwaItem.setAttribute("accession", cols[36]);
 			gwaItem.setAttribute("date", cols[0]);
 			gwaItem.setAttribute("study", cols[6]);
-			gwaItem.setAttribute("trait", cols[7]);
+			if (!StringUtils.isEmpty(cols[7])) {
+				gwaItem.setAttribute("trait", cols[7]);
+			} else {
+				if (!StringUtils.isEmpty(cols[34])) {
+					gwaItem.setAttribute("trait", cols[34]);
+				} else {
+					LOG.info(String.format("WARNING! Unable to get the trait title, skip this entry! accession: %s", cols[36]));
+					continue;
+				}
+			}
 			if (!StringUtils.isEmpty(cols[13])) {
 				gwaItem.setAttribute("reportedGenes", cols[13]);
 			}
