@@ -354,8 +354,11 @@ public class FillProteinsXomConverter extends BioFileConverter {
 							Element location = feature.getFirstChildElement("location",UNIPROT_NAMESPACE);
 							Element position = location.getFirstChildElement("position",UNIPROT_NAMESPACE);
 							if (position != null) {
-								featureItem.setAttribute("start", position.getAttributeValue("position"));
-								featureItem.setAttribute("end", position.getAttributeValue("position"));
+								String posStr = position.getAttributeValue("position");
+								if (!StringUtils.isEmpty(posStr)) {
+									featureItem.setAttribute("start", posStr);
+									featureItem.setAttribute("end", posStr);
+								}
 							} else {
 								Element beginElement = location.getFirstChildElement("begin",UNIPROT_NAMESPACE);
 								Element endElement = location.getFirstChildElement("end",UNIPROT_NAMESPACE);
