@@ -126,7 +126,7 @@ public class LigandExpoConverter extends BioFileConverter {
 		String ret = structureMap.get(pdbId);
 		if (ret == null) {
 			Item item = createItem("ProteinStructure");
-			item.setAttribute("pdbId", pdbId);
+			item.setAttribute("pdbId", pdbId.toLowerCase());
 			store(item);
 			ret = item.getIdentifier();
 			structureMap.put(pdbId, ret);
